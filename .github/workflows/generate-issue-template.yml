@@ -1,0 +1,48 @@
+name: Regenerate update-paper issue template
+
+# Keeps the "Paper" dropdown in .github/ISSUE_TEMPLATE/update-paper.yml in
+# sync with the current paper list whenever data.json changes on main —
+# whether that change came from re-running export_data.py against the
+# spreadsheet, or from an applied update-request issue.
+on:
+  push:
+    branches: [main]
+    paths: [data.json]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-issue-template
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    # Skip commits made by the update-request bot to avoid any risk of a
+    # push loop (this workflow's own commits never touch data.json, so it
+    # can't actually trigger itself — this check is a second, explicit
+    # safety net rather than something the loop depends on).
+    if: github.event.head_commit.author.username != 'lab-ledger-bot'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install pyyaml
+
+      - run: python3 scripts/generate_issue_template.py
+
+      - name: Commit if the template changed
+        run: |
+          if git diff --quiet -- .github/ISSUE_TEMPLATE/update-paper.yml; then
+            echo "No paper-list changes; nothing to commit."
+            exit 0
+          fi
+          git config user.name "lab-ledger-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add .github/ISSUE_TEMPLATE/update-paper.yml
+          git commit -m "Regenerate update-paper issue template from data.json"
+          git push

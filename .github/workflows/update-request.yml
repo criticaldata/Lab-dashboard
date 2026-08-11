@@ -1,0 +1,48 @@
+name: Apply update-request issue
+
+# Fires when the "update-request" Issue Form is submitted (which applies the
+# label at creation time), and also on manual re-labeling as a fallback.
+# scripts/apply_update.py does all the real work: verifying the submitter is
+# a criticaldata org member, applying the change to data.json, logging it to
+# change-log.json, committing, and commenting/closing the issue either way.
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  # contents:write is needed to commit the applied change directly to main.
+  # issues:write is needed to comment on and close the request issue.
+  # Neither of these is the org-membership PAT — that's a separate secret
+  # (ORG_READ_PAT) used only for the read-only membership check below.
+  contents: write
+  issues: write
+
+concurrency:
+  group: update-request-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: contains(github.event.issue.labels.*.name, 'update-request')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Apply the requested update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Fine-grained PAT, read-only "Members" org permission, nothing
+          # else — see README.md's "Security notes" section for why this
+          # scope (and not GITHUB_TOKEN) is used for the membership check.
+          ORG_READ_PAT: ${{ secrets.ORG_READ_PAT }}
+          LAB_ORG: criticaldata
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python3 scripts/apply_update.py

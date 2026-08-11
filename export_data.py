@@ -4,13 +4,24 @@
 Usage: python3 export_data.py [path/to/Lab_Papers_Dashboard.xlsx]
 """
 import json
+import os
 import sys
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 try:
     import openpyxl
 except ImportError:
     sys.exit("Missing dependency: run `pip install openpyxl` first.")
+
+# Fields on a paper that the update-request Action (scripts/apply_update.py)
+# can change. These are the ones reconciliation may preserve from the
+# existing data.json instead of overwriting with the spreadsheet's values —
+# see reconcile_papers() below.
+ISSUE_EDITABLE_FIELDS = [
+    "stage", "priority", "owner", "attempts", "currentVenue", "deadline",
+    "daysLeft", "latestDecision", "status", "notes", "lastUpdated",
+    "submissions",
+]
 
 PAPERS_SHEET = "\U0001F4C4 Papers Tracker"
 SUBMISSIONS_SHEET = "\U0001F4E8 Submissions Log"
@@ -46,6 +57,56 @@ def as_int(v, default=0):
         return int(float(v))
     except (TypeError, ValueError):
         return default
+
+
+def reconcile_papers(fresh_papers, previous_papers_by_id, spreadsheet_modified):
+    """Merge freshly-exported papers with any changes already applied via
+    the update-request Action, so re-running this script doesn't silently
+    clobber someone's issue-driven update just because the spreadsheet
+    hasn't caught up yet.
+
+    The signal used is wall-clock time: each paper's `updatedViaIssue.at`
+    timestamp (stamped by apply_update.py) is compared against the
+    spreadsheet file's own last-saved time (from its docProps metadata).
+    Whichever is more recent wins:
+
+      - issue edit newer than the spreadsheet -> keep the JSON's values for
+        the fields the Action can touch (stage/priority/owner/status/
+        submissions/etc — see ISSUE_EDITABLE_FIELDS), and print a warning
+        so whoever runs this knows to catch the spreadsheet up too.
+      - spreadsheet saved more recently -> assume a human has since caught
+        the spreadsheet up (or overridden it on purpose); use the fresh
+        spreadsheet values as normal, and drop the now-stale
+        `updatedViaIssue` marker.
+
+    Returns the reconciled paper list; prints warnings for any preserved
+    papers as a side effect.
+    """
+    reconciled = []
+    for paper in fresh_papers:
+        previous = previous_papers_by_id.get(paper["id"])
+        marker = (previous or {}).get("updatedViaIssue")
+
+        if previous and marker and marker.get("at"):
+            issue_at = datetime.fromisoformat(marker["at"])
+            if issue_at.tzinfo is None:
+                issue_at = issue_at.replace(tzinfo=timezone.utc)
+            if issue_at > spreadsheet_modified:
+                print(
+                    f"  keeping issue-applied values for {paper['id']} "
+                    f"({paper['title'][:60]!r}) — update-request #{marker.get('issueNumber')} "
+                    f"was applied {marker['at']}, after the spreadsheet was last saved. "
+                    "Update the spreadsheet to match if you want it to stick."
+                )
+                merged = dict(paper)
+                for field in ISSUE_EDITABLE_FIELDS:
+                    merged[field] = previous.get(field)
+                merged["updatedViaIssue"] = marker
+                reconciled.append(merged)
+                continue
+
+        reconciled.append(paper)
+    return reconciled
 
 
 def main():
@@ -114,6 +175,20 @@ def main():
             "availability": row.get("Availability"),
         })
 
+    previous_papers_by_id = {}
+    if os.path.exists("data.json"):
+        with open("data.json", encoding="utf-8") as f:
+            try:
+                previous_papers_by_id = {p["id"]: p for p in json.load(f).get("papers", [])}
+            except (json.JSONDecodeError, AttributeError):
+                previous_papers_by_id = {}
+
+    spreadsheet_modified = wb.properties.modified or wb.properties.created
+    if spreadsheet_modified.tzinfo is None:
+        spreadsheet_modified = spreadsheet_modified.replace(tzinfo=timezone.utc)
+
+    papers = reconcile_papers(papers, previous_papers_by_id, spreadsheet_modified)
+
     data = {
         "generatedAt": datetime.now().isoformat(timespec="seconds"),
         "papers": papers,
@@ -122,6 +197,7 @@ def main():
 
     with open("data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
 
     print(f"Wrote data.json: {len(papers)} papers, {len(team)} team members.")
 
