@@ -195,8 +195,14 @@
   .meta-row .meta-item strong{color:var(--ink);font-weight:600;}
   .priority-High{color:var(--mit-red);font-weight:600;}
 
-  .history-toggle{
+  .card-actions{
+    display:flex;
+    align-items:center;
+    gap:16px;
     margin-top:10px;
+  }
+  .history-toggle,
+  .edit-toggle{
     background:none;
     border:none;
     color:var(--mit-red);
@@ -205,8 +211,118 @@
     cursor:pointer;
     padding:4px 0;
   }
-  .history-toggle:hover{text-decoration:underline;}
-  .history-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .history-toggle{margin-top:0;}
+  .history-toggle:hover,
+  .edit-toggle:hover{text-decoration:underline;}
+  .history-toggle:focus-visible,
+  .edit-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+
+  .edit-panel{
+    display:none;
+    margin-top:12px;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--panel);
+  }
+  .edit-panel.open{display:block;}
+  .edit-panel h4{
+    margin:0 0 10px;
+    font-size:.82rem;
+    font-weight:700;
+    color:var(--mit-charcoal);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .edit-panel p.hint{
+    margin:0 0 12px;
+    font-size:.82rem;
+    color:var(--muted);
+  }
+  .edit-field{margin-bottom:10px;}
+  .edit-field label{
+    display:block;
+    font-size:.78rem;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:4px;
+  }
+  .edit-field .field-hint{
+    display:block;
+    font-size:.74rem;
+    font-weight:400;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .edit-field input[type=text],
+  .edit-field input[type=date],
+  .edit-field input[type=email],
+  .edit-field select,
+  .edit-field textarea{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:.88rem;
+    font-family:inherit;
+    background:#fff;
+    color:var(--ink);
+  }
+  .edit-field textarea{resize:vertical;min-height:56px;}
+  .edit-field input:focus,
+  .edit-field select:focus,
+  .edit-field textarea:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .edit-fieldset{
+    border:none;
+    padding:10px 0 0;
+    margin:12px 0 0;
+    border-top:1px dashed var(--line);
+  }
+  .edit-fieldset legend{
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--mit-charcoal);
+    padding:0;
+    margin-bottom:6px;
+  }
+  .edit-row2{display:flex;gap:10px;}
+  .edit-row2 > .edit-field{flex:1;}
+  .edit-actions{display:flex;align-items:center;gap:10px;margin-top:14px;}
+  .edit-btn-primary{
+    background:var(--mit-red);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:9px 16px;
+    font-size:.86rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .edit-btn-primary:hover{background:#8a1a2b;}
+  .edit-btn-primary:disabled{background:var(--gray);cursor:not-allowed;}
+  .edit-btn-secondary{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:.82rem;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+  .edit-message{
+    font-size:.82rem;
+    padding:8px 12px;
+    border-radius:6px;
+    margin-bottom:12px;
+  }
+  .edit-message.info{background:var(--teal-bg);color:var(--teal);}
+  .edit-message.error{background:var(--red-bg);color:var(--mit-red);}
+  .edit-message.success{background:var(--green-bg);color:var(--green);}
+  .code-input{
+    font-size:1.3rem !important;
+    letter-spacing:.3em;
+    text-align:center;
+    font-family:ui-monospace,Consolas,monospace;
+  }
 
   .timeline{
     display:none;
@@ -273,6 +389,8 @@
     .controls,
     #result-count,
     .history-toggle,
+    .edit-toggle,
+    .edit-panel,
     .empty-state{display:none !important;}
     header.site{margin-bottom:16px;padding:10px 0;}
     .kpi-row{margin-bottom:16px;}
@@ -428,7 +546,12 @@
     });
   }
 
-  function renderTimeline(p){
+  function renderHistoryToggle(p){
+    if (!p.submissions || p.submissions.length === 0) return "";
+    return '<button type="button" class="history-toggle" data-history-toggle>Submission history (' + p.submissions.length + ')</button>';
+  }
+
+  function renderTimelineContent(p){
     if (!p.submissions || p.submissions.length === 0) return "";
     var items = p.submissions.map(function(s){
       var venue = escapeHtml(s.venue || "Unknown venue");
@@ -439,8 +562,339 @@
       return '<li><div class="t-venue">Attempt ' + (s.attempt != null ? s.attempt : "?") + " — " + venue + '</div>' +
              '<div class="t-meta">' + parts.join(" · ") + '</div>' + notes + '</li>';
     }).join("");
-    return '<button type="button" class="history-toggle" data-history-toggle>Submission history (' + p.submissions.length + ')</button>' +
-           '<div class="timeline"><ol>' + items + '</ol></div>';
+    return '<div class="timeline"><ol>' + items + '</ol></div>';
+  }
+
+  // ---------------------------------------------------------------------
+  // Inline edit flow: email -> one-time code -> edit fields -> save.
+  //
+  // The dashboard's core data load (init(), above/below) never depends on
+  // any of this — WORKER_URL is only ever contacted when a user actively
+  // opens an edit panel, so a misconfigured or unreachable Worker can never
+  // break the read-only page loading data.json.
+  // ---------------------------------------------------------------------
+
+  // Set this to your deployed Worker's URL once you've run `wrangler
+  // deploy` — see README.md's "Worker setup" section. Left as a placeholder
+  // here, editing shows a friendly "unavailable" message instead of trying
+  // (and failing) to reach a real endpoint.
+  var WORKER_URL = "https://lab-ledger-updates.YOUR-SUBDOMAIN.workers.dev";
+  var SESSION_KEY = "labledger_session";
+
+  // ?worker=<url> overrides WORKER_URL, mirroring the existing ?data=
+  // override — handy for pointing at a staging Worker (or a mocked one in
+  // tests) without editing this file.
+  function getWorkerUrl(){
+    var params = new URLSearchParams(window.location.search);
+    return params.get("worker") || WORKER_URL;
+  }
+
+  function workerConfigured(){
+    return getWorkerUrl().indexOf("YOUR-SUBDOMAIN") === -1;
+  }
+
+  function getSession(){
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      var session = JSON.parse(raw);
+      if (!session.token || !session.expiresAt || Date.now() >= session.expiresAt) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      return session;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setSession(email, token, expiresInSeconds){
+    var session = { email: email, token: token, expiresAt: Date.now() + expiresInSeconds * 1000 };
+    // sessionStorage, not localStorage — the session clears when the tab
+    // closes rather than persisting indefinitely on a shared/public computer.
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    return session;
+  }
+
+  function clearSession(){
+    sessionStorage.removeItem(SESSION_KEY);
+  }
+
+  function workerFetch(path, body){
+    if (!workerConfigured()) {
+      return Promise.resolve({ ok: false, networkError: true, data: { error: "Editing isn't configured on this deployment yet." } });
+    }
+    return fetch(getWorkerUrl() + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function(res){
+      return res.json().catch(function(){ return {}; }).then(function(data){
+        return { ok: res.ok, status: res.status, data: data };
+      });
+    }).catch(function(err){
+      console.error("Lab Ledger: edit request failed", err);
+      return { ok: false, networkError: true, data: { error: "Couldn't reach the update service." } };
+    });
+  }
+
+  function showEditMessage(slot, type, text){
+    slot.innerHTML = '<div class="edit-message ' + type + '">' + escapeHtml(text) + '</div>';
+  }
+
+  function closeEditPanel(panel){
+    panel.classList.remove("open");
+    var card = panel.closest(".paper-card");
+    if (card) {
+      var toggle = card.querySelector("[data-edit-toggle]");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function reloadDataAndRerender(){
+    fetch(dataUrl()).then(function(res){ return res.json(); }).then(function(data){
+      state.papers = Array.isArray(data.papers) ? data.papers : [];
+      populateOwnerSelect();
+      render();
+    }).catch(function(err){
+      console.error("Lab Ledger: failed to refresh after edit", err);
+    });
+  }
+
+  function renderEditPanel(panel, p){
+    var session = getSession();
+    if (session) {
+      renderFieldsStep(panel, p, session);
+    } else {
+      renderEmailStep(panel, p);
+    }
+  }
+
+  function renderEmailStep(panel, p){
+    var uid = "edit-" + p.id;
+    panel.innerHTML =
+      '<h4>Verify your lab email to edit</h4>' +
+      '<p class="hint">We’ll email a 6-digit code to confirm you’re a lab member. You won’t need to do this again for a couple of hours.</p>' +
+      '<div class="edit-message-slot"></div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-email">Lab email</label>' +
+        '<input type="email" id="' + uid + '-email" placeholder="you@yourlab.org" autocomplete="email">' +
+      '</div>' +
+      '<div class="edit-actions">' +
+        '<button type="button" class="edit-btn-primary" data-send-code>Send code</button>' +
+        '<button type="button" class="edit-btn-secondary" data-cancel-edit>Cancel</button>' +
+      '</div>';
+
+    var emailInput = panel.querySelector("#" + uid + "-email");
+    var msgSlot = panel.querySelector(".edit-message-slot");
+    var sendBtn = panel.querySelector("[data-send-code]");
+
+    emailInput.addEventListener("keydown", function(e){ if (e.key === "Enter") sendBtn.click(); });
+
+    sendBtn.addEventListener("click", function(){
+      var email = emailInput.value.trim();
+      if (!email || email.indexOf("@") === -1) {
+        showEditMessage(msgSlot, "error", "Enter a valid email address.");
+        return;
+      }
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending…";
+      workerFetch("/request-code", { email: email }).then(function(result){
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Send code";
+        if (result.networkError) {
+          showEditMessage(msgSlot, "error", "Editing is temporarily unavailable. Please try again later.");
+          return;
+        }
+        renderCodeStep(panel, p, email);
+      });
+    });
+
+    panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ closeEditPanel(panel); });
+  }
+
+  function renderCodeStep(panel, p, email){
+    var uid = "edit-" + p.id;
+    panel.innerHTML =
+      '<h4>Enter your code</h4>' +
+      '<p class="hint">Sent to <strong>' + escapeHtml(email) + '</strong> — expires in 10 minutes.</p>' +
+      '<div class="edit-message-slot"></div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-code">Verification code</label>' +
+        '<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="code-input" id="' + uid + '-code" placeholder="000000" autocomplete="one-time-code">' +
+      '</div>' +
+      '<div class="edit-actions">' +
+        '<button type="button" class="edit-btn-primary" data-verify-code>Verify</button>' +
+        '<button type="button" class="edit-btn-secondary" data-use-different-email>Use a different email</button>' +
+      '</div>';
+
+    var codeInput = panel.querySelector("#" + uid + "-code");
+    var msgSlot = panel.querySelector(".edit-message-slot");
+    var verifyBtn = panel.querySelector("[data-verify-code]");
+    codeInput.focus();
+    codeInput.addEventListener("keydown", function(e){ if (e.key === "Enter") verifyBtn.click(); });
+
+    verifyBtn.addEventListener("click", function(){
+      var code = codeInput.value.trim();
+      if (!/^\d{6}$/.test(code)) {
+        showEditMessage(msgSlot, "error", "Enter the 6-digit code from your email.");
+        return;
+      }
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = "Verifying…";
+      workerFetch("/verify-code", { email: email, code: code }).then(function(result){
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = "Verify";
+        if (result.networkError) {
+          showEditMessage(msgSlot, "error", "Editing is temporarily unavailable. Please try again later.");
+          return;
+        }
+        if (!result.ok) {
+          showEditMessage(msgSlot, "error", (result.data && result.data.error) || "That code didn't work. Please try again.");
+          return;
+        }
+        var session = setSession(email, result.data.token, result.data.expiresIn);
+        renderFieldsStep(panel, p, session);
+      });
+    });
+
+    panel.querySelector("[data-use-different-email]").addEventListener("click", function(){
+      renderEmailStep(panel, p);
+    });
+  }
+
+  function renderFieldsStep(panel, p, session){
+    var uid = "edit-" + p.id;
+    var owners = Array.from(new Set(state.papers.map(function(x){ return x.owner; }).filter(Boolean))).sort();
+    var stageOptions = ["", "Idea", "Drafting", "Internal Review", "On Hold"];
+    var priorityOptions = ["", "High", "Medium", "Low"];
+    var decisionOptions = ["", "Under Review", "Revise & Resubmit", "Accepted", "Rejected", "Withdrawn"];
+
+    function optionsHtml(values, current, emptyLabel){
+      return values.map(function(v){
+        var label = v === "" ? emptyLabel : v;
+        var selected = v === (current || "") ? " selected" : "";
+        return '<option value="' + escapeHtml(v) + '"' + selected + '>' + escapeHtml(label) + '</option>';
+      }).join("");
+    }
+
+    panel.innerHTML =
+      '<h4>Edit ' + escapeHtml(p.id) + '</h4>' +
+      '<p class="hint">Signed in as ' + escapeHtml(session.email) + '. <button type="button" class="edit-btn-secondary" data-sign-out>Not you?</button></p>' +
+      '<div class="edit-message-slot"></div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-stage">Stage</label>' +
+        '<select id="' + uid + '-stage">' + optionsHtml(stageOptions, p.stage, "(no change)") + '</select>' +
+      '</div>' +
+      '<div class="edit-row2">' +
+        '<div class="edit-field">' +
+          '<label for="' + uid + '-priority">Priority</label>' +
+          '<select id="' + uid + '-priority">' + optionsHtml(priorityOptions, p.priority, "(no change)") + '</select>' +
+        '</div>' +
+        '<div class="edit-field">' +
+          '<label for="' + uid + '-owner">Owner</label>' +
+          '<select id="' + uid + '-owner">' + optionsHtml([""].concat(owners), p.owner, "(no change)") + '</select>' +
+        '</div>' +
+      '</div>' +
+      '<fieldset class="edit-fieldset">' +
+        '<legend>Log a new submission</legend>' +
+        '<div class="edit-field">' +
+          '<label for="' + uid + '-venue">Venue<span class="field-hint">Leave blank unless you just sent this to a new journal/conference.</span></label>' +
+          '<input type="text" id="' + uid + '-venue" placeholder="e.g. Nature Medicine">' +
+        '</div>' +
+        '<div class="edit-field">' +
+          '<label for="' + uid + '-submitted">Submitted date</label>' +
+          '<input type="date" id="' + uid + '-submitted">' +
+        '</div>' +
+      '</fieldset>' +
+      '<fieldset class="edit-fieldset">' +
+        '<legend>Decision<span class="field-hint" style="display:block;font-weight:400">Applies to the new submission above, or the current venue if Venue is blank.</span></legend>' +
+        '<div class="edit-row2">' +
+          '<div class="edit-field">' +
+            '<label for="' + uid + '-decision">Decision</label>' +
+            '<select id="' + uid + '-decision">' + optionsHtml(decisionOptions, "", "(no change)") + '</select>' +
+          '</div>' +
+          '<div class="edit-field">' +
+            '<label for="' + uid + '-decisiondate">Decision date</label>' +
+            '<input type="date" id="' + uid + '-decisiondate">' +
+          '</div>' +
+        '</div>' +
+      '</fieldset>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-notes">Notes<span class="field-hint">Attached to the submission/decision above, or a general note if neither was filled in.</span></label>' +
+        '<textarea id="' + uid + '-notes"></textarea>' +
+      '</div>' +
+      '<div class="edit-actions">' +
+        '<button type="button" class="edit-btn-primary" data-save-edit>Save changes</button>' +
+        '<button type="button" class="edit-btn-secondary" data-cancel-edit>Cancel</button>' +
+      '</div>';
+
+    var msgSlot = panel.querySelector(".edit-message-slot");
+    var saveBtn = panel.querySelector("[data-save-edit]");
+
+    panel.querySelector("[data-sign-out]").addEventListener("click", function(){
+      clearSession();
+      renderEmailStep(panel, p);
+    });
+    panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ closeEditPanel(panel); });
+
+    saveBtn.addEventListener("click", function(){
+      var stage = panel.querySelector("#" + uid + "-stage").value;
+      var priority = panel.querySelector("#" + uid + "-priority").value;
+      var owner = panel.querySelector("#" + uid + "-owner").value;
+      var venue = panel.querySelector("#" + uid + "-venue").value.trim();
+      var submittedDate = panel.querySelector("#" + uid + "-submitted").value;
+      var decision = panel.querySelector("#" + uid + "-decision").value;
+      var decisionDate = panel.querySelector("#" + uid + "-decisiondate").value;
+      var notes = panel.querySelector("#" + uid + "-notes").value.trim();
+
+      var body = { token: session.token, paperId: p.id };
+      if (stage) body.stage = stage;
+      if (priority) body.priority = priority;
+      if (owner) body.owner = owner;
+      if (venue) {
+        if (!submittedDate) {
+          showEditMessage(msgSlot, "error", "Enter a Submitted date to log this new venue.");
+          return;
+        }
+        body.newSubmission = { venue: venue, submittedDate: submittedDate, decision: decision || null, decisionDate: decisionDate || null, notes: notes || null };
+      } else if (decision) {
+        body.decisionUpdate = { decision: decision, decisionDate: decisionDate || null, notes: notes || null };
+      } else if (notes) {
+        body.notes = notes;
+      }
+
+      if (!body.stage && !body.priority && !body.owner && !body.newSubmission && !body.decisionUpdate && !body.notes) {
+        showEditMessage(msgSlot, "error", "Nothing to save — change at least one field.");
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving…";
+      workerFetch("/apply-update", body).then(function(result){
+        if (result.networkError) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save changes";
+          showEditMessage(msgSlot, "error", "Editing is temporarily unavailable. Please try again later.");
+          return;
+        }
+        if (!result.ok) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save changes";
+          if (result.status === 401 || result.status === 403) {
+            clearSession();
+            renderEmailStep(panel, p);
+            showEditMessage(panel.querySelector(".edit-message-slot"), "error", (result.data && result.data.error) || "Please verify your email again.");
+            return;
+          }
+          showEditMessage(msgSlot, "error", (result.data && result.data.error) || "Something went wrong. Please try again.");
+          return;
+        }
+        var summary = (result.data.summary || []).join(" · ");
+        panel.innerHTML = '<div class="edit-message success">Saved!' + (summary ? " " + escapeHtml(summary) : "") + '</div>';
+        setTimeout(reloadDataAndRerender, 1500);
+      });
+    });
   }
 
   function renderPaperCard(p){
@@ -465,7 +919,10 @@
     el.innerHTML =
       '<div class="row1"><h3>' + escapeHtml(p.title) + '</h3>' + badge + '</div>' +
       '<div class="meta-row">' + meta.join("") + '</div>' +
-      renderTimeline(p);
+      '<div class="card-actions">' + renderHistoryToggle(p) +
+        '<button type="button" class="edit-toggle" data-edit-toggle aria-expanded="false">Edit</button></div>' +
+      renderTimelineContent(p) +
+      '<div class="edit-panel" data-edit-panel></div>';
 
     var toggle = el.querySelector("[data-history-toggle]");
     if (toggle) {
@@ -474,6 +931,20 @@
         panel.classList.toggle("open");
       });
     }
+
+    var editToggle = el.querySelector("[data-edit-toggle]");
+    var editPanel = el.querySelector("[data-edit-panel]");
+    editToggle.addEventListener("click", function(){
+      var willOpen = !editPanel.classList.contains("open");
+      editToggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      if (willOpen) {
+        renderEditPanel(editPanel, p);
+        editPanel.classList.add("open");
+      } else {
+        editPanel.classList.remove("open");
+      }
+    });
+
     return el;
   }
 

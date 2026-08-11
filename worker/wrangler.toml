@@ -1,0 +1,28 @@
+name = "lab-ledger-updates"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# account_id is per-account, not something we can commit a real value for —
+# fill in your own (find it on any page of the Cloudflare dashboard sidebar,
+# or run `wrangler whoami`).
+account_id = "REPLACE_WITH_YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+# Non-secret configuration. Actual secrets (GITHUB_COMMIT_TOKEN,
+# RESEND_API_KEY, JWT_SECRET, TEAM_EMAILS) are set with `wrangler secret put`
+# and must never appear in this file — see README.md's Worker setup section.
+[vars]
+GITHUB_REPO = "criticaldata/Lab-dashboard"
+GITHUB_BRANCH = "main"
+ALLOWED_ORIGIN = "https://criticaldata.github.io"
+EMAIL_FROM = "Lab Ledger <onboarding@resend.dev>"
+
+# One KV namespace holds both one-time codes (key: "code:<email>") and the
+# per-email rate-limit counters (key: "ratelimit:<email>") — both are
+# short-lived, low-volume, and don't need to be separated.
+#
+# Create it with:  wrangler kv namespace create CODES
+# then paste the id it prints in place of the placeholder below (and again
+# under [[kv_namespaces]] with preview_id for `wrangler dev` if you use it).
+[[kv_namespaces]]
+binding = "CODES"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"

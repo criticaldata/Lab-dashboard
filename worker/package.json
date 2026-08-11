@@ -1,0 +1,12 @@
+{
+  "name": "lab-ledger-updates-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/run.js",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

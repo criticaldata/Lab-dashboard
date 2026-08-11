@@ -1,0 +1,14 @@
+.DS_Store
+*.tmp
+__pycache__/
+
+# Real lab email addresses — generated locally by
+# scripts/export_team_emails.py, pasted into a Cloudflare Worker secret by
+# hand, and never committed (the repo is public; see README.md's
+# "Security notes" section for why).
+team-emails.local.json
+
+# Worker dev/deploy tooling
+worker/node_modules/
+worker/.wrangler/
+worker/.dev.vars
