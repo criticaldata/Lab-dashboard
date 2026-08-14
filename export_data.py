@@ -27,18 +27,21 @@ PAPERS_SHEET = "\U0001F4C4 Papers Tracker"
 SUBMISSIONS_SHEET = "\U0001F4E8 Submissions Log"
 TEAM_SHEET = "\U0001F465 Team Directory"
 
-# These two sheets don't exist in the workbook yet — see the "Meetings /
+# These sheets don't exist in the workbook yet — see the "Meetings /
 # resources schema" note in README.md for the exact columns to add when
-# ready. Until then, load_meetings()/load_resources() below just return
-# empty results for every paper; nothing here requires them to exist.
+# ready. Until then, load_meetings()/load_resources()/load_project_team()
+# below just return empty results for every paper; nothing here requires
+# them to exist.
 MEETINGS_SHEET = "\U0001F4C5 Meetings Log"
 RESOURCES_SHEET = "\U0001F517 Resources"
+PROJECT_TEAM_SHEET = "\U0001F91D Project Team"
 
 PAPERS_HEADER_ROW = 3
 SUBMISSIONS_HEADER_ROW = 3
 TEAM_HEADER_ROW = 3
 MEETINGS_HEADER_ROW = 3
 RESOURCES_HEADER_ROW = 3
+PROJECT_TEAM_HEADER_ROW = 3
 
 # Placeholder shared-inbox address used on data.public.json whenever a
 # paper's owner hasn't been explicitly marked OK to show their real email
@@ -154,6 +157,29 @@ def load_resources(wb):
     return by_paper
 
 
+def load_project_team(wb):
+    """Returns {paper title: [{"name", "linkedin"}, ...]}. One row per
+    team member, same joined-by-title pattern as Resources/Meetings Log.
+    Unlike Team Directory (the whole-lab roster used for internal owner
+    lookups), this is per-project and opt-in: a name only shows up here,
+    and only ever leaves the building via `teamMembers` on
+    data.public.json for a paper that's already openToNewMembers, if
+    someone deliberately added a row for them — a LinkedIn URL is
+    self-published and not sensitive the way a raw email address is, but
+    it's still nobody's business to publish without them being listed
+    here on purpose."""
+    if PROJECT_TEAM_SHEET not in wb.sheetnames:
+        return {}
+    by_paper = {}
+    for row in sheet_rows(wb[PROJECT_TEAM_SHEET], PROJECT_TEAM_HEADER_ROW):
+        title = row.get("Paper")
+        name = row.get("Name")
+        if not title or not name:
+            continue
+        by_paper.setdefault(title, []).append({"name": name, "linkedin": row.get("LinkedIn URL")})
+    return by_paper
+
+
 def public_stage_label(paper):
     """A plain-language stage label safe to show prospective members —
     deliberately coarser than the internal emoji status badge, which can
@@ -182,7 +208,7 @@ def public_stage_label(paper):
 # default), and worker-phase2-paused aside, a Playwright test asserts this
 # exact key set on every run — see the "field-allowlist" test in
 # test/ for what fails if this ever drifts.
-PUBLIC_PAPER_FIELDS = ["id", "title", "abstract", "tags", "skillsNeeded", "stage", "openToNewMembers", "contact"]
+PUBLIC_PAPER_FIELDS = ["id", "title", "abstract", "tags", "skillsNeeded", "stage", "openToNewMembers", "contact", "whatsapp", "teamMembers"]
 
 
 def build_public_dataset(papers, team):
@@ -205,7 +231,12 @@ def build_public_dataset(papers, team):
     Contact info: an owner's real email is only used if their Team
     Directory row has "Public Contact OK" set — otherwise (the default)
     every paper's contact is the generic lab inbox, never a personal
-    address pulled raw off the roster.
+    address pulled raw off the roster. `whatsapp` is an optional extra
+    contact channel (a wa.me link) set directly on the paper, not derived
+    from anyone's roster row. `teamMembers` (name + LinkedIn URL) is
+    per-project and opt-in — see load_project_team() — never the whole
+    Team Directory roster; a name only appears here if someone
+    deliberately listed them on this specific project.
     """
     team_by_name = {m["name"]: m for m in team}
     public_papers = []
@@ -228,6 +259,8 @@ def build_public_dataset(papers, team):
             "stage": public_stage_label(p),
             "openToNewMembers": True,
             "contact": {"name": first_name, "email": email},
+            "whatsapp": p.get("whatsapp"),
+            "teamMembers": p.get("teamMembers") or [],
         })
     return public_papers
 
@@ -305,6 +338,7 @@ def main():
 
     meetings_by_paper = load_meetings(wb)
     resources_by_paper = load_resources(wb)
+    project_team_by_paper = load_project_team(wb)
 
     papers = []
     for row in sheet_rows(wb[PAPERS_SHEET], PAPERS_HEADER_ROW):
@@ -342,6 +376,8 @@ def main():
             "tags": parse_list_cell(row.get("Tags")),
             "skillsNeeded": parse_list_cell(row.get("Skills Needed")),
             "openToNewMembers": parse_bool_cell(row.get("Open to New Members")),
+            "whatsapp": row.get("WhatsApp Link"),
+            "teamMembers": project_team_by_paper.get(title, []),
         })
 
     team = []

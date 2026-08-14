@@ -27,18 +27,29 @@
     --gray:#595959;
     --gray-bg:#eeece9;
     --focus:#2563eb;
+    /* No web-font request — this project deliberately has zero external
+       runtime dependencies that could fail mid-demo (same reasoning as
+       demo mode replacing the Cloudflare Worker). --font-display and
+       --font-mono give headings/badges their own visual weight using only
+       fonts already on the device, and are named as separate variables
+       so a real Archivo/Inter/IBM Plex Mono system could be dropped in
+       later (self-hosted, not a live CDN call) without touching every
+       rule that references them. */
+    --font-display:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,SFMono-Regular,Consolas,"Courier New",monospace;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-family:var(--font-body);
     color:var(--ink);
     background:var(--bg);
     line-height:1.4;
   }
   a{color:var(--mit-red);}
   button{font:inherit;}
-  .wrap{max-width:1100px;margin:0 auto;padding:0 20px 64px;}
+  .wrap{max-width:1680px;margin:0 auto;padding:0 20px 64px;}
 
   header.site{
     border-bottom:3px solid var(--mit-red);
@@ -57,6 +68,7 @@
   header.site nav a{font-size:.86rem;font-weight:600;color:var(--mit-red);text-decoration:none;white-space:nowrap;}
   header.site nav a:hover{text-decoration:underline;}
   header.site h1{
+    font-family:var(--font-display);
     font-size:1.35rem;
     margin:0;
     color:var(--mit-charcoal);
@@ -103,7 +115,7 @@
     box-shadow:0 0 0 1px var(--mit-red);
     background:#fff;
   }
-  .kpi-card .num{font-size:1.6rem;font-weight:700;color:var(--mit-charcoal);}
+  .kpi-card .num{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--mit-charcoal);}
   .kpi-card.active .num{color:var(--mit-red);}
   .kpi-card .label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
 
@@ -125,24 +137,145 @@
   }
   .controls input[type=search]:focus{outline:2px solid var(--focus);outline-offset:1px;}
 
+  /* -------------------- Three-column layout: filter rail / main / widgets rail -------------------- */
+  .dashboard-layout{
+    display:grid;
+    grid-template-columns:216px minmax(0,1fr) 252px;
+    gap:24px;
+    align-items:start;
+  }
+  .main-content{min-width:0;}
+  .left-rail,.right-rail{min-width:0;}
+  .rail-toggle-btn{
+    display:none;
+    width:100%;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 14px;
+    font-size:.86rem;
+    font-weight:600;
+    color:var(--mit-charcoal);
+    cursor:pointer;
+    margin-bottom:12px;
+    text-align:left;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .rail-toggle-btn .chevron{transition:transform .15s;}
+  .rail-toggle-btn[aria-expanded="true"] .chevron{transform:rotate(180deg);}
+  .rail-section{
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--panel);
+    padding:16px;
+    margin-bottom:16px;
+  }
+  .rail-section h6{
+    margin:0 0 10px;
+    font-family:var(--font-display);
+    font-size:.72rem;
+    font-weight:700;
+    color:var(--mit-charcoal);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .filter-group{margin-bottom:16px;}
+  .filter-group:last-child{margin-bottom:0;}
+  .filter-group-label{
+    display:block;
+    font-size:.68rem;
+    font-weight:700;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:6px;
+  }
+  .filter-chip{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:1px solid transparent;
+    border-radius:6px;
+    padding:6px 8px;
+    font-size:.84rem;
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .12s;
+  }
+  .filter-chip:hover{background:#fff;}
+  .filter-chip.active{background:var(--red-bg);color:var(--mit-red);font-weight:600;border-color:var(--mit-red);}
+  .filter-chip .chip-count{font-size:.74rem;color:var(--muted);font-family:var(--font-mono);}
+  .filter-chip.active .chip-count{color:var(--mit-red);}
+  .filter-chip:disabled{opacity:.4;cursor:default;}
+  .filter-chip:focus-visible{outline:2px solid var(--focus);outline-offset:1px;}
+
+  .rail-widget-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+  .rail-widget-item{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    border-radius:6px;
+    padding:7px 8px;
+    cursor:pointer;
+    font-size:.82rem;
+    color:var(--ink);
+  }
+  .rail-widget-item:hover{background:#fff;}
+  .rail-widget-item .rw-title{display:block;font-weight:600;color:var(--mit-charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rail-widget-item .rw-meta{display:block;font-size:.74rem;color:var(--muted);margin-top:1px;}
+  .rail-widget-item .rw-meta.overdue{color:var(--mit-red);font-weight:600;}
+  .rail-widget-empty{font-size:.82rem;color:var(--muted);font-style:italic;margin:0;}
+
+  @media (max-width:1100px){
+    .dashboard-layout{grid-template-columns:1fr;}
+    .rail-toggle-btn{display:flex;}
+    .left-rail .rail-content{display:none;}
+    .left-rail .rail-content.open{display:block;}
+    .right-rail{margin-top:20px;}
+  }
+
   #result-count{
     font-size:.82rem;
     color:var(--muted);
     margin-bottom:12px;
   }
 
-  .paper-list{display:flex;flex-direction:column;gap:8px;}
+  .paper-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:16px;
+    align-items:start;
+  }
   .paper-card{
+    /* Grid items default to min-width:auto, which bases the minimum on
+       unbreakable content inside (e.g. the nowrap "Open to new members"
+       badge) — without this override that blows the track past its
+       minmax() width and overflows the viewport on narrow screens. */
+    min-width:0;
     border:1px solid var(--line);
-    border-radius:8px;
-    padding:12px 16px;
+    border-radius:12px;
+    padding:18px 20px;
     background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .paper-card.expanded{grid-column:1 / -1;}
+  @media (max-width:700px){
+    .paper-list{grid-template-columns:1fr;}
   }
 
   .needs-status-block{
     margin-top:2px;
+    grid-column:1 / -1;
+    min-width:0;
     border:1px solid var(--line);
-    border-radius:8px;
+    border-radius:12px;
     background:var(--panel);
   }
   .needs-status-block summary{
@@ -154,7 +287,7 @@
   }
   .needs-status-block summary:focus-visible{outline:2px solid var(--focus);outline-offset:-2px;}
   .needs-status-block[open] summary{border-bottom:1px solid var(--line);}
-  .needs-status-list{padding:10px;}
+  .needs-status-list{padding:14px;}
   .paper-card .row1{
     display:flex;
     justify-content:space-between;
@@ -164,8 +297,9 @@
   }
   .paper-card h3{
     margin:0;
-    font-size:1rem;
-    font-weight:600;
+    font-family:var(--font-display);
+    font-size:1.02rem;
+    font-weight:700;
     color:var(--mit-charcoal);
     max-width:70ch;
   }
@@ -175,7 +309,8 @@
     gap:5px;
     padding:3px 10px;
     border-radius:999px;
-    font-size:.76rem;
+    font-family:var(--font-mono);
+    font-size:.74rem;
     font-weight:600;
     white-space:nowrap;
   }
@@ -203,14 +338,18 @@
     padding:0;
     border:none;
     background:none;
-    font-size:1rem;
-    font-weight:600;
+    font-family:var(--font-display);
+    font-size:1.02rem;
+    font-weight:700;
     color:var(--mit-charcoal);
     max-width:70ch;
+    min-width:0;
+    flex:1 1 auto;
     text-align:left;
     cursor:pointer;
-    font-family:inherit;
-    line-height:inherit;
+    line-height:1.3;
+    white-space:normal;
+    overflow-wrap:break-word;
   }
   .paper-title-btn:hover{color:var(--mit-red);text-decoration:underline;}
   .paper-title-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
@@ -291,7 +430,7 @@
     gap:12px;
     margin-bottom:14px;
   }
-  .detail-head h3{margin:0;font-size:1.1rem;color:var(--mit-charcoal);}
+  .detail-head h3{margin:0;font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--mit-charcoal);}
   .detail-close{
     background:none;
     border:none;
@@ -334,6 +473,8 @@
   }
   .resource-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
   .resource-list li a{font-size:.88rem;}
+  .team-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.88rem;color:var(--ink);}
+  .team-list li a{font-size:.86rem;}
   .meeting-block{font-size:.86rem;}
   .meeting-block + .meeting-block{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
   .meeting-block .m-date{font-weight:600;color:var(--mit-charcoal);}
@@ -383,6 +524,20 @@
   .edit-field input:focus,
   .edit-field select:focus,
   .edit-field textarea:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .edit-field input[type=date],
+  .edit-field input[type=datetime-local]{color-scheme:light;}
+  .edit-field input[type=date]::-webkit-calendar-picker-indicator,
+  .edit-field input[type=datetime-local]::-webkit-calendar-picker-indicator{
+    cursor:pointer;
+    opacity:.55;
+    border-radius:4px;
+    padding:2px;
+  }
+  .edit-field input[type=date]:hover::-webkit-calendar-picker-indicator,
+  .edit-field input[type=datetime-local]:hover::-webkit-calendar-picker-indicator{
+    opacity:1;
+    background:var(--red-bg);
+  }
   .edit-fieldset{
     border:none;
     padding:10px 0 0;
@@ -497,29 +652,37 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:16px;
+    gap:12px;
     flex-wrap:wrap;
     background:var(--amber-bg);
     color:var(--amber);
-    border-bottom:2px solid var(--amber);
-    padding:9px 16px;
-    font-size:.84rem;
+    border-bottom:1px solid var(--amber);
+    padding:5px 14px;
+    font-size:.76rem;
     font-weight:600;
     text-align:center;
   }
-  #demo-banner .demo-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  #demo-banner.dismissed{display:none;}
+  #demo-banner .demo-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
   #demo-banner button{
-    background:#fff;
-    border:1px solid var(--amber);
+    background:none;
+    border:none;
     color:var(--amber);
-    border-radius:6px;
-    padding:5px 10px;
-    font-size:.78rem;
+    border-radius:4px;
+    padding:2px 7px;
+    font-size:.72rem;
     font-weight:600;
     cursor:pointer;
     white-space:nowrap;
+    text-decoration:underline;
   }
-  #demo-banner button:hover{background:var(--amber);color:#fff;}
+  #demo-banner button:hover{background:var(--amber);color:#fff;text-decoration:none;}
+  #dismiss-demo-btn{
+    text-decoration:none;
+    font-size:.9rem;
+    line-height:1;
+    padding:1px 6px;
+  }
 
   .modal-overlay{
     display:none;
@@ -593,8 +756,8 @@
   }
   .edit-btn-danger:hover{background:#8a1a2b;}
   .checkbox-field{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-  .checkbox-field input{width:auto;}
-  .checkbox-field label{margin:0;font-size:.84rem;font-weight:600;color:var(--ink);}
+  .checkbox-field input{width:18px;height:18px;accent-color:var(--mit-red);cursor:pointer;flex:0 0 auto;}
+  .checkbox-field label{margin:0;font-size:.84rem;font-weight:600;color:var(--ink);cursor:pointer;}
 
   /* -------------------- Motion -------------------- */
   @keyframes fadeSlideIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
@@ -607,8 +770,9 @@
   .detail-panel.open{animation:fadeSlideIn .16s ease;}
   .modal-overlay.open{animation:overlayFadeIn .14s ease;}
   .modal-overlay.open .modal-box{animation:modalPopIn .18s ease;}
-  .paper-card{animation:cardFadeIn .14s ease;transition:box-shadow .12s,border-color .12s;}
-  .paper-card:hover{border-color:#cfcbc5;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .paper-card{animation:cardFadeIn .14s ease;transition:box-shadow .15s,border-color .15s,transform .15s;}
+  .paper-card:hover{border-color:#cfcbc5;box-shadow:0 6px 16px rgba(0,0,0,.08);transform:translateY(-2px);}
+  .paper-card.expanded:hover{transform:none;}
   .kpi-card{transition:border-color .12s,box-shadow .12s,transform .1s;}
   .kpi-card:active{transform:scale(.97);}
   .project-card{animation:cardFadeIn .14s ease;}
@@ -682,7 +846,7 @@
     .paper-card h3,
     .paper-title-btn{max-width:100%;}
     .controls .new-project-btn{flex:1 1 100%;}
-    #demo-banner{font-size:.78rem;padding:8px 12px;text-align:left;justify-content:flex-start;}
+    #demo-banner{font-size:.72rem;padding:5px 10px;text-align:left;justify-content:flex-start;}
     .detail-meta-grid{grid-template-columns:1fr 1fr;}
     .edit-row2{flex-direction:column;gap:0;}
     .resource-edit-row{flex-wrap:wrap;}
@@ -729,10 +893,11 @@
 <body>
 
 <div id="demo-banner" role="status">
-  <span>🎭 Demo mode — edits, new projects, and deletions are saved in this browser only, not yet shared with the team <span title="A new project marked &quot;Open to new members&quot; will also show up on the Discover page, flagged as a demo addition — but only in this same browser. Deleting a real paper here never removes it from Discover either way, since that page never reads this browser's edits. None of this is visible to any other visitor until it goes through the real spreadsheet.">ⓘ</span>.</span>
+  <span>🎭 Demo mode <span title="Edits, new projects, and deletions are saved in this browser only, not yet shared with the team. A new project marked &quot;Open to new members&quot; will also show up on the Discover page, flagged as a demo addition — but only in this same browser. Deleting a real paper here never removes it from Discover either way, since that page never reads this browser's edits. None of this is visible to any other visitor until it goes through the real spreadsheet.">ⓘ</span></span>
   <div class="demo-actions">
-    <button type="button" id="reset-demo-btn">Reset demo data</button>
-    <button type="button" id="copy-demo-btn">Copy my changes as JSON</button>
+    <button type="button" id="reset-demo-btn">Reset</button>
+    <button type="button" id="copy-demo-btn">Copy JSON</button>
+    <button type="button" id="dismiss-demo-btn" aria-label="Dismiss demo mode banner for this session">×</button>
   </div>
 </div>
 
@@ -790,8 +955,23 @@
     <button type="button" class="new-project-btn" id="new-project-btn">+ New Project</button>
   </div>
 
-  <div id="result-count"></div>
-  <div class="paper-list" id="paper-list"></div>
+  <div class="dashboard-layout">
+    <aside class="left-rail">
+      <button type="button" class="rail-toggle-btn" id="filters-toggle" aria-expanded="false">
+        <span>☰ Filters</span><span class="chevron">▾</span>
+      </button>
+      <div class="rail-content" id="filters-rail-content">
+        <div class="rail-section" id="filters-rail"></div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div id="result-count"></div>
+      <div class="paper-list" id="paper-list"></div>
+    </div>
+
+    <aside class="right-rail" id="right-rail"></aside>
+  </div>
 </main>
 
 <div class="wrap"><footer class="site">Lab Ledger — MIT Critical Data. Data regenerated from <code>Lab_Papers_Dashboard.xlsx</code> via <code>export_data.py</code>.</footer></div>
@@ -807,7 +987,13 @@
     search: "",
     needsStatusOpen: false,
     openDetailPaperId: null,
-    loading: true
+    loading: true,
+    // Left-rail facet filters — combine with search + the KPI strip via AND,
+    // same as the KPI strip already combines with search. Each is
+    // single-select-with-toggle-off, same interaction as a KPI card.
+    filterStage: null,
+    filterStatus: null,
+    filterOpenOnly: false
   };
 
   var KPI_DEFS = [
@@ -940,14 +1126,27 @@
     return haystack.indexOf(q) !== -1;
   }
 
-  function filteredPapers(){
-    var kpiDef = KPI_DEFS.find(function(d){ return d.key === state.activeKpi; });
+  // Every active filter — the KPI strip, the search box, and the three
+  // left-rail facets — combines via AND. `skip` lets a facet's own rail
+  // count be computed against every OTHER active filter without counting
+  // itself out, i.e. standard faceted-search "how many would this ADD"
+  // counts, not "how many total".
+  function matchesFilters(p, skip){
+    skip = skip || {};
     var q = state.search.trim().toLowerCase();
-    return state.papers.filter(function(p){
+    if (!skip.kpi) {
+      var kpiDef = KPI_DEFS.find(function(d){ return d.key === state.activeKpi; });
       if (kpiDef && !kpiDef.test(p)) return false;
-      if (!matchesSearch(p, q)) return false;
-      return true;
-    });
+    }
+    if (!skip.search && !matchesSearch(p, q)) return false;
+    if (!skip.stage && state.filterStage && p.stage !== state.filterStage) return false;
+    if (!skip.status && state.filterStatus && p.status !== state.filterStatus) return false;
+    if (!skip.open && state.filterOpenOnly && !p.openToNewMembers) return false;
+    return true;
+  }
+
+  function filteredPapers(){
+    return state.papers.filter(function(p){ return matchesFilters(p, {}); });
   }
 
   function renderTimelineContent(p){
@@ -976,6 +1175,7 @@
   var DEMO_ADDED_KEY = "labledger_demo_added";
   var DEMO_DELETED_KEY = "labledger_demo_deleted";
   var DEMO_NAME_KEY = "labledger_demo_name";
+  var DEMO_BANNER_DISMISSED_KEY = "labledger_demo_banner_dismissed";
   var WAITING_STAGES = ["Idea", "On Hold", "Withdrawn"];
 
   // Ported from scripts/status_logic.py (also ported, separately, to
@@ -1147,6 +1347,8 @@
   function closeDetailPanel(panel){
     panel.classList.remove("open");
     state.openDetailPaperId = null;
+    var card = panel.closest(".paper-card");
+    if (card) card.classList.remove("expanded");
   }
 
   // -------------------- Resources mini-editor (add/remove rows) --------------------
@@ -1172,6 +1374,33 @@
       .map(function(r){ return { label: r.label || r.url, url: r.url }; });
   }
 
+  // -------------------- Team members mini-editor (add/remove rows) --------------------
+  // Per-project and opt-in — a name only shows up here if someone
+  // deliberately adds a row for them. A LinkedIn URL is self-published,
+  // not sensitive the way a raw personal email is, so (unlike email) this
+  // flows straight through to the public Discover page for an open
+  // project — see export_data.py's load_project_team().
+
+  function addTeamMemberRow(container, name, linkedin){
+    var row = document.createElement("div");
+    row.className = "resource-edit-row";
+    row.innerHTML =
+      '<input type="text" placeholder="Name" class="tm-name" value="' + escapeHtml(name || "") + '">' +
+      '<input type="text" placeholder="https://linkedin.com/in/…" class="tm-linkedin" value="' + escapeHtml(linkedin || "") + '">' +
+      '<button type="button" class="resource-remove-btn" aria-label="Remove team member">×</button>';
+    row.querySelector(".resource-remove-btn").addEventListener("click", function(){ row.remove(); });
+    container.appendChild(row);
+  }
+
+  function readTeamMemberRows(container){
+    return Array.from(container.querySelectorAll(".resource-edit-row")).map(function(row){
+      return {
+        name: row.querySelector(".tm-name").value.trim(),
+        linkedin: row.querySelector(".tm-linkedin").value.trim()
+      };
+    }).filter(function(r){ return r.name; });
+  }
+
   // -------------------- Detail panel: read view --------------------
 
   function renderDetailReadView(panel, p){
@@ -1195,6 +1424,7 @@
     metaRow("Authors", p.authors ? escapeHtml(p.authors) : null);
     metaRow("Last updated", p.lastUpdated ? fmtDate(p.lastUpdated) : null);
     metaRow("Skills needed", (p.skillsNeeded && p.skillsNeeded.length) ? escapeHtml(p.skillsNeeded.join(", ")) : null);
+    metaRow("WhatsApp", p.whatsapp ? '<a href="' + escapeHtml(p.whatsapp) + '" target="_blank" rel="noopener">Chat on WhatsApp</a>' : null);
 
     var abstractHtml = p.abstract
       ? '<p style="margin:0">' + escapeHtml(p.abstract) + '</p>'
@@ -1239,6 +1469,16 @@
       ? renderTimelineContent(p).replace('<div class="timeline">', '<div class="timeline open">')
       : '<p class="detail-empty">No submissions logged yet.</p>';
 
+    var teamHtml;
+    if (p.teamMembers && p.teamMembers.length) {
+      teamHtml = '<ul class="team-list">' + p.teamMembers.map(function(m){
+        var linkedinLink = m.linkedin ? ' — <a href="' + escapeHtml(m.linkedin) + '" target="_blank" rel="noopener">LinkedIn</a>' : '';
+        return '<li>' + escapeHtml(m.name) + linkedinLink + '</li>';
+      }).join("") + '</ul>';
+    } else {
+      teamHtml = '<p class="detail-empty">No team members listed yet.</p>';
+    }
+
     var noteParts = [];
     if (p._demoAdded) noteParts.push('🆕 Created in this demo session' + (p._demoCreatedBy ? ' by ' + escapeHtml(p._demoCreatedBy) : '') + '.');
     if (p._demoEdited) noteParts.push('✏️ Edited in this demo session' + (p._demoEditedBy ? ' by ' + escapeHtml(p._demoEditedBy) : '') + '.');
@@ -1253,6 +1493,7 @@
       '<div class="detail-section"><h5>Past meetings</h5>' + pastMeetingsHtml + '</div>' +
       '<div class="detail-section"><h5>Current draft</h5>' + draftHtml + '</div>' +
       '<div class="detail-section"><h5>Resources</h5>' + resourcesHtml + '</div>' +
+      '<div class="detail-section"><h5>Team</h5>' + teamHtml + '</div>' +
       '<div class="detail-section"><h5>Submission history</h5>' + timelineHtml + '</div>' +
       '<button type="button" class="detail-edit-toggle" data-open-edit>Edit</button>';
 
@@ -1320,6 +1561,9 @@
         '<input type="checkbox" id="' + uid + '-open"' + (p.openToNewMembers ? " checked" : "") + '>' +
         '<label for="' + uid + '-open">Open to new members<span class="field-hint" style="display:block;font-weight:400">Shows a badge here and (once synced through a real spreadsheet export) on the public Discover page.</span></label>' +
       '</div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-whatsapp">WhatsApp link<span class="field-hint">Optional extra contact channel for prospective members, shown alongside email on the public Discover page — e.g. https://wa.me/15551234567.</span></label>' +
+        '<input type="text" id="' + uid + '-whatsapp" placeholder="https://wa.me/…" value="' + escapeHtml(p.whatsapp || "") + '"></div>' +
       '<fieldset class="edit-fieldset">' +
         '<legend>Next meeting</legend>' +
         '<div class="edit-row2">' +
@@ -1337,6 +1581,11 @@
         '<legend>Resources</legend>' +
         '<div id="' + uid + '-resources"></div>' +
         '<button type="button" class="add-resource-btn" data-add-resource>+ Add resource</button>' +
+      '</fieldset>' +
+      '<fieldset class="edit-fieldset">' +
+        '<legend>Team members<span class="field-hint" style="display:block;font-weight:400">Opt-in only — a name and LinkedIn URL are shown here and, for an open project, on the public Discover page too. Only add someone who\'s OK with that.</span></legend>' +
+        '<div id="' + uid + '-team"></div>' +
+        '<button type="button" class="add-resource-btn" data-add-team-member>+ Add team member</button>' +
       '</fieldset>'
     );
   }
@@ -1345,10 +1594,15 @@
     var resourcesContainer = panel.querySelector("#" + uid + "-resources");
     (p.resources || []).forEach(function(r){ addResourceRow(resourcesContainer, r.label, r.url); });
     panel.querySelector("[data-add-resource]").addEventListener("click", function(){ addResourceRow(resourcesContainer, "", ""); });
-    return resourcesContainer;
+
+    var teamContainer = panel.querySelector("#" + uid + "-team");
+    (p.teamMembers || []).forEach(function(m){ addTeamMemberRow(teamContainer, m.name, m.linkedin); });
+    panel.querySelector("[data-add-team-member]").addEventListener("click", function(){ addTeamMemberRow(teamContainer, "", ""); });
+
+    return { resourcesContainer: resourcesContainer, teamContainer: teamContainer };
   }
 
-  function readCommonProjectFieldValues(panel, uid, resourcesContainer){
+  function readCommonProjectFieldValues(panel, uid, containers){
     return {
       stage: panel.querySelector("#" + uid + "-stage").value,
       priority: panel.querySelector("#" + uid + "-priority").value,
@@ -1360,10 +1614,12 @@
       tags: parseListInput(panel.querySelector("#" + uid + "-tags").value),
       skillsNeeded: parseListInput(panel.querySelector("#" + uid + "-skills").value),
       openToNewMembers: panel.querySelector("#" + uid + "-open").checked,
+      whatsapp: panel.querySelector("#" + uid + "-whatsapp").value.trim(),
       meetDate: panel.querySelector("#" + uid + "-meetdate").value,
       meetLink: panel.querySelector("#" + uid + "-meetlink").value.trim(),
       draftLink: panel.querySelector("#" + uid + "-draft").value.trim(),
-      resources: readResourceRows(resourcesContainer)
+      resources: readResourceRows(containers.resourcesContainer),
+      teamMembers: readTeamMemberRows(containers.teamContainer)
     };
   }
 
@@ -1440,7 +1696,7 @@
     panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ renderDetailReadView(panel, p); });
     panel.querySelector("[data-open-delete]").addEventListener("click", function(){ renderDeleteConfirm(panel, p); });
 
-    var resourcesContainer = wireCommonProjectFieldsInteractivity(panel, uid, p);
+    var fieldContainers = wireCommonProjectFieldsInteractivity(panel, uid, p);
 
     var msgSlot = panel.querySelector(".edit-message-slot");
     var saveBtn = panel.querySelector("[data-save-edit]");
@@ -1453,7 +1709,7 @@
       }
       setDemoName(name);
 
-      var v = readCommonProjectFieldValues(panel, uid, resourcesContainer);
+      var v = readCommonProjectFieldValues(panel, uid, fieldContainers);
       var venue = panel.querySelector("#" + uid + "-venue").value.trim();
       var submittedDate = panel.querySelector("#" + uid + "-submitted").value;
       var decision = panel.querySelector("#" + uid + "-decision").value;
@@ -1480,9 +1736,11 @@
       setIfChanged("tags", v.tags);
       setIfChanged("skillsNeeded", v.skillsNeeded);
       setIfChanged("openToNewMembers", v.openToNewMembers);
+      setIfChanged("whatsapp", v.whatsapp || null);
       if (v.meetDate || v.meetLink) setIfChanged("nextMeeting", { date: v.meetDate || null, link: v.meetLink || null });
       setIfChanged("currentDraftLink", v.draftLink || null);
       setIfChanged("resources", v.resources);
+      setIfChanged("teamMembers", v.teamMembers);
 
       var submissions = (p.submissions || []).slice();
       var submissionTouched = false;
@@ -1566,6 +1824,7 @@
 
     var el = document.createElement("div");
     el.className = "paper-card";
+    el.dataset.paperId = p.id;
     el.innerHTML =
       '<div class="row1"><button type="button" class="paper-title-btn" data-open-detail>' + escapeHtml(p.title) + '</button>' + badge + openBadge + editedFlag + '</div>' +
       '<div class="meta-row">' + meta.join("") + '</div>' +
@@ -1579,6 +1838,7 @@
       titleBtn.setAttribute("aria-expanded", "true");
       renderDetailPanel(detailPanel, p);
       detailPanel.classList.add("open");
+      el.classList.add("expanded");
     }
 
     titleBtn.setAttribute("aria-expanded", "false");
@@ -1660,6 +1920,129 @@
     }
   }
 
+  // Clears every active filter, opens one specific paper's detail panel,
+  // and scrolls its card into view — used by the right-rail widgets, whose
+  // "Upcoming deadlines" / "Recently added" items are always drawn from
+  // the FULL dataset regardless of what's currently filtered, so the
+  // paper they point at might not even be in the current filtered view.
+  function focusOnPaper(paperId){
+    state.activeKpi = null;
+    state.search = "";
+    state.filterStage = null;
+    state.filterStatus = null;
+    state.filterOpenOnly = false;
+    document.getElementById("search-input").value = "";
+    state.openDetailPaperId = paperId;
+    render();
+    var card = document.querySelector('.paper-card[data-paper-id="' + paperId + '"]');
+    if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function renderLeftRail(){
+    var mount = document.getElementById("filters-rail");
+    var stages = STAGE_OPTIONS.slice(1); // drop the "" (no-change) sentinel
+    var statuses = Array.from(new Set(state.papers.map(function(p){ return p.status; }).filter(Boolean))).sort();
+
+    function chip(label, count, active, disabled){
+      return '<button type="button" class="filter-chip' + (active ? " active" : "") + '"' +
+        (disabled ? " disabled" : "") + '>' +
+        '<span>' + escapeHtml(label) + '</span><span class="chip-count">' + count + '</span></button>';
+    }
+
+    var stageChips = stages.map(function(s){
+      var count = state.papers.filter(function(p){ return p.stage === s && matchesFilters(p, { stage: true }); }).length;
+      return chip(s, count, state.filterStage === s, count === 0 && state.filterStage !== s);
+    }).join("");
+
+    var statusChips = statuses.map(function(s){
+      var count = state.papers.filter(function(p){ return p.status === s && matchesFilters(p, { status: true }); }).length;
+      return chip(s, count, state.filterStatus === s, count === 0 && state.filterStatus !== s);
+    }).join("");
+
+    var openCount = state.papers.filter(function(p){ return p.openToNewMembers && matchesFilters(p, { open: true }); }).length;
+
+    mount.innerHTML =
+      '<h6>Filters</h6>' +
+      '<div class="filter-group"><span class="filter-group-label">Stage</span>' + stageChips + '</div>' +
+      '<div class="filter-group"><span class="filter-group-label">Status</span>' + statusChips + '</div>' +
+      '<div class="filter-group"><span class="filter-group-label">Membership</span>' +
+        chip("Open to new members", openCount, state.filterOpenOnly, openCount === 0 && !state.filterOpenOnly) +
+      '</div>';
+
+    var stageButtons = mount.querySelectorAll(".filter-group")[0].querySelectorAll(".filter-chip");
+    stageButtons.forEach(function(btn, i){
+      btn.addEventListener("click", function(){
+        state.filterStage = (state.filterStage === stages[i]) ? null : stages[i];
+        render();
+      });
+    });
+    var statusButtons = mount.querySelectorAll(".filter-group")[1].querySelectorAll(".filter-chip");
+    statusButtons.forEach(function(btn, i){
+      btn.addEventListener("click", function(){
+        state.filterStatus = (state.filterStatus === statuses[i]) ? null : statuses[i];
+        render();
+      });
+    });
+    mount.querySelectorAll(".filter-group")[2].querySelector(".filter-chip").addEventListener("click", function(){
+      state.filterOpenOnly = !state.filterOpenOnly;
+      render();
+    });
+  }
+
+  function renderRightRail(){
+    var mount = document.getElementById("right-rail");
+
+    var withDeadline = state.papers.filter(function(p){ return typeof p.daysLeft === "number"; })
+      .sort(function(a, b){ return a.daysLeft - b.daysLeft; })
+      .slice(0, 5);
+    var deadlinesHtml = withDeadline.length
+      ? '<ul class="rail-widget-list">' + withDeadline.map(function(p){
+          var overdue = p.daysLeft < 0;
+          var metaText = overdue ? Math.abs(p.daysLeft) + "d overdue" : p.daysLeft + "d left";
+          return '<li><button type="button" class="rail-widget-item" data-focus-paper="' + escapeHtml(p.id) + '">' +
+            '<span class="rw-title">' + escapeHtml(p.title) + '</span>' +
+            '<span class="rw-meta' + (overdue ? " overdue" : "") + '">' + metaText + '</span></button></li>';
+        }).join("") + '</ul>'
+      : '<p class="rail-widget-empty">No deadlines on the books right now.</p>';
+
+    // "Recently updated" needs real lastUpdated data on enough papers to be
+    // worth showing (today's real data.json has none — every paper came
+    // straight from the spreadsheet with no per-paper edit timestamp yet).
+    // Falls back to "Recently added via demo mode" so the widget isn't
+    // just empty during a demo — see README.md's "Dashboard layout" notes.
+    var withLastUpdated = state.papers.filter(function(p){ return p.lastUpdated; });
+    var secondWidgetTitle, secondWidgetHtml;
+    if (withLastUpdated.length >= 3) {
+      var recent = withLastUpdated.slice().sort(function(a, b){ return (b.lastUpdated || "").localeCompare(a.lastUpdated || ""); }).slice(0, 5);
+      secondWidgetTitle = "Recently updated";
+      secondWidgetHtml = '<ul class="rail-widget-list">' + recent.map(function(p){
+        return '<li><button type="button" class="rail-widget-item" data-focus-paper="' + escapeHtml(p.id) + '">' +
+          '<span class="rw-title">' + escapeHtml(p.title) + '</span>' +
+          '<span class="rw-meta">' + escapeHtml(fmtDate(p.lastUpdated)) + '</span></button></li>';
+      }).join("") + '</ul>';
+    } else {
+      var demoAdded = state.papers.filter(function(p){ return p._demoAdded; })
+        .sort(function(a, b){ return (b._demoCreatedAt || "").localeCompare(a._demoCreatedAt || ""); })
+        .slice(0, 5);
+      secondWidgetTitle = "Recently added via demo mode";
+      secondWidgetHtml = demoAdded.length
+        ? '<ul class="rail-widget-list">' + demoAdded.map(function(p){
+            return '<li><button type="button" class="rail-widget-item" data-focus-paper="' + escapeHtml(p.id) + '">' +
+              '<span class="rw-title">' + escapeHtml(p.title) + '</span>' +
+              '<span class="rw-meta">by ' + escapeHtml(p._demoCreatedBy || "someone") + '</span></button></li>';
+          }).join("") + '</ul>'
+        : '<p class="rail-widget-empty">No demo activity yet — try "+ New Project".</p>';
+    }
+
+    mount.innerHTML =
+      '<div class="rail-section"><h6>Upcoming deadlines</h6>' + deadlinesHtml + '</div>' +
+      '<div class="rail-section"><h6>' + escapeHtml(secondWidgetTitle) + '</h6>' + secondWidgetHtml + '</div>';
+
+    mount.querySelectorAll("[data-focus-paper]").forEach(function(btn){
+      btn.addEventListener("click", function(){ focusOnPaper(btn.getAttribute("data-focus-paper")); });
+    });
+  }
+
   function render(){
     if (state.loading) {
       renderKpiSkeleton();
@@ -1668,12 +2051,14 @@
     }
     renderKpis();
     renderList();
+    renderLeftRail();
+    renderRightRail();
   }
 
   function wireControls(){
     document.getElementById("search-input").addEventListener("input", function(e){
       state.search = e.target.value;
-      renderList();
+      render();
     });
   }
 
@@ -1702,6 +2087,18 @@
   }
 
   function wireDemoBanner(){
+    var banner = document.getElementById("demo-banner");
+    try {
+      if (sessionStorage.getItem(DEMO_BANNER_DISMISSED_KEY) === "1") {
+        banner.classList.add("dismissed");
+      }
+    } catch (e) { /* non-fatal */ }
+
+    document.getElementById("dismiss-demo-btn").addEventListener("click", function(){
+      banner.classList.add("dismissed");
+      try { sessionStorage.setItem(DEMO_BANNER_DISMISSED_KEY, "1"); } catch (e) { /* non-fatal */ }
+    });
+
     document.getElementById("reset-demo-btn").addEventListener("click", function(){
       showConfirmModal({
         title: "Reset demo data?",
@@ -1781,7 +2178,7 @@
         '<button type="button" class="edit-btn-primary" id="new-project-save">Create project</button>' +
       '</div>';
 
-    var resourcesContainer = wireCommonProjectFieldsInteractivity(slot, uid, blank);
+    var fieldContainers = wireCommonProjectFieldsInteractivity(slot, uid, blank);
     var msgSlot = slot.querySelector(".edit-message-slot");
 
     document.getElementById("new-project-cancel").addEventListener("click", closeNewProjectModal);
@@ -1799,7 +2196,7 @@
       }
       setDemoName(name);
 
-      var v = readCommonProjectFieldValues(slot, uid, resourcesContainer);
+      var v = readCommonProjectFieldValues(slot, uid, fieldContainers);
       var now = new Date();
       var status = deriveStatus(v.stage || null, 0, null, v.deadline || null, null, now);
       var id = nextPaperId();
@@ -1833,7 +2230,9 @@
         abstract: v.abstract || null,
         tags: v.tags,
         skillsNeeded: v.skillsNeeded,
-        openToNewMembers: v.openToNewMembers
+        openToNewMembers: v.openToNewMembers,
+        whatsapp: v.whatsapp || null,
+        teamMembers: v.teamMembers
       };
 
       commitDemoAdd(paper, name);
@@ -1851,11 +2250,21 @@
     });
   }
 
+  function wireFiltersToggle(){
+    var toggleBtn = document.getElementById("filters-toggle");
+    var content = document.getElementById("filters-rail-content");
+    toggleBtn.addEventListener("click", function(){
+      var open = content.classList.toggle("open");
+      toggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
   function init(){
     wireControls();
     wirePrintExpansion();
     wireDemoBanner();
     wireNewProjectModal();
+    wireFiltersToggle();
     render();
     fetch(dataUrl())
       .then(function(res){

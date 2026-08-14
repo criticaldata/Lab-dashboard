@@ -16,7 +16,7 @@ function assert(cond, msg) {
 
 const ROOT = path.join(__dirname, '..');
 
-const ALLOWED_KEYS = ['id', 'title', 'abstract', 'tags', 'skillsNeeded', 'stage', 'openToNewMembers', 'contact'].sort();
+const ALLOWED_KEYS = ['id', 'title', 'abstract', 'tags', 'skillsNeeded', 'stage', 'openToNewMembers', 'contact', 'whatsapp', 'teamMembers'].sort();
 
 const FORBIDDEN_SUBSTRINGS = [
   'venue', 'deadline', 'notes', 'meetingLink', 'draftLink', 'currentDraftLink',
@@ -57,7 +57,7 @@ console.log("(data.public.json may currently have 0 papers if no spreadsheet pap
 
 checkFile(path.join(ROOT, 'data.sample.public.json'), 'data.sample.public.json');
 const sampleData = JSON.parse(fs.readFileSync(path.join(ROOT, 'data.sample.public.json'), 'utf-8'));
-assert(sampleData.papers.length === 13, 'data.sample.public.json has exactly the 13 openToNewMembers fixture papers, got ' + sampleData.papers.length);
+assert(sampleData.papers.length === 15, 'data.sample.public.json has exactly the 15 openToNewMembers fixture papers, got ' + sampleData.papers.length);
 
 // Cross-check against the full data.sample.json to make sure the ones that
 // were EXCLUDED really are the openToNewMembers:false ones, not an

@@ -2,7 +2,7 @@
   "name": "lab-ledger-tests",
   "private": true,
   "scripts": {
-    "test": "node test_public_allowlist.js && node test_dashboard.js && node test_part1.js && node test_demo_mode.js && node test_create_delete.js && node test_discover.js && node test_discover_bridge.js"
+    "test": "node test_public_allowlist.js && node test_dashboard.js && node test_part1.js && node test_demo_mode.js && node test_create_delete.js && node test_discover.js && node test_discover_bridge.js && node test_layout.js"
   },
   "devDependencies": {
     "playwright": "^1.62.1"

@@ -19,7 +19,9 @@
       "contact": {
         "name": "Test",
         "email": "test-owner-a@example.org"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S002",
@@ -39,7 +41,9 @@
       "contact": {
         "name": "Test",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S005",
@@ -58,7 +62,9 @@
       "contact": {
         "name": "Test",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S009",
@@ -79,7 +85,9 @@
       "contact": {
         "name": "Priya",
         "email": "priya.raman@example.org"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S010",
@@ -99,7 +107,9 @@
       "contact": {
         "name": "Marcus",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S011",
@@ -120,7 +130,9 @@
       "contact": {
         "name": "Wei",
         "email": "wei.zhang@example.org"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S012",
@@ -140,7 +152,9 @@
       "contact": {
         "name": "Sofia",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S013",
@@ -160,7 +174,9 @@
       "contact": {
         "name": "Priya",
         "email": "priya.raman@example.org"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S014",
@@ -180,7 +196,9 @@
       "contact": {
         "name": "Marcus",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S015",
@@ -200,7 +218,9 @@
       "contact": {
         "name": "Sofia",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S017",
@@ -220,7 +240,9 @@
       "contact": {
         "name": "Priya",
         "email": "priya.raman@example.org"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S019",
@@ -240,7 +262,9 @@
       "contact": {
         "name": "Wei",
         "email": "wei.zhang@example.org"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S020",
@@ -260,7 +284,67 @@
       "contact": {
         "name": "Sofia",
         "email": "criticaldata-lab@mit.edu"
-      }
+      },
+      "whatsapp": null,
+      "teamMembers": []
+    },
+    {
+      "id": "S021",
+      "title": "AI-Assisted Post-Surgical Recovery Check-Ins via Chat",
+      "abstract": "A lightweight conversational check-in tool that messages patients on WhatsApp after surgery to catch early warning signs before their next appointment, designed with nursing staff rather than for them.",
+      "tags": [
+        "patient engagement",
+        "healthcare AI",
+        "conversational AI"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "clinical workflows"
+      ],
+      "stage": "In progress (drafting)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Dana",
+        "email": "criticaldata-lab@mit.edu"
+      },
+      "whatsapp": "https://wa.me/15551234567",
+      "teamMembers": [
+        {
+          "name": "Dana Okafor",
+          "linkedin": "https://linkedin.com/in/fake-dana-okafor"
+        },
+        {
+          "name": "Théo Laurent",
+          "linkedin": "https://linkedin.com/in/fake-theo-laurent"
+        }
+      ]
+    },
+    {
+      "id": "S022",
+      "title": "Community Data Co-ops for Rare Disease Research",
+      "abstract": "Exploring a community-governed data co-op model where rare-disease patient communities collectively decide how their pooled health data gets used for research, instead of a single institution holding all the keys.",
+      "tags": [
+        "data governance",
+        "rare disease",
+        "community health"
+      ],
+      "skillsNeeded": [
+        "policy analysis",
+        "community organizing"
+      ],
+      "stage": "Early stage / idea",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Priya",
+        "email": "priya.raman@example.org"
+      },
+      "whatsapp": "https://wa.me/15559876543",
+      "teamMembers": [
+        {
+          "name": "Priya Raman",
+          "linkedin": "https://linkedin.com/in/fake-priya-raman"
+        }
+      ]
     }
   ]
 }

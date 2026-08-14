@@ -14,7 +14,7 @@ No login, no build step, nothing to install to view it.
 | `discover.html` | The **public-safe** project-browsing page for prospective members. Reads only `data.public.json` — never `data.json`. See "Project Discovery" below. |
 | `data.json` | The real data `index.html` reads, generated from the spreadsheet. Contains everything — safe only for lab members. |
 | `data.public.json` | An explicit-allowlist export for `discover.html`, generated alongside `data.json`. Safe to share with anyone — see "Project Discovery" below for exactly why. |
-| `data.sample.json`, `data.sample.public.json` | Fixture data (20 papers, 13 of them open to new members, spanning ML/policy-ethics/clinical-data/writing-heavy projects) covering every UI state, for local testing/demos of both pages. |
+| `data.sample.json`, `data.sample.public.json` | Fixture data (22 papers, 15 of them open to new members, spanning ML/policy-ethics/clinical-data/writing-heavy projects, two of them showcasing the WhatsApp-link and team-member/LinkedIn fields) covering every UI state, for local testing/demos of both pages. |
 | `export_data.py` | Regenerates `data.json` **and** `data.public.json` from `Lab_Papers_Dashboard.xlsx`, reconciling `data.json` with any edits already applied via the Issue Form fallback. |
 | `Lab_Papers_Dashboard.xlsx` | Source of truth for bulk edits. Papers Tracker + Submissions Log + Team Directory. |
 | `assets/mit-critical-data-logo.svg`, `assets/favicon.ico` | Brand assets, pulled from criticaldata.mit.edu. |
@@ -42,6 +42,56 @@ of overwriting a paper's venue/deadline on every attempt, each attempt is
 logged separately in the spreadsheet's Submissions Log and exported into
 that paper's `submissions` array, so a rejection followed by a resubmission
 is fully visible on the paper's timeline rather than lost.
+
+## Dashboard layout (index.html)
+
+The paper list is a real multi-column card grid (CSS Grid, `auto-fill` +
+`minmax(320px, 1fr)`) — 3 columns on a wide desktop, 2 on a laptop/tablet,
+1 on mobile — not a single wide column of thin rows. Each card has a
+visible border, rounded corners, real padding, and a subtle shadow that
+deepens on hover, so it reads as a distinct object rather than a table
+row. Opening a card's detail view makes that one card span the *entire*
+grid width for the duration (`grid-column: 1 / -1`) instead of squeezing
+a full submission history into a 320px column; it collapses back into the
+grid on close.
+
+At desktop width (≥1100px) the grid sits between two rails:
+
+- **Left rail — Filters.** Stage, Status, and Open to New Members, each
+  as a set of chips with a live count. Clicking one filters the list
+  exactly like clicking a KPI card does (click again to clear), and it
+  combines with the KPI strip and the search box via AND — searching
+  "AI" with the Drafting chip active narrows to papers that are both
+  Drafting *and* match "AI", never widens past either filter alone. A
+  chip whose count would currently be zero renders disabled rather than
+  as a clickable dead end.
+- **Right rail — At a glance.** "Upcoming deadlines" (the 3-5 papers with
+  the soonest `daysLeft`, soonest first, overdue ones included and
+  flagged in red) and a second widget that's either "Recently updated"
+  (sorted by `lastUpdated`, if at least 3 papers have that field set) or
+  "Recently added via demo mode" as a fallback — real `data.json` has no
+  papers with `lastUpdated` set yet, so today it's the demo-mode one; the
+  sample fixture data has `lastUpdated` on every paper, so switching to
+  `?data=data.sample.json` shows the "Recently updated" version instead.
+  Clicking any item clears every active filter and jumps straight to that
+  paper's detail view, since the widgets always draw from the whole
+  dataset regardless of what's currently filtered.
+
+Below ~1100px the left rail collapses behind a "☰ Filters" toggle button
+(closed by default, to keep the page from opening on a wall of filter
+chips on a phone) and the right rail's widgets stack full-width below the
+card grid instead of disappearing.
+
+No sparkline/trend indicators on the KPI strip — there's no historical
+snapshot data to compute a real trend from (`data.json` only ever holds
+today's current state), and fabricating one wasn't worth pretending the
+lab's paper counts have momentum data behind them yet.
+
+The demo-mode banner is a slim, single-line strip rather than a full bar
+competing with the header for attention, and it's dismissible: closing it
+(×) hides it for the rest of that browser tab's session (`sessionStorage`,
+not `localStorage` — it comes back on the next real visit) without
+touching any of the underlying demo state Reset/Copy JSON still control.
 
 ## Demo mode
 
@@ -80,7 +130,10 @@ What demo mode does:
   Owner is a free-text write-in field, not a dropdown — like the search
   box, a fixed list of existing owners doesn't scale to a lab with hundreds
   of members, and it also means a project can be created for someone who
-  isn't in the system yet.
+  isn't in the system yet. The same form (and the edit view) also has a
+  WhatsApp link field and an opt-in team-members list (name + LinkedIn URL,
+  add/remove rows like Resources) — both flow through to the public
+  Discover page for an open project, same as abstract/tags/skills do.
 - Inside a paper's edit view, **Delete this project…** asks for confirmation
   before doing anything (no single-click delete). Deleting a paper you
   created locally removes it outright; deleting a real, `data.json`-sourced
@@ -185,10 +238,13 @@ Why it's actually safe, not just hidden:
   `skillsNeeded`, `stage` (a plain-language label like "In progress
   (drafting)" — deliberately coarser than the internal emoji status badge,
   which can say things like "Needs Attention" that read badly out of
-  context), `openToNewMembers`, and `contact` (`{name, email}`). Nothing
-  else — venue, deadline, notes, meeting links, draft links, resources,
-  submission history, priority, and full names are never read by the
-  function that builds this file, so there's nothing to accidentally leak.
+  context), `openToNewMembers`, `contact` (`{name, email}`), `whatsapp` (a
+  `wa.me` link or `null`), and `teamMembers` (`[{name, linkedin}, …]`, only
+  ever the people someone deliberately opted in on that specific project —
+  see "New fields not yet in the spreadsheet" below). Nothing else — venue,
+  deadline, notes, meeting links, draft links, resources, submission
+  history, priority, and full names are never read by the function that
+  builds this file, so there's nothing to accidentally leak.
 - **Contact info never exposes a personal email by accident.** A paper's
   `contact.email` is the owner's real address only if their Team Directory
   row has `Public Contact OK` explicitly set; otherwise (the default for
@@ -238,8 +294,10 @@ not built here; today's version needs no ML, no API key, nothing that can
 fail in front of an audience.
 
 Try it locally: `http://localhost:8000/discover.html?data=data.sample.public.json`
-(the real `data.public.json` is empty until the spreadsheet has at least one
-paper marked `Open to New Members` — see below).
+(the real `discover.html` reflects whatever's currently in `data.public.json`
+— empty until at least one real paper is marked `Open to New Members`; as of
+this writing, 4 real papers are, so it isn't empty right now — see below for
+how to change which ones are).
 
 ## Updating the site after editing the spreadsheet
 
@@ -281,11 +339,20 @@ reads from sheets/columns that **don't exist yet** in
 | `tags` | New "Tags" column, comma-separated | `["clinical ML", "causal inference"]` |
 | `skillsNeeded` | New "Skills Needed" column, comma-separated | `["Python", "writing"]` |
 | `openToNewMembers` | New "Open to New Members" column (Yes/No) | boolean, defaults `false` |
+| `whatsapp` | New "WhatsApp Link" column on Papers Tracker | `wa.me` URL string or `null` |
+| `teamMembers` | New "🤝 Project Team" sheet | `[{ name, linkedin }, …]` |
 
-The last four feed `discover.html` (see "Project Discovery" above) —
+The middle six feed `discover.html` (see "Project Discovery" above) —
 `openToNewMembers` in particular is the switch that puts a paper on that
 public page at all, so it defaults to `false`/hidden until someone
-explicitly opts a project in.
+explicitly opts a project in. `whatsapp` and `teamMembers` are optional
+extras on an already-open project: a WhatsApp contact link shown alongside
+the email "I'm interested" button, and a small opt-in team roster (name +
+LinkedIn URL — self-published info, not sensitive the way a raw personal
+email is, so unlike `contact.email` it doesn't need a "Public Contact OK"
+gate; a name only appears here if someone deliberately added a row for
+them on this specific project, never pulled from the whole Team Directory
+roster).
 
 **Why the spreadsheet itself wasn't touched:** `Lab_Papers_Dashboard.xlsx`
 has hand-configured conditional formatting and dropdown validation.
@@ -299,8 +366,9 @@ minutes; mutating the binary programmatically wasn't worth that risk for
 this. `export_data.py` is defensive either way — with everything absent (as
 now), every paper just gets `nextMeeting: null, pastMeetings: [],
 currentDraftLink: null, resources: [], abstract: null, tags: [],
-skillsNeeded: [], openToNewMembers: false` — no crash, no data loss, and
-(because of that last default) nothing shows up on `discover.html` either.
+skillsNeeded: [], openToNewMembers: false, whatsapp: null, teamMembers: []`
+— no crash, no data loss, and (because of that `openToNewMembers` default)
+nothing shows up on `discover.html` either.
 
 **"📅 Meetings Log" sheet** (mirror the existing "📨 Submissions Log"
 pattern — one row per meeting, joined by paper title):
@@ -313,18 +381,26 @@ pattern — one row per meeting, joined by paper title):
 | Paper | Label | URL |
 |---|---|---|
 
-**Papers Tracker**: add five columns — `Current Draft Link`, `Abstract`,
-`Tags`, `Skills Needed`, `Open to New Members`.
+**"🤝 Project Team" sheet** (one row per team member, same joined-by-title
+pattern — opt-in, not the whole Team Directory roster):
+
+| Paper | Name | LinkedIn URL |
+|---|---|---|
+
+**Papers Tracker**: add six columns — `Current Draft Link`, `Abstract`,
+`Tags`, `Skills Needed`, `Open to New Members`, `WhatsApp Link`.
 
 **Team Directory**: add one column, `Public Contact OK` (Yes/No) — controls
 whether a paper's public contact on `discover.html` shows that owner's real
 email or falls back to the generic lab inbox. See "Project Discovery" above.
 
-`data.sample.json`'s 20 fixture papers already have realistic example values
-across every field above (13 of the 20 marked `openToNewMembers: true`,
+`data.sample.json`'s 22 fixture papers already have realistic example values
+across every field above (15 of the 22 marked `openToNewMembers: true`,
 spanning ML-heavy, policy/ethics-heavy, clinical-data-heavy, and
 writing-heavy projects so `discover.html`'s search demos convincingly
-across different typed interests; the rest show the full range of
+across different typed interests, with two of them also carrying a
+`whatsapp` link and a couple of `teamMembers` entries so those fields have
+something real to demo too; the rest show the full range of
 meeting/draft/resource/multi-attempt-submission states) — open it or demo
 with `?data=data.sample.json` (and
 `discover.html?data=data.sample.public.json`) to see the full range without
@@ -366,8 +442,8 @@ python3 -m http.server 8000
 Then open `http://localhost:8000/` in your browser. This is also exactly how
 GitHub Pages serves it in production, so testing this way matches reality.
 
-To demo/preview with fake fixture data (`data.sample.json`, 20 papers
-covering every status, all four new fields populated) instead of the real
+To demo/preview with fake fixture data (`data.sample.json`, 22 papers
+covering every status, every new field populated) instead of the real
 `data.json`, open `http://localhost:8000/?data=data.sample.json`.
 
 ## Future: real authentication

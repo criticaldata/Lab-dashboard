@@ -27,10 +27,19 @@
       "pastMeetings": [],
       "currentDraftLink": null,
       "resources": [],
-      "abstract": null,
-      "tags": [],
-      "skillsNeeded": [],
-      "openToNewMembers": false
+      "abstract": "A look at how clinical measurement tools and instruments should be rethought for an era where AI increasingly mediates diagnosis and monitoring, examining where today's measurement standards fall short.",
+      "tags": [
+        "clinical measurement",
+        "healthcare AI",
+        "diagnostics"
+      ],
+      "skillsNeeded": [
+        "clinical research",
+        "writing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P002",
@@ -61,7 +70,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P003",
@@ -92,7 +103,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P004",
@@ -142,7 +155,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P005",
@@ -173,7 +188,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P006",
@@ -214,7 +231,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P007",
@@ -245,7 +264,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P008",
@@ -276,7 +297,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P009",
@@ -307,7 +330,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P010",
@@ -338,7 +363,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P011",
@@ -369,7 +396,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P012",
@@ -400,7 +429,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P013",
@@ -431,7 +462,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P014",
@@ -462,7 +495,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P015",
@@ -493,7 +528,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P016",
@@ -524,7 +561,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P017",
@@ -555,7 +594,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P018",
@@ -586,7 +627,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P019",
@@ -617,7 +660,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P020",
@@ -648,7 +693,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P021",
@@ -679,7 +726,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P022",
@@ -710,7 +759,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P023",
@@ -741,7 +792,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P024",
@@ -769,10 +822,19 @@
       "pastMeetings": [],
       "currentDraftLink": null,
       "resources": [],
-      "abstract": null,
-      "tags": [],
-      "skillsNeeded": [],
-      "openToNewMembers": false
+      "abstract": "A human-centered design framework for AI tools built for older adults, focused on usability, trust, and dignity rather than technical capability alone.",
+      "tags": [
+        "human-centered design",
+        "aging",
+        "healthcare AI"
+      ],
+      "skillsNeeded": [
+        "UX research",
+        "writing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P025",
@@ -803,7 +865,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P026",
@@ -834,7 +898,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P027",
@@ -865,7 +931,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P028",
@@ -903,10 +971,19 @@
       "pastMeetings": [],
       "currentDraftLink": null,
       "resources": [],
-      "abstract": null,
-      "tags": [],
-      "skillsNeeded": [],
-      "openToNewMembers": false
+      "abstract": "A critical look at why accurate clinical prediction models don't automatically translate into better patient outcomes, and what's missing between a good model and a good decision.",
+      "tags": [
+        "predictive modeling",
+        "clinical decision-making",
+        "healthcare AI"
+      ],
+      "skillsNeeded": [
+        "biostatistics",
+        "clinical informatics"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P029",
@@ -934,10 +1011,19 @@
       "pastMeetings": [],
       "currentDraftLink": null,
       "resources": [],
-      "abstract": null,
-      "tags": [],
-      "skillsNeeded": [],
-      "openToNewMembers": false
+      "abstract": "A multi-agent AI architecture for orchestrating steps of the clinical research pipeline under human supervision, from literature review to draft analysis.",
+      "tags": [
+        "multi-agent systems",
+        "clinical research",
+        "machine learning"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "agent orchestration"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "P030",
@@ -968,7 +1054,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     }
   ],
   "team": [

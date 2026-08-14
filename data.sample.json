@@ -27,12 +27,24 @@
       "pastMeetings": [],
       "currentDraftLink": "https://docs.google.com/document/d/fake-s001-draft",
       "resources": [
-        { "label": "Related dataset", "url": "https://example.org/datasets/s001" }
+        {
+          "label": "Related dataset",
+          "url": "https://example.org/datasets/s001"
+        }
       ],
       "abstract": "An early-stage look at how community health workers describe unmet needs in their own words, and whether that language differs systematically from what standard intake forms capture.",
-      "tags": ["health equity", "qualitative research", "community health"],
-      "skillsNeeded": ["interview skills", "writing"],
-      "openToNewMembers": true
+      "tags": [
+        "health equity",
+        "qualitative research",
+        "community health"
+      ],
+      "skillsNeeded": [
+        "interview skills",
+        "writing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S002",
@@ -56,19 +68,41 @@
       "githubRepo": null,
       "notes": "Steady progress, no deadline pressure yet.",
       "submissions": [],
-      "nextMeeting": { "date": "2026-08-15T14:00:00", "link": "https://zoom.us/j/fake-s002-sync" },
+      "nextMeeting": {
+        "date": "2026-08-15T14:00:00",
+        "link": "https://zoom.us/j/fake-s002-sync"
+      },
       "pastMeetings": [
-        { "date": "2026-08-01T14:00:00", "link": "https://zoom.us/j/fake-s002-kickoff", "notes": "Kickoff — agreed on outline and split sections." }
+        {
+          "date": "2026-08-01T14:00:00",
+          "link": "https://zoom.us/j/fake-s002-kickoff",
+          "notes": "Kickoff — agreed on outline and split sections."
+        }
       ],
       "currentDraftLink": "https://docs.google.com/document/d/fake-s002-draft",
       "resources": [
-        { "label": "Shared Drive folder", "url": "https://drive.google.com/drive/folders/fake-s002" },
-        { "label": "Slack channel", "url": "https://labworkspace.slack.com/channels/fake-s002" }
+        {
+          "label": "Shared Drive folder",
+          "url": "https://drive.google.com/drive/folders/fake-s002"
+        },
+        {
+          "label": "Slack channel",
+          "url": "https://labworkspace.slack.com/channels/fake-s002"
+        }
       ],
       "abstract": "A machine learning approach to flagging which public health policy interventions are most likely to widen, rather than close, outcome gaps between neighborhoods — trained on a decade of city-level program data.",
-      "tags": ["machine learning", "public health policy", "urban health"],
-      "skillsNeeded": ["Python", "policy analysis"],
-      "openToNewMembers": true
+      "tags": [
+        "machine learning",
+        "public health policy",
+        "urban health"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "policy analysis"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S003",
@@ -94,14 +128,25 @@
       "submissions": [],
       "nextMeeting": null,
       "pastMeetings": [
-        { "date": "2026-07-10T10:00:00", "link": "https://zoom.us/j/fake-s003-review", "notes": "Discussed why the internal-review deadline was missed." }
+        {
+          "date": "2026-07-10T10:00:00",
+          "link": "https://zoom.us/j/fake-s003-review",
+          "notes": "Discussed why the internal-review deadline was missed."
+        }
       ],
       "currentDraftLink": "https://www.overleaf.com/project/fake-s003",
       "resources": [],
       "abstract": "A retrospective review of internal-review turnaround times across the lab's last two years of submissions, and what that implies for realistic deadline-setting going forward.",
-      "tags": ["research operations", "lab process"],
-      "skillsNeeded": ["data analysis"],
-      "openToNewMembers": false
+      "tags": [
+        "research operations",
+        "lab process"
+      ],
+      "skillsNeeded": [
+        "data analysis"
+      ],
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S004",
@@ -144,16 +189,30 @@
           "notes": "Resubmitted here after the Fake Conference A rejection."
         }
       ],
-      "nextMeeting": { "date": "2026-08-20T16:00:00", "link": "https://zoom.us/j/fake-s004-strategy" },
+      "nextMeeting": {
+        "date": "2026-08-20T16:00:00",
+        "link": "https://zoom.us/j/fake-s004-strategy"
+      },
       "pastMeetings": [],
       "currentDraftLink": "https://docs.google.com/document/d/fake-s004-draft",
       "resources": [
-        { "label": "Reviewer feedback doc", "url": "https://docs.google.com/document/d/fake-s004-feedback" }
+        {
+          "label": "Reviewer feedback doc",
+          "url": "https://docs.google.com/document/d/fake-s004-feedback"
+        }
       ],
       "abstract": "Training junior lab members to red-team each other's AI safety claims before submission, using a structured double-agent review protocol.",
-      "tags": ["AI safety", "mentorship", "peer review"],
-      "skillsNeeded": ["critical writing"],
-      "openToNewMembers": false
+      "tags": [
+        "AI safety",
+        "mentorship",
+        "peer review"
+      ],
+      "skillsNeeded": [
+        "critical writing"
+      ],
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S005",
@@ -191,12 +250,23 @@
       "pastMeetings": [],
       "currentDraftLink": null,
       "resources": [
-        { "label": "Submission portal", "url": "https://example.org/portal/fake-s005" }
+        {
+          "label": "Submission portal",
+          "url": "https://example.org/portal/fake-s005"
+        }
       ],
       "abstract": "A biostatistics-heavy re-analysis of a published clinical trial's subgroup effects, testing whether the original result holds under a pre-registered alternative model.",
-      "tags": ["clinical trials", "biostatistics"],
-      "skillsNeeded": ["R", "statistics"],
-      "openToNewMembers": true
+      "tags": [
+        "clinical trials",
+        "biostatistics"
+      ],
+      "skillsNeeded": [
+        "R",
+        "statistics"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S006",
@@ -230,19 +300,39 @@
           "notes": null
         }
       ],
-      "nextMeeting": { "date": "2026-08-14T11:00:00", "link": "https://zoom.us/j/fake-s006-revisions" },
+      "nextMeeting": {
+        "date": "2026-08-14T11:00:00",
+        "link": "https://zoom.us/j/fake-s006-revisions"
+      },
       "pastMeetings": [
-        { "date": "2026-07-05T11:00:00", "link": "https://zoom.us/j/fake-s006-submit", "notes": "Final pre-submission check." }
+        {
+          "date": "2026-07-05T11:00:00",
+          "link": "https://zoom.us/j/fake-s006-submit",
+          "notes": "Final pre-submission check."
+        }
       ],
       "currentDraftLink": "https://docs.google.com/document/d/fake-s006-revision",
       "resources": [
-        { "label": "Reviewer comments", "url": "https://docs.google.com/document/d/fake-s006-comments" },
-        { "label": "Response letter draft", "url": "https://docs.google.com/document/d/fake-s006-response" }
+        {
+          "label": "Reviewer comments",
+          "url": "https://docs.google.com/document/d/fake-s006-comments"
+        },
+        {
+          "label": "Response letter draft",
+          "url": "https://docs.google.com/document/d/fake-s006-response"
+        }
       ],
       "abstract": "Revising a submitted manuscript on why uncertainty bounds alone can't substitute for institutional readiness when deploying healthcare AI.",
-      "tags": ["healthcare AI", "uncertainty quantification"],
-      "skillsNeeded": ["technical writing"],
-      "openToNewMembers": false
+      "tags": [
+        "healthcare AI",
+        "uncertainty quantification"
+      ],
+      "skillsNeeded": [
+        "technical writing"
+      ],
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S007",
@@ -278,16 +368,28 @@
       ],
       "nextMeeting": null,
       "pastMeetings": [
-        { "date": "2026-07-16T13:00:00", "link": "https://zoom.us/j/fake-s007-celebrate", "notes": "Acceptance debrief and camera-ready task assignment." }
+        {
+          "date": "2026-07-16T13:00:00",
+          "link": "https://zoom.us/j/fake-s007-celebrate",
+          "notes": "Acceptance debrief and camera-ready task assignment."
+        }
       ],
       "currentDraftLink": "https://docs.google.com/document/d/fake-s007-cameraready",
       "resources": [
-        { "label": "Camera-ready checklist", "url": "https://example.org/checklist/fake-s007" }
+        {
+          "label": "Camera-ready checklist",
+          "url": "https://example.org/checklist/fake-s007"
+        }
       ],
       "abstract": "An accepted paper on human-centered AI design principles for older adults, now in camera-ready preparation.",
-      "tags": ["human-centered design", "aging"],
+      "tags": [
+        "human-centered design",
+        "aging"
+      ],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S008",
@@ -323,16 +425,29 @@
       ],
       "nextMeeting": null,
       "pastMeetings": [
-        { "date": "2026-06-15T13:00:00", "link": "https://zoom.us/j/fake-s008-launch", "notes": "Coordinated announcement and social posts." }
+        {
+          "date": "2026-06-15T13:00:00",
+          "link": "https://zoom.us/j/fake-s008-launch",
+          "notes": "Coordinated announcement and social posts."
+        }
       ],
       "currentDraftLink": null,
       "resources": [
-        { "label": "Published article", "url": "https://example.org/journal/fake-s008-published" }
+        {
+          "label": "Published article",
+          "url": "https://example.org/journal/fake-s008-published"
+        }
       ],
       "abstract": "A published account of how storytelling and provenance tracking can rebuild scientific rigor in an AI-saturated publishing environment.",
-      "tags": ["scientific rigor", "provenance", "AI"],
+      "tags": [
+        "scientific rigor",
+        "provenance",
+        "AI"
+      ],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S009",
@@ -361,9 +476,19 @@
       "currentDraftLink": null,
       "resources": [],
       "abstract": "An audit of algorithmic bias in ML-based emergency-department triage scoring tools, focused on whether risk scores systematically under-triage patients from historically under-resourced neighborhoods.",
-      "tags": ["machine learning", "algorithmic bias", "emergency medicine", "health equity"],
-      "skillsNeeded": ["Python", "fairness metrics"],
-      "openToNewMembers": true
+      "tags": [
+        "machine learning",
+        "algorithmic bias",
+        "emergency medicine",
+        "health equity"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "fairness metrics"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S010",
@@ -392,9 +517,18 @@
       "currentDraftLink": null,
       "resources": [],
       "abstract": "Examining what 'informed consent' should mean when wearable and ambient sensors passively collect health-relevant data outside a clinical encounter, and drafting a practical consent framework labs can adopt.",
-      "tags": ["research ethics", "data governance", "informed consent"],
-      "skillsNeeded": ["writing", "policy analysis"],
-      "openToNewMembers": true
+      "tags": [
+        "research ethics",
+        "data governance",
+        "informed consent"
+      ],
+      "skillsNeeded": [
+        "writing",
+        "policy analysis"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S011",
@@ -437,16 +571,32 @@
           "notes": "Resubmitted after adding two more hospital sites to validation."
         }
       ],
-      "nextMeeting": { "date": "2026-08-18T15:00:00", "link": "https://zoom.us/j/fake-s011-sync" },
+      "nextMeeting": {
+        "date": "2026-08-18T15:00:00",
+        "link": "https://zoom.us/j/fake-s011-sync"
+      },
       "pastMeetings": [],
       "currentDraftLink": "https://docs.google.com/document/d/fake-s011-draft",
       "resources": [
-        { "label": "Multi-site data agreement", "url": "https://example.org/agreements/s011" }
+        {
+          "label": "Multi-site data agreement",
+          "url": "https://example.org/agreements/s011"
+        }
       ],
       "abstract": "A federated learning approach to sepsis onset prediction that trains across five hospital systems without centralizing patient data, addressing the generalizability failures that sank an earlier single-site model.",
-      "tags": ["machine learning", "federated learning", "sepsis", "clinical data"],
-      "skillsNeeded": ["Python", "distributed systems"],
-      "openToNewMembers": true
+      "tags": [
+        "machine learning",
+        "federated learning",
+        "sepsis",
+        "clinical data"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "distributed systems"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S012",
@@ -475,9 +625,18 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s012-draft",
       "resources": [],
       "abstract": "A patient-preference survey testing whether people want AI clinical-decision-support tools to explicitly disclose their confidence level, and how disclosure changes trust and follow-through on recommendations.",
-      "tags": ["healthcare AI", "patient preferences", "survey research"],
-      "skillsNeeded": ["survey design", "writing"],
-      "openToNewMembers": true
+      "tags": [
+        "healthcare AI",
+        "patient preferences",
+        "survey research"
+      ],
+      "skillsNeeded": [
+        "survey design",
+        "writing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S013",
@@ -524,12 +683,24 @@
       "pastMeetings": [],
       "currentDraftLink": null,
       "resources": [
-        { "label": "Pipeline GitHub repo", "url": "https://github.com/example/s013-pipeline" }
+        {
+          "label": "Pipeline GitHub repo",
+          "url": "https://github.com/example/s013-pipeline"
+        }
       ],
       "abstract": "A fully reproducible, open-source pipeline for reconciling inconsistent EHR timestamp formats across a decade of merged hospital systems, released alongside the accepted manuscript.",
-      "tags": ["EHR data", "data engineering", "reproducibility"],
-      "skillsNeeded": ["Python", "SQL"],
-      "openToNewMembers": true
+      "tags": [
+        "EHR data",
+        "data engineering",
+        "reproducibility"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "SQL"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S014",
@@ -558,9 +729,18 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s014-draft",
       "resources": [],
       "abstract": "An agent-based simulation comparing pandemic-era resource-allocation policies (bed triage, vaccine rollout order, supply-chain prioritization) across different equity-weighting schemes.",
-      "tags": ["public health policy", "simulation", "resource allocation"],
-      "skillsNeeded": ["policy analysis", "R"],
-      "openToNewMembers": true
+      "tags": [
+        "public health policy",
+        "simulation",
+        "resource allocation"
+      ],
+      "skillsNeeded": [
+        "policy analysis",
+        "R"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S015",
@@ -589,9 +769,18 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s015-draft",
       "resources": [],
       "abstract": "A historical narrative review tracing five decades of 'AI will transform medicine' predictions against what actually shipped, looking for a pattern in why certain claims recur every hype cycle.",
-      "tags": ["writing", "history of science", "healthcare AI"],
-      "skillsNeeded": ["writing", "literature review"],
-      "openToNewMembers": true
+      "tags": [
+        "writing",
+        "history of science",
+        "healthcare AI"
+      ],
+      "skillsNeeded": [
+        "writing",
+        "literature review"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S016",
@@ -620,9 +809,18 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s016-draft",
       "resources": [],
       "abstract": "A benchmark comparing several open and closed LLMs on clinical-note summarization quality, judged against physician-written gold summaries across three specialties.",
-      "tags": ["machine learning", "large language models", "clinical data"],
-      "skillsNeeded": ["Python", "NLP"],
-      "openToNewMembers": false
+      "tags": [
+        "machine learning",
+        "large language models",
+        "clinical data"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "NLP"
+      ],
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S017",
@@ -670,9 +868,18 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s017-draft",
       "resources": [],
       "abstract": "An audit of hospital consent forms' reading-level and comprehensibility across a diverse literacy sample, finding that most forms require college-level reading fluency to understand basic risks.",
-      "tags": ["health equity", "research ethics", "health literacy"],
-      "skillsNeeded": ["qualitative research", "writing"],
-      "openToNewMembers": true
+      "tags": [
+        "health equity",
+        "research ethics",
+        "health literacy"
+      ],
+      "skillsNeeded": [
+        "qualitative research",
+        "writing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S018",
@@ -703,7 +910,9 @@
       "abstract": null,
       "tags": [],
       "skillsNeeded": [],
-      "openToNewMembers": false
+      "openToNewMembers": false,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S019",
@@ -742,9 +951,18 @@
       "currentDraftLink": null,
       "resources": [],
       "abstract": "A claims-data audit of real-world combination-therapy sequencing for a common chronic condition, benchmarked against clinical-guideline recommended sequences.",
-      "tags": ["machine learning", "clinical data", "claims data"],
-      "skillsNeeded": ["Python", "causal inference"],
-      "openToNewMembers": true
+      "tags": [
+        "machine learning",
+        "clinical data",
+        "claims data"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "causal inference"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
     },
     {
       "id": "S020",
@@ -783,9 +1001,112 @@
       "currentDraftLink": null,
       "resources": [],
       "abstract": "A practical field guide, drawn from five years of fielding journalist questions about the lab's statistical results, on how to explain p-values, confidence intervals, and effect sizes without either dumbing them down or getting misquoted.",
-      "tags": ["writing", "science communication", "public engagement"],
-      "skillsNeeded": ["writing", "editing"],
-      "openToNewMembers": true
+      "tags": [
+        "writing",
+        "science communication",
+        "public engagement"
+      ],
+      "skillsNeeded": [
+        "writing",
+        "editing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": null,
+      "teamMembers": []
+    },
+    {
+      "id": "S021",
+      "title": "AI-Assisted Post-Surgical Recovery Check-Ins via Chat",
+      "stage": "Drafting",
+      "status": "🟢 On Track",
+      "priority": "Medium",
+      "targetVenue": null,
+      "targetDeadline": null,
+      "attempts": 0,
+      "currentVenue": null,
+      "deadline": null,
+      "daysLeft": null,
+      "latestDecision": null,
+      "owner": "Dana Okafor",
+      "authors": "Dana Okafor, Théo Laurent",
+      "finalFile": null,
+      "publishedDate": null,
+      "progressPct": 35,
+      "lastUpdated": "2026-08-11",
+      "githubRepo": null,
+      "notes": "Demo example showcasing the WhatsApp contact + team member/LinkedIn features.",
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": "https://docs.google.com/document/d/fake-s021-draft",
+      "resources": [],
+      "abstract": "A lightweight conversational check-in tool that messages patients on WhatsApp after surgery to catch early warning signs before their next appointment, designed with nursing staff rather than for them.",
+      "tags": [
+        "patient engagement",
+        "healthcare AI",
+        "conversational AI"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "clinical workflows"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": "https://wa.me/15551234567",
+      "teamMembers": [
+        {
+          "name": "Dana Okafor",
+          "linkedin": "https://linkedin.com/in/fake-dana-okafor"
+        },
+        {
+          "name": "Théo Laurent",
+          "linkedin": "https://linkedin.com/in/fake-theo-laurent"
+        }
+      ]
+    },
+    {
+      "id": "S022",
+      "title": "Community Data Co-ops for Rare Disease Research",
+      "stage": "Idea",
+      "status": "🟠 Waiting",
+      "priority": "Low",
+      "targetVenue": null,
+      "targetDeadline": null,
+      "attempts": 0,
+      "currentVenue": null,
+      "deadline": null,
+      "daysLeft": null,
+      "latestDecision": null,
+      "owner": "Priya Raman",
+      "authors": "Priya Raman",
+      "finalFile": null,
+      "publishedDate": null,
+      "progressPct": 10,
+      "lastUpdated": "2026-08-09",
+      "githubRepo": null,
+      "notes": "Demo example showcasing the WhatsApp contact + team member/LinkedIn features.",
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": [],
+      "abstract": "Exploring a community-governed data co-op model where rare-disease patient communities collectively decide how their pooled health data gets used for research, instead of a single institution holding all the keys.",
+      "tags": [
+        "data governance",
+        "rare disease",
+        "community health"
+      ],
+      "skillsNeeded": [
+        "policy analysis",
+        "community organizing"
+      ],
+      "openToNewMembers": true,
+      "whatsapp": "https://wa.me/15559876543",
+      "teamMembers": [
+        {
+          "name": "Priya Raman",
+          "linkedin": "https://linkedin.com/in/fake-priya-raman"
+        }
+      ]
     }
   ],
   "team": [
@@ -848,6 +1169,24 @@
       "role": "PhD Student",
       "focusArea": "Science communication & survey research",
       "currentPapers": 3,
+      "email": null,
+      "availability": null,
+      "publicContactOk": false
+    },
+    {
+      "name": "Dana Okafor",
+      "role": "PhD Student",
+      "focusArea": "Patient-facing conversational tools",
+      "currentPapers": 1,
+      "email": null,
+      "availability": null,
+      "publicContactOk": false
+    },
+    {
+      "name": "Théo Laurent",
+      "role": "Research Assistant",
+      "focusArea": "Patient-facing conversational tools",
+      "currentPapers": 1,
       "email": null,
       "availability": null,
       "publicContactOk": false

@@ -1,4 +1,93 @@
 {
   "generatedAt": "2026-08-14T07:28:53",
-  "papers": []
+  "papers": [
+    {
+      "id": "P001",
+      "title": "Instruments of Inquiry: Rethinking Clinical Measurement for the Age of AI",
+      "abstract": "A look at how clinical measurement tools and instruments should be rethought for an era where AI increasingly mediates diagnosis and monitoring, examining where today's measurement standards fall short.",
+      "tags": [
+        "clinical measurement",
+        "healthcare AI",
+        "diagnostics"
+      ],
+      "skillsNeeded": [
+        "clinical research",
+        "writing"
+      ],
+      "stage": "In progress (internal review)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Mohammad",
+        "email": "criticaldata-lab@mit.edu"
+      },
+      "whatsapp": null,
+      "teamMembers": []
+    },
+    {
+      "id": "P024",
+      "title": "Resetting the Compass: Toward Human-Centered AI Design for Older Adults",
+      "abstract": "A human-centered design framework for AI tools built for older adults, focused on usability, trust, and dignity rather than technical capability alone.",
+      "tags": [
+        "human-centered design",
+        "aging",
+        "healthcare AI"
+      ],
+      "skillsNeeded": [
+        "UX research",
+        "writing"
+      ],
+      "stage": "In progress (internal review)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": null,
+        "email": "criticaldata-lab@mit.edu"
+      },
+      "whatsapp": null,
+      "teamMembers": []
+    },
+    {
+      "id": "P028",
+      "title": "The Crystal Ball Problem: Why Prediction Models Are Not Guaranteed to Improve Health Outcomes",
+      "abstract": "A critical look at why accurate clinical prediction models don't automatically translate into better patient outcomes, and what's missing between a good model and a good decision.",
+      "tags": [
+        "predictive modeling",
+        "clinical decision-making",
+        "healthcare AI"
+      ],
+      "skillsNeeded": [
+        "biostatistics",
+        "clinical informatics"
+      ],
+      "stage": "Submitted, under review",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Ryohei",
+        "email": "criticaldata-lab@mit.edu"
+      },
+      "whatsapp": null,
+      "teamMembers": []
+    },
+    {
+      "id": "P029",
+      "title": "ARCAI: A Supervised Multi-Agent Architecture for Autonomous Clinical Research Orchestration",
+      "abstract": "A multi-agent AI architecture for orchestrating steps of the clinical research pipeline under human supervision, from literature review to draft analysis.",
+      "tags": [
+        "multi-agent systems",
+        "clinical research",
+        "machine learning"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "agent orchestration"
+      ],
+      "stage": "In progress (drafting)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Mohammad",
+        "email": "criticaldata-lab@mit.edu"
+      },
+      "whatsapp": null,
+      "teamMembers": []
+    }
+  ]
 }

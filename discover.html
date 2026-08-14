@@ -176,9 +176,21 @@
     font-weight:600;
   }
   .pill-group-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-right:6px;}
+  .team-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;}
+  .team-chip{
+    font-size:.78rem;
+    padding:3px 10px;
+    border-radius:999px;
+    background:var(--panel);
+    color:var(--mit-charcoal);
+    border:1px solid var(--line);
+    text-decoration:none;
+  }
+  a.team-chip{font-weight:600;color:var(--teal);border-color:var(--teal);}
+  a.team-chip:hover{background:var(--teal-bg);}
+  .contact-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
   .interested-btn{
     display:inline-block;
-    margin-top:12px;
     background:var(--mit-red);
     color:#fff;
     border:none;
@@ -190,6 +202,19 @@
     text-decoration:none;
   }
   .interested-btn:hover{background:#8a1a2b;}
+  .whatsapp-btn{
+    display:inline-block;
+    background:#fff;
+    color:#1d8a4c;
+    border:1px solid #1d8a4c;
+    border-radius:6px;
+    padding:9px 18px;
+    font-size:.86rem;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .whatsapp-btn:hover{background:#e6f6ec;}
 
   .empty-state{
     text-align:center;
@@ -352,6 +377,8 @@
           stage: publicStageLabel(p),
           openToNewMembers: true,
           contact: { name: firstName, email: GENERIC_LAB_EMAIL },
+          whatsapp: p.whatsapp || null,
+          teamMembers: p.teamMembers || [],
           _demoLocal: true
         };
       });
@@ -435,6 +462,21 @@
     var mailSubject = encodeURIComponent("Interested in: " + p.title);
     var mailHref = "mailto:" + encodeURIComponent(p.contact && p.contact.email || "") + "?subject=" + mailSubject;
 
+    var teamHtml = "";
+    if (p.teamMembers && p.teamMembers.length) {
+      teamHtml = '<div class="team-row"><span class="pill-group-label">Team</span>' +
+        p.teamMembers.map(function(m){
+          return m.linkedin
+            ? '<a class="team-chip" href="' + escapeHtml(m.linkedin) + '" target="_blank" rel="noopener">' + escapeHtml(m.name) + '</a>'
+            : '<span class="team-chip">' + escapeHtml(m.name) + '</span>';
+        }).join("") + '</div>';
+    }
+
+    var contactRow = '<div class="contact-row">' +
+      '<a class="interested-btn" href="' + mailHref + '" data-interested-link>I’m interested</a>' +
+      (p.whatsapp ? '<a class="whatsapp-btn" href="' + escapeHtml(p.whatsapp) + '" target="_blank" rel="noopener" data-whatsapp-link>💬 WhatsApp</a>' : '') +
+      '</div>';
+
     el.innerHTML =
       '<h3>' + escapeHtml(p.title) + '</h3>' +
       '<span class="stage-label">' + escapeHtml(p.stage || "") + '</span>' +
@@ -444,7 +486,8 @@
         : '<p class="abstract empty">No summary yet — reach out to ask what this project is about.</p>') +
       pillsHtml("Tags", p.tags, queryWords) +
       pillsHtml("Skills needed", p.skillsNeeded, queryWords) +
-      '<a class="interested-btn" href="' + mailHref + '" data-interested-link>I’m interested</a>';
+      teamHtml +
+      contactRow;
 
     return el;
   }

@@ -142,17 +142,17 @@ function assert(cond, msg) {
   await page.waitForTimeout(200);
   const sampleKpi = await page.$$eval('.kpi-card .num', els => els.map(e => e.textContent.trim()));
   console.log('Sample data KPI numbers:', sampleKpi);
-  assert(sampleKpi[0] === '20', 'Sample data Total = 20, got ' + sampleKpi[0]);
-  assert(sampleKpi[6] === '13', 'Sample data Open to New Members = 13, got ' + sampleKpi[6]);
+  assert(sampleKpi[0] === '22', 'Sample data Total = 22, got ' + sampleKpi[0]);
+  assert(sampleKpi[6] === '15', 'Sample data Open to New Members = 15, got ' + sampleKpi[6]);
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_sample_data.png'), fullPage: true });
 
-  // The real data.json has 0 open-to-new-members papers right now, so the
-  // "here's an actual badge" screenshot has to come from sample data —
-  // click the KPI so the visible cards actually carry the badge.
+  // Sample data has more open-to-new-members variety than real data right
+  // now (15 vs 4), so it's the better source for a "here's an actual
+  // badge" screenshot — click the KPI so the visible cards carry it.
   await (await page.$$('.kpi-card'))[6].click();
   await page.waitForTimeout(150);
   const sampleOpenBadges = await page.$$eval('.open-badge', els => els.length);
-  assert(sampleOpenBadges === 13, 'Sample data Open to New Members filter shows 13 badged cards, got ' + sampleOpenBadges);
+  assert(sampleOpenBadges === 15, 'Sample data Open to New Members filter shows 15 badged cards, got ' + sampleOpenBadges);
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_open_badge_sample.png'), fullPage: true });
 
   assert(sampleConsoleErrors.length === 0, 'No console errors on sample data, got: ' + JSON.stringify(sampleConsoleErrors));

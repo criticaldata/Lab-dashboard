@@ -36,6 +36,7 @@ node test/test_demo_mode.js       # inline editing: every field type, persistenc
 node test/test_create_delete.js   # add/delete a project entirely in demo mode, real-paper hide vs. reset
 node test/test_discover.js        # Project Discovery page: filtering, matching, mailto, network isolation
 node test/test_discover_bridge.js # demo-created open projects echoing through to discover.html, same-browser only
+node test/test_layout.js          # card grid, left/right rails, filter combining, WhatsApp/team fields, breakpoints
 ```
 
 Or all of them at once: `npm test` from inside `test/` (with the server
@@ -97,3 +98,20 @@ not meant to be committed).
   safety check — a **different browser context** (a stand-in for another
   visitor) never sees it, proving this is a same-browser localStorage echo
   and not an actual publish. Desktop and mobile.
+- **`test_layout.js`** — the card-grid/rails redesign: the paper list is a
+  real multi-column CSS grid (not a single wide column) with visible
+  border/radius/padding/shadow on every card and a hover lift; an expanded
+  card's detail view spans the *entire* grid width instead of squeezing
+  into one narrow column; the left-rail stage/status/open-to-new-members
+  filter chips actually filter, combine correctly with the search box and
+  the KPI strip (AND, not OR — narrows or holds, never widens), toggle
+  off on a second click the same way a KPI card does, and a 0-count chip
+  renders disabled instead of a clickable dead end; the right-rail
+  "Upcoming deadlines" widget's items clear every filter and jump straight
+  to that paper's detail view; the demo-mode banner is dismissible and
+  stays dismissed across a reload within the session; the new WhatsApp
+  contact link and team-member/LinkedIn fields round-trip through create →
+  detail view on `index.html` and render correctly (as a `wa.me` button
+  and LinkedIn chips) on `discover.html`; and full-page screenshots at
+  desktop (1680px, 3 columns), tablet (900px, rails collapsed/stacked),
+  and mobile (390px) with no horizontal overflow at any of them.

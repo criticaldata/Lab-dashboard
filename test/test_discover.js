@@ -35,14 +35,14 @@ function assert(cond, msg) {
   await page.waitForTimeout(200);
 
   const cardCount = await page.$$eval('.project-card', els => els.length);
-  assert(cardCount === 13, 'Only the 13 openToNewMembers fixture papers appear, got ' + cardCount);
+  assert(cardCount === 15, 'Only the 15 openToNewMembers fixture papers appear, got ' + cardCount);
 
   const titles = await page.$$eval('.project-card h3', els => els.map(e => e.textContent));
   console.log('Titles shown:', titles);
   assert(!titles.some(t => t.includes('Overdue') || t.includes('Two Submission') || t.includes('Revise') || t.includes('Accepted') || t.includes('Published') || t.includes('Benchmarking Large Language') || t.includes("Lab's Own Data Retention")), 'None of the closed (openToNewMembers:false) papers appear');
 
   const resultCountText = await page.$eval('#result-count', el => el.textContent);
-  assert(resultCountText.includes('13 open project'), 'Result count reflects 13 open projects, got: ' + resultCountText);
+  assert(resultCountText.includes('15 open project'), 'Result count reflects 15 open projects, got: ' + resultCountText);
 
   const noteText = await page.$eval('.matching-note', el => el.textContent);
   assert(noteText.includes('Basic keyword matching'), 'Page plainly labels the matching as basic/temporary');
@@ -78,7 +78,7 @@ function assert(cond, msg) {
   assert(orderedTitles2[0].includes('Out for Review'), 'The clinical-trials paper (S005) sorts first for that query, got: ' + orderedTitles2[0]);
 
   // A tag match should outrank a same-count-of-words abstract-only match —
-  // "AI" appears in two projects' tags (S012, S015) and nowhere else; a
+  // "AI" appears in several projects' tags/titles (S012, S015, S021); a
   // naive substring version of this matcher used to also false-positive
   // match "AI" inside "claims" (S019) — confirm that's gone.
   await page.fill('#interest-input', "I'm interested in AI");
@@ -89,11 +89,11 @@ function assert(cond, msg) {
   assert(!aiBestMatches.some(t => t.includes('Claims-Data Audit')), 'The claims-data paper is NOT flagged as a best-match for an "AI" query (no more false-positive substring match), got best-matches: ' + JSON.stringify(aiBestMatches));
   assert(aiBestMatches.some(t => t.includes('AI Hype Cycles')) && aiBestMatches.some(t => t.includes('Should AI Clinicians')), 'Both genuinely AI-tagged projects ARE flagged as best-matches, got: ' + JSON.stringify(aiBestMatches));
 
-  // A nonsense query should still show all 13 (sorted, all score 0) rather than an empty state
+  // A nonsense query should still show all 15 (sorted, all score 0) rather than an empty state
   await page.fill('#interest-input', 'xyznonsensequery');
   await page.waitForTimeout(150);
   const cardCountNonsense = await page.$$eval('.project-card', els => els.length);
-  assert(cardCountNonsense === 13, 'A query matching nothing still shows all open projects (sorted, not filtered/hidden), got ' + cardCountNonsense);
+  assert(cardCountNonsense === 15, 'A query matching nothing still shows all open projects (sorted, not filtered/hidden), got ' + cardCountNonsense);
   const nonsenseCountText = await page.$eval('#result-count', el => el.textContent);
   assert(nonsenseCountText.includes('No close matches'), 'No-match state says so plainly instead of silently showing an unsorted list, got: ' + nonsenseCountText);
 
@@ -104,13 +104,13 @@ function assert(cond, msg) {
   const stopwordCountText = await page.$eval('#result-count', el => el.textContent);
   assert(stopwordCountText.includes("didn't have enough to go on"), 'An all-stopword query gets its own plain-language explanation, got: ' + stopwordCountText);
   const cardCountStopword = await page.$$eval('.project-card', els => els.length);
-  assert(cardCountStopword === 13, 'All-stopword query still shows all 13 open projects, got ' + cardCountStopword);
+  assert(cardCountStopword === 15, 'All-stopword query still shows all 15 open projects, got ' + cardCountStopword);
 
   // Clear query -> back to original order/count
   await page.fill('#interest-input', '');
   await page.waitForTimeout(150);
   const cardCountCleared = await page.$$eval('.project-card', els => els.length);
-  assert(cardCountCleared === 13, 'Clearing the query still shows all 13');
+  assert(cardCountCleared === 15, 'Clearing the query still shows all 15');
 
   assert(consoleErrors.length === 0, 'No console errors on discover.html, got: ' + JSON.stringify(consoleErrors));
 
