@@ -28,7 +28,11 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s001-draft",
       "resources": [
         { "label": "Related dataset", "url": "https://example.org/datasets/s001" }
-      ]
+      ],
+      "abstract": "An early-stage look at how community health workers describe unmet needs in their own words, and whether that language differs systematically from what standard intake forms capture.",
+      "tags": ["health equity", "qualitative research", "community health"],
+      "skillsNeeded": ["interview skills", "writing"],
+      "openToNewMembers": true
     },
     {
       "id": "S002",
@@ -60,7 +64,11 @@
       "resources": [
         { "label": "Shared Drive folder", "url": "https://drive.google.com/drive/folders/fake-s002" },
         { "label": "Slack channel", "url": "https://labworkspace.slack.com/channels/fake-s002" }
-      ]
+      ],
+      "abstract": "A machine learning approach to flagging which public health policy interventions are most likely to widen, rather than close, outcome gaps between neighborhoods — trained on a decade of city-level program data.",
+      "tags": ["machine learning", "public health policy", "urban health"],
+      "skillsNeeded": ["Python", "policy analysis"],
+      "openToNewMembers": true
     },
     {
       "id": "S003",
@@ -89,7 +97,11 @@
         { "date": "2026-07-10T10:00:00", "link": "https://zoom.us/j/fake-s003-review", "notes": "Discussed why the internal-review deadline was missed." }
       ],
       "currentDraftLink": "https://www.overleaf.com/project/fake-s003",
-      "resources": []
+      "resources": [],
+      "abstract": "A retrospective review of internal-review turnaround times across the lab's last two years of submissions, and what that implies for realistic deadline-setting going forward.",
+      "tags": ["research operations", "lab process"],
+      "skillsNeeded": ["data analysis"],
+      "openToNewMembers": false
     },
     {
       "id": "S004",
@@ -137,7 +149,11 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s004-draft",
       "resources": [
         { "label": "Reviewer feedback doc", "url": "https://docs.google.com/document/d/fake-s004-feedback" }
-      ]
+      ],
+      "abstract": "Training junior lab members to red-team each other's AI safety claims before submission, using a structured double-agent review protocol.",
+      "tags": ["AI safety", "mentorship", "peer review"],
+      "skillsNeeded": ["critical writing"],
+      "openToNewMembers": false
     },
     {
       "id": "S005",
@@ -176,7 +192,11 @@
       "currentDraftLink": null,
       "resources": [
         { "label": "Submission portal", "url": "https://example.org/portal/fake-s005" }
-      ]
+      ],
+      "abstract": "A biostatistics-heavy re-analysis of a published clinical trial's subgroup effects, testing whether the original result holds under a pre-registered alternative model.",
+      "tags": ["clinical trials", "biostatistics"],
+      "skillsNeeded": ["R", "statistics"],
+      "openToNewMembers": true
     },
     {
       "id": "S006",
@@ -218,7 +238,11 @@
       "resources": [
         { "label": "Reviewer comments", "url": "https://docs.google.com/document/d/fake-s006-comments" },
         { "label": "Response letter draft", "url": "https://docs.google.com/document/d/fake-s006-response" }
-      ]
+      ],
+      "abstract": "Revising a submitted manuscript on why uncertainty bounds alone can't substitute for institutional readiness when deploying healthcare AI.",
+      "tags": ["healthcare AI", "uncertainty quantification"],
+      "skillsNeeded": ["technical writing"],
+      "openToNewMembers": false
     },
     {
       "id": "S007",
@@ -259,7 +283,11 @@
       "currentDraftLink": "https://docs.google.com/document/d/fake-s007-cameraready",
       "resources": [
         { "label": "Camera-ready checklist", "url": "https://example.org/checklist/fake-s007" }
-      ]
+      ],
+      "abstract": "An accepted paper on human-centered AI design principles for older adults, now in camera-ready preparation.",
+      "tags": ["human-centered design", "aging"],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "S008",
@@ -300,7 +328,11 @@
       "currentDraftLink": null,
       "resources": [
         { "label": "Published article", "url": "https://example.org/journal/fake-s008-published" }
-      ]
+      ],
+      "abstract": "A published account of how storytelling and provenance tracking can rebuild scientific rigor in an AI-saturated publishing environment.",
+      "tags": ["scientific rigor", "provenance", "AI"],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     }
   ],
   "team": [
@@ -309,8 +341,9 @@
       "role": "Researcher",
       "focusArea": "Fixture data for testing",
       "currentPapers": 3,
-      "email": null,
-      "availability": null
+      "email": "test-owner-a@example.org",
+      "availability": null,
+      "publicContactOk": true
     },
     {
       "name": "Test Owner B",
@@ -318,7 +351,8 @@
       "focusArea": "Fixture data for testing",
       "currentPapers": 3,
       "email": null,
-      "availability": null
+      "availability": null,
+      "publicContactOk": false
     },
     {
       "name": "Test Owner C",
@@ -326,7 +360,8 @@
       "focusArea": "Fixture data for testing",
       "currentPapers": 2,
       "email": null,
-      "availability": null
+      "availability": null,
+      "publicContactOk": false
     }
   ]
 }

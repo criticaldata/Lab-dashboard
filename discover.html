@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discover Projects — MIT Critical Data</title>
+<link rel="icon" href="assets/favicon.ico">
+<style>
+  :root{
+    --mit-red:#A31F34;
+    --mit-charcoal:#333333;
+    --ink:#1c1c1c;
+    --muted:#6b6b6b;
+    --line:#e3e1de;
+    --bg:#ffffff;
+    --panel:#faf9f7;
+    --teal:#0f7a7a;
+    --teal-bg:#e3f4f4;
+    --focus:#2563eb;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.5;
+  }
+  a{color:var(--mit-red);}
+  button{font:inherit;}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 64px;}
+
+  /* Distinct from index.html on purpose: no red top rule, no dense KPI
+     strip, no Edit affordances anywhere — this is the light, public page. */
+  header.site{
+    padding:24px 0 20px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+  }
+  header.site .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header.site .brand{display:flex;align-items:center;gap:14px;}
+  header.site img.logo{height:36px;width:auto;display:block;}
+  header.site h1{font-size:1.2rem;margin:0;color:var(--mit-charcoal);font-weight:700;}
+  header.site p.tagline{margin:1px 0 0;color:var(--muted);font-size:.82rem;}
+  header.site nav a{
+    font-size:.86rem;
+    font-weight:600;
+    color:var(--mit-red);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  header.site nav a:hover{text-decoration:underline;}
+
+  #error-banner{
+    display:none;
+    max-width:900px;
+    margin:0 auto 20px;
+    padding:14px 18px;
+    background:#fbe4e8;
+    border:1px solid var(--mit-red);
+    color:var(--mit-charcoal);
+    border-radius:6px;
+    font-size:.92rem;
+  }
+
+  .hero{
+    padding:36px 0 28px;
+    text-align:center;
+  }
+  .hero h2{
+    margin:0 0 8px;
+    font-size:1.6rem;
+    color:var(--mit-charcoal);
+  }
+  .hero p{
+    margin:0 auto 20px;
+    max-width:52ch;
+    color:var(--muted);
+    font-size:.95rem;
+  }
+  .search-box{
+    max-width:520px;
+    margin:0 auto;
+  }
+  .search-box input{
+    width:100%;
+    padding:14px 18px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    font-size:1rem;
+    background:var(--panel);
+    color:var(--ink);
+  }
+  .search-box input:focus{outline:2px solid var(--focus);outline-offset:2px;}
+  .matching-note{
+    margin-top:10px;
+    font-size:.76rem;
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  #result-count{
+    font-size:.84rem;
+    color:var(--muted);
+    margin:24px 0 12px;
+  }
+
+  .project-list{display:flex;flex-direction:column;gap:14px;}
+  .project-card{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+    background:#fff;
+    transition:border-color .12s;
+  }
+  .project-card.best-match{border-color:var(--teal);}
+  .project-card h3{
+    margin:0 0 4px;
+    font-size:1.08rem;
+    color:var(--mit-charcoal);
+  }
+  .project-card .stage-label{
+    display:inline-block;
+    font-size:.74rem;
+    font-weight:600;
+    color:var(--teal);
+    background:var(--teal-bg);
+    padding:2px 10px;
+    border-radius:999px;
+    margin-bottom:10px;
+  }
+  .project-card .abstract{
+    font-size:.9rem;
+    color:var(--ink);
+    margin:0 0 12px;
+  }
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .pill{
+    font-size:.76rem;
+    padding:3px 10px;
+    border-radius:999px;
+    background:var(--panel);
+    color:var(--muted);
+    border:1px solid var(--line);
+  }
+  .pill.match{
+    background:var(--teal-bg);
+    color:var(--teal);
+    border-color:var(--teal);
+    font-weight:600;
+  }
+  .pill-group-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-right:6px;}
+  .interested-btn{
+    display:inline-block;
+    margin-top:12px;
+    background:var(--mit-red);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:9px 18px;
+    font-size:.86rem;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .interested-btn:hover{background:#8a1a2b;}
+
+  .empty-state{
+    text-align:center;
+    padding:48px 20px;
+    color:var(--muted);
+  }
+
+  footer.site{
+    margin-top:48px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    font-size:.78rem;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  @media (max-width:520px){
+    header.site .wrap{flex-direction:column;align-items:flex-start;}
+    .hero h2{font-size:1.3rem;}
+    .project-card{padding:16px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand">
+      <img class="logo" src="assets/mit-critical-data-logo.svg" alt="MIT Critical Data">
+      <div>
+        <h1>Lab Ledger — Discover</h1>
+        <p class="tagline">Open projects looking for new collaborators.</p>
+      </div>
+    </div>
+    <nav><a href="index.html">Lab member? Go to full dashboard →</a></nav>
+  </div>
+</header>
+
+<div id="error-banner" role="alert"></div>
+
+<main class="wrap">
+  <div class="hero">
+    <h2>Find a project that fits you</h2>
+    <p>Tell us what you're interested in and we'll surface the lab's projects that are currently looking for new collaborators.</p>
+    <div class="search-box">
+      <input type="search" id="interest-input" placeholder="e.g. I like machine learning and public health policy" aria-label="What are you interested in?">
+    </div>
+    <p class="matching-note">Basic keyword matching for now — this will become an AI-powered recommendation soon.</p>
+  </div>
+
+  <div id="result-count"></div>
+  <div class="project-list" id="project-list"></div>
+</main>
+
+<div class="wrap"><footer class="site">Lab Ledger — MIT Critical Data. Every project here is one the lab has explicitly opened to new members — nothing internal (deadlines, drafts, meeting notes) is on this page. <a href="index.html">Full dashboard for lab members →</a></footer></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var state = { papers: [], query: "" };
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function showError(message){
+    var el = document.getElementById("error-banner");
+    el.textContent = message;
+    el.style.display = "block";
+  }
+
+  // Common connective words filtered out so they don't cause noisy
+  // substring false-positives (e.g. "and" matching inside "statistics" via
+  // shared letters isn't a real signal). Short tokens (<3 chars) are
+  // dropped for the same reason — "i" would otherwise "match" almost any
+  // word in the corpus.
+  var STOPWORDS = ["the","and","for","are","but","not","you","all","can",
+    "her","was","one","our","out","day","get","has","him","his","how",
+    "man","new","now","old","see","two","way","who","did","its","let",
+    "say","she","too","use","like","that","this","from","have","with",
+    "about","into","just","also","been","being","them","they","what",
+    "when","your","would","could","should"];
+
+  function tokenize(text){
+    var words = (text || "").toLowerCase().match(/[a-z0-9]+/g) || [];
+    return words.filter(function(w){ return w.length >= 3 && STOPWORDS.indexOf(w) === -1; });
+  }
+
+  function paperSearchText(p){
+    return [p.title, p.abstract, (p.tags || []).join(" "), (p.skillsNeeded || []).join(" ")].join(" ").toLowerCase();
+  }
+
+  // Basic keyword-overlap scoring: one point per distinct query word found
+  // anywhere in the paper's title/abstract/tags/skills. No stemming, no ML
+  // — see the on-page note. Good enough to sort "clearly relevant" above
+  // "clearly not," which is all this MVP promises.
+  function scoreMatch(queryWords, p){
+    if (queryWords.length === 0) return 0;
+    var text = paperSearchText(p);
+    var score = 0;
+    queryWords.forEach(function(w){ if (text.indexOf(w) !== -1) score++; });
+    return score;
+  }
+
+  function pillsHtml(label, values, queryWords){
+    if (!values || values.length === 0) return "";
+    var items = values.map(function(v){
+      var isMatch = queryWords.some(function(w){ return v.toLowerCase().indexOf(w) !== -1; });
+      return '<span class="pill' + (isMatch ? ' match' : '') + '">' + escapeHtml(v) + '</span>';
+    }).join("");
+    return '<div class="pill-row"><span class="pill-group-label">' + escapeHtml(label) + '</span>' + items + '</div>';
+  }
+
+  function renderProjectCard(p, score, queryWords){
+    var el = document.createElement("div");
+    el.className = "project-card" + (score > 0 ? " best-match" : "");
+
+    var mailSubject = encodeURIComponent("Interested in: " + p.title);
+    var mailHref = "mailto:" + encodeURIComponent(p.contact && p.contact.email || "") + "?subject=" + mailSubject;
+
+    el.innerHTML =
+      '<h3>' + escapeHtml(p.title) + '</h3>' +
+      '<span class="stage-label">' + escapeHtml(p.stage || "") + '</span>' +
+      (p.abstract ? '<p class="abstract">' + escapeHtml(p.abstract) + '</p>' : '') +
+      pillsHtml("Tags", p.tags, queryWords) +
+      pillsHtml("Skills needed", p.skillsNeeded, queryWords) +
+      '<a class="interested-btn" href="' + mailHref + '" data-interested-link>I’m interested</a>';
+
+    return el;
+  }
+
+  function render(){
+    var list = document.getElementById("project-list");
+    var count = document.getElementById("result-count");
+    var queryWords = tokenize(state.query);
+
+    var scored = state.papers.map(function(p){ return { paper: p, score: scoreMatch(queryWords, p) }; });
+    // Stable sort: ties keep their original (spreadsheet) order.
+    scored.sort(function(a, b){ return b.score - a.score; });
+
+    count.textContent = state.papers.length + (state.papers.length === 1 ? " open project" : " open projects") +
+      (queryWords.length > 0 ? " · sorted by match to your interests" : "");
+
+    list.innerHTML = "";
+    if (scored.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "No open projects right now — check back soon, or go say hi to a lab member.";
+      list.appendChild(empty);
+      return;
+    }
+    scored.forEach(function(item){ list.appendChild(renderProjectCard(item.paper, item.score, queryWords)); });
+  }
+
+  function dataUrl(){
+    var params = new URLSearchParams(window.location.search);
+    return params.get("data") || "data.public.json";
+  }
+
+  function init(){
+    document.getElementById("interest-input").addEventListener("input", function(e){
+      state.query = e.target.value;
+      render();
+    });
+
+    // This page has exactly one data dependency, and it's the public
+    // allowlisted file — there is no code path here that ever touches
+    // data.json. See README.md's "Project Discovery" section.
+    fetch(dataUrl())
+      .then(function(res){
+        if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + dataUrl());
+        return res.json();
+      })
+      .then(function(data){
+        state.papers = Array.isArray(data.papers) ? data.papers : [];
+        render();
+      })
+      .catch(function(err){
+        console.error("Lab Ledger Discover: failed to load data.", err);
+        showError("Couldn't load " + dataUrl() + " — check the console. (This page must be served over http://, not opened as a file:// URL.)");
+        state.papers = [];
+        render();
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>

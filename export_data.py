@@ -40,6 +40,12 @@ TEAM_HEADER_ROW = 3
 MEETINGS_HEADER_ROW = 3
 RESOURCES_HEADER_ROW = 3
 
+# Placeholder shared-inbox address used on data.public.json whenever a
+# paper's owner hasn't been explicitly marked OK to show their real email
+# (Team Directory's "Public Contact OK" column) — see build_public_dataset()
+# below. Change this to your lab's real shared inbox before publishing.
+GENERIC_LAB_EMAIL = "criticaldata-lab@mit.edu"
+
 
 def cell_value(v):
     if isinstance(v, (datetime, date)):
@@ -66,6 +72,19 @@ def as_int(v, default=0):
         return int(float(v))
     except (TypeError, ValueError):
         return default
+
+
+def parse_list_cell(v):
+    """'clinical ML, causal inference, EHR data' -> ['clinical ML', 'causal inference', 'EHR data']"""
+    if not v:
+        return []
+    return [part.strip() for part in str(v).split(",") if part.strip()]
+
+
+def parse_bool_cell(v):
+    if v is None:
+        return False
+    return str(v).strip().lower() in ("yes", "true", "y", "1")
 
 
 def parse_meeting_dt(s):
@@ -133,6 +152,84 @@ def load_resources(wb):
             continue
         by_paper.setdefault(title, []).append({"label": row.get("Label") or url, "url": url})
     return by_paper
+
+
+def public_stage_label(paper):
+    """A plain-language stage label safe to show prospective members —
+    deliberately coarser than the internal emoji status badge, which can
+    say things like "Needs Attention" or "Overdue" that read badly out of
+    context and aren't this audience's business anyway."""
+    if paper.get("publishedDate"):
+        return "Published"
+    if (paper.get("attempts") or 0) > 0:
+        return "Submitted, under review"
+    stage = paper.get("stage")
+    if stage == "Drafting":
+        return "In progress (drafting)"
+    if stage == "Internal Review":
+        return "In progress (internal review)"
+    if stage == "Idea":
+        return "Early stage / idea"
+    if stage == "On Hold":
+        return "On hold"
+    return "Getting started"
+
+
+# The complete set of fields data.public.json's paper objects may ever
+# carry. This is enforced two ways: build_public_dataset() below only ever
+# constructs objects with exactly these keys (an ALLOWLIST — everything on
+# the internal `papers` dict is excluded by default, not included by
+# default), and worker-phase2-paused aside, a Playwright test asserts this
+# exact key set on every run — see the "field-allowlist" test in
+# test/ for what fails if this ever drifts.
+PUBLIC_PAPER_FIELDS = ["id", "title", "abstract", "tags", "skillsNeeded", "stage", "openToNewMembers", "contact"]
+
+
+def build_public_dataset(papers, team):
+    """Builds data.public.json's papers list for the public Project
+    Discovery page (discover.html).
+
+    Two safety properties, both deliberate:
+      1. Only papers with openToNewMembers=True are included AT ALL — this
+         is filtered here, server-side, at export time, not left to
+         discover.html's JS to filter client-side. A paper the lab hasn't
+         marked open never appears in the file discover.html fetches, so
+         there's nothing for a curious dev-tools user to find.
+      2. Every field below is an explicit, positive inclusion. Nothing
+         else on a paper — venue, deadline, notes, meeting links, draft
+         links, resources, submission history, priority, or a raw personal
+         email — is ever written here, because build_public_dataset()
+         simply never reads those fields, not because they're filtered out
+         after the fact.
+
+    Contact info: an owner's real email is only used if their Team
+    Directory row has "Public Contact OK" set — otherwise (the default)
+    every paper's contact is the generic lab inbox, never a personal
+    address pulled raw off the roster.
+    """
+    team_by_name = {m["name"]: m for m in team}
+    public_papers = []
+    for p in papers:
+        if not p.get("openToNewMembers"):
+            continue
+        owner = p.get("owner")
+        member = team_by_name.get(owner) if owner else None
+        first_name = owner.split(" ")[0] if owner else None
+        if member and member.get("publicContactOk") and member.get("email"):
+            email = member["email"]
+        else:
+            email = GENERIC_LAB_EMAIL
+        public_papers.append({
+            "id": p["id"],
+            "title": p["title"],
+            "abstract": p.get("abstract"),
+            "tags": p.get("tags") or [],
+            "skillsNeeded": p.get("skillsNeeded") or [],
+            "stage": public_stage_label(p),
+            "openToNewMembers": True,
+            "contact": {"name": first_name, "email": email},
+        })
+    return public_papers
 
 
 def reconcile_papers(fresh_papers, previous_papers_by_id, spreadsheet_modified):
@@ -241,6 +338,10 @@ def main():
             "pastMeetings": meetings["past"],
             "currentDraftLink": row.get("Current Draft Link"),
             "resources": resources_by_paper.get(title, []),
+            "abstract": row.get("Abstract"),
+            "tags": parse_list_cell(row.get("Tags")),
+            "skillsNeeded": parse_list_cell(row.get("Skills Needed")),
+            "openToNewMembers": parse_bool_cell(row.get("Open to New Members")),
         })
 
     team = []
@@ -257,6 +358,7 @@ def main():
             "currentPapers": as_int(row.get("Current Papers")),
             "email": row.get("Email"),
             "availability": row.get("Availability"),
+            "publicContactOk": parse_bool_cell(row.get("Public Contact OK")),
         })
 
     previous_papers_by_id = {}
@@ -284,6 +386,17 @@ def main():
         f.write("\n")
 
     print(f"Wrote data.json: {len(papers)} papers, {len(team)} team members.")
+
+    public_papers = build_public_dataset(papers, team)
+    public_data = {
+        "generatedAt": data["generatedAt"],
+        "papers": public_papers,
+    }
+    with open("data.public.json", "w", encoding="utf-8") as f:
+        json.dump(public_data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+    print(f"Wrote data.public.json: {len(public_papers)} paper(s) open to new members.")
 
 
 if __name__ == "__main__":

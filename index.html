@@ -48,10 +48,14 @@
   header.site .wrap{
     display:flex;
     align-items:center;
+    justify-content:space-between;
     gap:16px;
     flex-wrap:wrap;
   }
+  header.site .brand{display:flex;align-items:center;gap:16px;}
   header.site img.logo{height:40px;width:auto;display:block;}
+  header.site nav a{font-size:.86rem;font-weight:600;color:var(--mit-red);text-decoration:none;white-space:nowrap;}
+  header.site nav a:hover{text-decoration:underline;}
   header.site h1{
     font-size:1.35rem;
     margin:0;
@@ -548,6 +552,7 @@
     }
     body{font-size:11pt;}
     .paper-title-btn{color:inherit;cursor:default;}
+    header.site nav,
     .controls,
     #result-count,
     #demo-banner,
@@ -587,11 +592,14 @@
 
 <header class="site">
   <div class="wrap">
-    <img class="logo" src="assets/mit-critical-data-logo.svg" alt="MIT Critical Data">
-    <div>
-      <h1>Lab Ledger</h1>
-      <p class="tagline">Every paper, what stage it's at, and its full submission history.</p>
+    <div class="brand">
+      <img class="logo" src="assets/mit-critical-data-logo.svg" alt="MIT Critical Data">
+      <div>
+        <h1>Lab Ledger</h1>
+        <p class="tagline">Every paper, what stage it's at, and its full submission history.</p>
+      </div>
     </div>
+    <nav><a href="discover.html">Browse open projects →</a></nav>
   </div>
 </header>
 

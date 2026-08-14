@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-14T07:02:12",
+  "generatedAt": "2026-08-14T07:28:53",
   "papers": [
     {
       "id": "P001",
@@ -26,7 +26,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P002",
@@ -53,7 +57,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P003",
@@ -80,7 +88,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P004",
@@ -126,7 +138,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P005",
@@ -153,7 +169,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P006",
@@ -190,7 +210,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P007",
@@ -217,7 +241,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P008",
@@ -244,7 +272,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P009",
@@ -271,7 +303,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P010",
@@ -298,7 +334,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P011",
@@ -325,7 +365,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P012",
@@ -352,7 +396,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P013",
@@ -379,7 +427,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P014",
@@ -406,7 +458,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P015",
@@ -433,7 +489,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P016",
@@ -460,7 +520,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P017",
@@ -487,7 +551,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P018",
@@ -514,7 +582,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P019",
@@ -541,7 +613,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P020",
@@ -568,7 +644,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P021",
@@ -595,7 +675,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P022",
@@ -622,7 +706,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P023",
@@ -649,7 +737,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P024",
@@ -676,7 +768,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P025",
@@ -703,7 +799,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P026",
@@ -730,7 +830,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P027",
@@ -757,7 +861,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P028",
@@ -794,7 +902,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P029",
@@ -821,7 +933,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     },
     {
       "id": "P030",
@@ -848,7 +964,11 @@
       "nextMeeting": null,
       "pastMeetings": [],
       "currentDraftLink": null,
-      "resources": []
+      "resources": [],
+      "abstract": null,
+      "tags": [],
+      "skillsNeeded": [],
+      "openToNewMembers": false
     }
   ],
   "team": [
@@ -858,7 +978,8 @@
       "focusArea": "Clinical AI safety, causal inference, multi-agent LLM systems",
       "currentPapers": 3,
       "email": null,
-      "availability": null
+      "availability": null,
+      "publicContactOk": false
     },
     {
       "name": "Leo Anthony Celi",
@@ -866,7 +987,8 @@
       "focusArea": "Lab PI — Laboratory for Computational Physiology",
       "currentPapers": 0,
       "email": null,
-      "availability": null
+      "availability": null,
+      "publicContactOk": false
     },
     {
       "name": "Nik",
@@ -874,7 +996,8 @@
       "focusArea": null,
       "currentPapers": 1,
       "email": null,
-      "availability": null
+      "availability": null,
+      "publicContactOk": false
     },
     {
       "name": "Ryohei",
@@ -882,7 +1005,8 @@
       "focusArea": null,
       "currentPapers": 1,
       "email": null,
-      "availability": null
+      "availability": null,
+      "publicContactOk": false
     }
   ]
 }

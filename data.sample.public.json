@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-08-10T09:00:00",
+  "papers": [
+    {
+      "id": "S001",
+      "title": "A Fake Paper With No Stage Set Yet",
+      "abstract": "An early-stage look at how community health workers describe unmet needs in their own words, and whether that language differs systematically from what standard intake forms capture.",
+      "tags": [
+        "health equity",
+        "qualitative research",
+        "community health"
+      ],
+      "skillsNeeded": [
+        "interview skills",
+        "writing"
+      ],
+      "stage": "Getting started",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Test",
+        "email": "test-owner-a@example.org"
+      }
+    },
+    {
+      "id": "S002",
+      "title": "A Fake Paper That Is Mid-Draft",
+      "abstract": "A machine learning approach to flagging which public health policy interventions are most likely to widen, rather than close, outcome gaps between neighborhoods — trained on a decade of city-level program data.",
+      "tags": [
+        "machine learning",
+        "public health policy",
+        "urban health"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "policy analysis"
+      ],
+      "stage": "In progress (drafting)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Test",
+        "email": "criticaldata-lab@mit.edu"
+      }
+    },
+    {
+      "id": "S005",
+      "title": "A Fake Paper Currently Out for Review",
+      "abstract": "A biostatistics-heavy re-analysis of a published clinical trial's subgroup effects, testing whether the original result holds under a pre-registered alternative model.",
+      "tags": [
+        "clinical trials",
+        "biostatistics"
+      ],
+      "skillsNeeded": [
+        "R",
+        "statistics"
+      ],
+      "stage": "Submitted, under review",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Test",
+        "email": "criticaldata-lab@mit.edu"
+      }
+    }
+  ]
+}
