@@ -27,9 +27,18 @@ PAPERS_SHEET = "\U0001F4C4 Papers Tracker"
 SUBMISSIONS_SHEET = "\U0001F4E8 Submissions Log"
 TEAM_SHEET = "\U0001F465 Team Directory"
 
+# These two sheets don't exist in the workbook yet — see the "Meetings /
+# resources schema" note in README.md for the exact columns to add when
+# ready. Until then, load_meetings()/load_resources() below just return
+# empty results for every paper; nothing here requires them to exist.
+MEETINGS_SHEET = "\U0001F4C5 Meetings Log"
+RESOURCES_SHEET = "\U0001F517 Resources"
+
 PAPERS_HEADER_ROW = 3
 SUBMISSIONS_HEADER_ROW = 3
 TEAM_HEADER_ROW = 3
+MEETINGS_HEADER_ROW = 3
+RESOURCES_HEADER_ROW = 3
 
 
 def cell_value(v):
@@ -57,6 +66,73 @@ def as_int(v, default=0):
         return int(float(v))
     except (TypeError, ValueError):
         return default
+
+
+def parse_meeting_dt(s):
+    """Parse a meeting date/time cell into a datetime for chronological
+    sorting. Accepts a full ISO datetime or a bare date (treated as
+    midnight) — cell_value() already normalizes Excel datetimes to ISO
+    strings, so this only needs to handle those two shapes."""
+    if not s:
+        return None
+    try:
+        return datetime.fromisoformat(s)
+    except ValueError:
+        try:
+            return datetime.combine(date.fromisoformat(s[:10]), datetime.min.time())
+        except ValueError:
+            return None
+
+
+def load_meetings(wb, now=None):
+    """Returns {paper title: {"next": {...}|None, "past": [...]}}.
+
+    One row per meeting in the Meetings Log sheet (mirrors the Submissions
+    Log pattern: one row per attempt, joined by paper title). Whichever
+    meeting is soonest in the future becomes `next`; everything else in the
+    past becomes `past`, most recent first. A paper with no meetings logged
+    simply doesn't appear in the returned dict.
+    """
+    if MEETINGS_SHEET not in wb.sheetnames:
+        return {}
+    now = now or datetime.now()
+    by_paper = {}
+    for row in sheet_rows(wb[MEETINGS_SHEET], MEETINGS_HEADER_ROW):
+        title = row.get("Paper")
+        if not title:
+            continue
+        by_paper.setdefault(title, []).append({
+            "date": row.get("Date/Time"),
+            "link": row.get("Link"),
+            "notes": row.get("Notes"),
+        })
+
+    result = {}
+    for title, meetings in by_paper.items():
+        future = [m for m in meetings if (parse_meeting_dt(m["date"]) or datetime.min) >= now]
+        past = [m for m in meetings if m not in future]
+        future.sort(key=lambda m: parse_meeting_dt(m["date"]) or datetime.min)
+        past.sort(key=lambda m: parse_meeting_dt(m["date"]) or datetime.min, reverse=True)
+        result[title] = {
+            "next": ({"date": future[0]["date"], "link": future[0]["link"]} if future else None),
+            "past": past,
+        }
+    return result
+
+
+def load_resources(wb):
+    """Returns {paper title: [{"label", "url"}, ...]}. One row per
+    resource, same joined-by-title pattern as Meetings/Submissions Log."""
+    if RESOURCES_SHEET not in wb.sheetnames:
+        return {}
+    by_paper = {}
+    for row in sheet_rows(wb[RESOURCES_SHEET], RESOURCES_HEADER_ROW):
+        title = row.get("Paper")
+        url = row.get("URL")
+        if not title or not url:
+            continue
+        by_paper.setdefault(title, []).append({"label": row.get("Label") or url, "url": url})
+    return by_paper
 
 
 def reconcile_papers(fresh_papers, previous_papers_by_id, spreadsheet_modified):
@@ -130,11 +206,15 @@ def main():
     for subs in submissions_by_paper.values():
         subs.sort(key=lambda s: (s["attempt"] is None, s["attempt"]))
 
+    meetings_by_paper = load_meetings(wb)
+    resources_by_paper = load_resources(wb)
+
     papers = []
     for row in sheet_rows(wb[PAPERS_SHEET], PAPERS_HEADER_ROW):
         title = row.get("Paper Title")
         if not title:
             continue
+        meetings = meetings_by_paper.get(title, {"next": None, "past": []})
         papers.append({
             "id": row.get("ID"),
             "title": title,
@@ -157,6 +237,10 @@ def main():
             "githubRepo": row.get("GitHub Repo"),
             "notes": row.get("Notes"),
             "submissions": submissions_by_paper.get(title, []),
+            "nextMeeting": meetings["next"],
+            "pastMeetings": meetings["past"],
+            "currentDraftLink": row.get("Current Draft Link"),
+            "resources": resources_by_paper.get(title, []),
         })
 
     team = []

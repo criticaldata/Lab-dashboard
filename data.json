@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T12:32:43",
+  "generatedAt": "2026-08-14T07:02:12",
   "papers": [
     {
       "id": "P001",
@@ -22,7 +22,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": "Waiting on results from experiment 3",
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P002",
@@ -45,7 +49,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P003",
@@ -68,7 +76,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P004",
@@ -110,7 +122,11 @@
           "decisionDate": null,
           "notes": "Example: resubmitted here after the Lancet rejection — Papers Tracker now shows THIS as Current Venue"
         }
-      ]
+      ],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P005",
@@ -133,7 +149,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P006",
@@ -166,7 +186,11 @@
           "decisionDate": null,
           "notes": null
         }
-      ]
+      ],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P007",
@@ -189,7 +213,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P008",
@@ -212,7 +240,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P009",
@@ -235,7 +267,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P010",
@@ -258,7 +294,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P011",
@@ -281,7 +321,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P012",
@@ -304,7 +348,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P013",
@@ -327,7 +375,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P014",
@@ -350,7 +402,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P015",
@@ -373,7 +429,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P016",
@@ -396,7 +456,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P017",
@@ -419,7 +483,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P018",
@@ -442,7 +510,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P019",
@@ -465,7 +537,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P020",
@@ -488,7 +564,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P021",
@@ -511,7 +591,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P022",
@@ -534,7 +618,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P023",
@@ -557,7 +645,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P024",
@@ -580,7 +672,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P025",
@@ -603,7 +699,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P026",
@@ -626,7 +726,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P027",
@@ -649,7 +753,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P028",
@@ -682,7 +790,11 @@
           "decisionDate": null,
           "notes": null
         }
-      ]
+      ],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P029",
@@ -705,7 +817,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     },
     {
       "id": "P030",
@@ -728,7 +844,11 @@
       "lastUpdated": null,
       "githubRepo": null,
       "notes": null,
-      "submissions": []
+      "submissions": [],
+      "nextMeeting": null,
+      "pastMeetings": [],
+      "currentDraftLink": null,
+      "resources": []
     }
   ],
   "team": [

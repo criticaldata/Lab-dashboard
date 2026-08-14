@@ -195,38 +195,49 @@
   .meta-row .meta-item strong{color:var(--ink);font-weight:600;}
   .priority-High{color:var(--mit-red);font-weight:600;}
 
+  .paper-title-btn{
+    display:block;
+    margin:0;
+    padding:0;
+    border:none;
+    background:none;
+    font-size:1rem;
+    font-weight:600;
+    color:var(--mit-charcoal);
+    max-width:70ch;
+    text-align:left;
+    cursor:pointer;
+    font-family:inherit;
+    line-height:inherit;
+  }
+  .paper-title-btn:hover{color:var(--mit-red);text-decoration:underline;}
+  .paper-title-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+
   .card-actions{
     display:flex;
     align-items:center;
     gap:16px;
     margin-top:10px;
   }
-  .history-toggle,
-  .edit-toggle{
-    background:none;
-    border:none;
-    color:var(--mit-red);
-    font-size:.82rem;
+  .edited-flag{
+    font-size:.74rem;
     font-weight:600;
-    cursor:pointer;
-    padding:4px 0;
+    color:var(--amber);
+    background:var(--amber-bg);
+    padding:2px 8px;
+    border-radius:999px;
   }
-  .history-toggle{margin-top:0;}
-  .history-toggle:hover,
-  .edit-toggle:hover{text-decoration:underline;}
-  .history-toggle:focus-visible,
-  .edit-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
 
-  .edit-panel{
+  .detail-panel{
     display:none;
     margin-top:12px;
-    padding:14px 16px;
+    padding:16px;
     border:1px solid var(--line);
     border-radius:8px;
     background:var(--panel);
   }
-  .edit-panel.open{display:block;}
-  .edit-panel h4{
+  .detail-panel.open{display:block;}
+  .detail-panel h4{
     margin:0 0 10px;
     font-size:.82rem;
     font-weight:700;
@@ -234,11 +245,68 @@
     text-transform:uppercase;
     letter-spacing:.03em;
   }
-  .edit-panel p.hint{
+  .detail-panel p.hint{
     margin:0 0 12px;
     font-size:.82rem;
     color:var(--muted);
   }
+  .detail-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .detail-head h3{margin:0;font-size:1.1rem;color:var(--mit-charcoal);}
+  .detail-close{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+    padding:2px 6px;
+    border-radius:4px;
+  }
+  .detail-close:hover{background:var(--line);color:var(--ink);}
+  .detail-close:focus-visible{outline:2px solid var(--focus);outline-offset:1px;}
+  .detail-section{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);}
+  .detail-section:first-of-type{margin-top:0;padding-top:0;border-top:none;}
+  .detail-section h5{
+    margin:0 0 8px;
+    font-size:.76rem;
+    font-weight:700;
+    color:var(--mit-charcoal);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .detail-meta-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:10px 16px;
+    font-size:.86rem;
+  }
+  .detail-meta-grid dt{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;}
+  .detail-meta-grid dd{margin:2px 0 0;color:var(--ink);}
+  .detail-empty{color:var(--muted);font-size:.86rem;font-style:italic;}
+  .resource-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .resource-list li a{font-size:.88rem;}
+  .meeting-block{font-size:.86rem;}
+  .meeting-block + .meeting-block{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
+  .meeting-block .m-date{font-weight:600;color:var(--mit-charcoal);}
+  .meeting-block .m-notes{color:var(--muted);margin-top:2px;font-style:italic;}
+  .detail-edit-toggle{
+    margin-top:16px;
+    background:var(--mit-red);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:9px 16px;
+    font-size:.86rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .detail-edit-toggle:hover{background:#8a1a2b;}
   .edit-field{margin-bottom:10px;}
   .edit-field label{
     display:block;
@@ -317,12 +385,33 @@
   .edit-message.info{background:var(--teal-bg);color:var(--teal);}
   .edit-message.error{background:var(--red-bg);color:var(--mit-red);}
   .edit-message.success{background:var(--green-bg);color:var(--green);}
-  .code-input{
-    font-size:1.3rem !important;
-    letter-spacing:.3em;
-    text-align:center;
-    font-family:ui-monospace,Consolas,monospace;
+
+  .resource-edit-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+  .resource-edit-row input{flex:1;}
+  .resource-edit-row input:first-child{flex:0 0 34%;}
+  .resource-remove-btn{
+    flex:0 0 auto;
+    background:none;
+    border:1px solid var(--line);
+    border-radius:6px;
+    color:var(--muted);
+    font-size:1rem;
+    line-height:1;
+    padding:6px 10px;
+    cursor:pointer;
   }
+  .resource-remove-btn:hover{color:var(--mit-red);border-color:var(--mit-red);}
+  .add-resource-btn{
+    background:none;
+    border:1px dashed var(--line);
+    border-radius:6px;
+    color:var(--mit-red);
+    font-size:.82rem;
+    font-weight:600;
+    padding:7px 12px;
+    cursor:pointer;
+  }
+  .add-resource-btn:hover{border-color:var(--mit-red);}
 
   .timeline{
     display:none;
@@ -358,6 +447,72 @@
     color:var(--muted);
   }
 
+  #demo-banner{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+    background:var(--amber-bg);
+    color:var(--amber);
+    border-bottom:2px solid var(--amber);
+    padding:9px 16px;
+    font-size:.84rem;
+    font-weight:600;
+    text-align:center;
+  }
+  #demo-banner .demo-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  #demo-banner button{
+    background:#fff;
+    border:1px solid var(--amber);
+    color:var(--amber);
+    border-radius:6px;
+    padding:5px 10px;
+    font-size:.78rem;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  #demo-banner button:hover{background:var(--amber);color:#fff;}
+
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:200;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:#fff;
+    border-radius:10px;
+    padding:20px;
+    max-width:560px;
+    width:100%;
+    max-height:80vh;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .modal-box h4{margin:0;font-size:1rem;color:var(--mit-charcoal);}
+  .modal-box textarea{
+    flex:1;
+    min-height:200px;
+    font-family:ui-monospace,Consolas,monospace;
+    font-size:.78rem;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    resize:vertical;
+  }
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+
   footer.site{
     margin-top:40px;
     padding-top:16px;
@@ -375,8 +530,14 @@
     header.site img.logo{height:32px;}
     header.site h1{font-size:1.1rem;}
     .paper-card{padding:10px 14px;}
-    .paper-card h3{max-width:100%;}
+    .paper-card h3,
+    .paper-title-btn{max-width:100%;}
     .controls select{flex:1 1 100%;}
+    #demo-banner{font-size:.78rem;padding:8px 12px;text-align:left;justify-content:flex-start;}
+    .detail-meta-grid{grid-template-columns:1fr 1fr;}
+    .edit-row2{flex-direction:column;gap:0;}
+    .resource-edit-row{flex-wrap:wrap;}
+    .resource-edit-row input:first-child{flex:1 1 100%;}
   }
 
   @media print{
@@ -386,11 +547,13 @@
       color-adjust:exact;
     }
     body{font-size:11pt;}
+    .paper-title-btn{color:inherit;cursor:default;}
     .controls,
     #result-count,
-    .history-toggle,
-    .edit-toggle,
-    .edit-panel,
+    #demo-banner,
+    .detail-panel,
+    .detail-edit-toggle,
+    .modal-overlay,
     .empty-state{display:none !important;}
     header.site{margin-bottom:16px;padding:10px 0;}
     .kpi-row{margin-bottom:16px;}
@@ -408,12 +571,19 @@
       border-bottom:1px solid var(--line);
       margin-bottom:8px;
     }
-    .timeline{display:block !important;border-top:1px dashed var(--line);}
     a{color:inherit;text-decoration:none;}
   }
 </style>
 </head>
 <body>
+
+<div id="demo-banner" role="status">
+  <span>🎭 Demo mode — edits are saved in this browser only, not yet shared with the team.</span>
+  <div class="demo-actions">
+    <button type="button" id="reset-demo-btn">Reset demo data</button>
+    <button type="button" id="copy-demo-btn">Copy my changes as JSON</button>
+  </div>
+</div>
 
 <header class="site">
   <div class="wrap">
@@ -426,6 +596,17 @@
 </header>
 
 <div id="error-banner" role="alert"></div>
+
+<div class="modal-overlay" id="copy-json-overlay">
+  <div class="modal-box">
+    <h4 id="copy-json-title">Your demo changes</h4>
+    <textarea id="copy-json-text" readonly></textarea>
+    <div class="modal-actions">
+      <button type="button" class="edit-btn-secondary" id="copy-json-close">Close</button>
+      <button type="button" class="edit-btn-primary" id="copy-json-copy">Copy to clipboard</button>
+    </div>
+  </div>
+</div>
 
 <main class="wrap">
   <div class="kpi-row" id="kpi-row"></div>
@@ -448,11 +629,13 @@
   "use strict";
 
   var state = {
-    papers: [],
+    rawPapers: [],   // exactly what data.json/data.sample.json contained, never mutated
+    papers: [],      // rawPapers with this session's demo edits merged on top — everything renders from this
     activeKpi: null,
     search: "",
     owner: "",
-    needsStatusOpen: false
+    needsStatusOpen: false,
+    openDetailPaperId: null
   };
 
   var KPI_DEFS = [
@@ -546,11 +729,6 @@
     });
   }
 
-  function renderHistoryToggle(p){
-    if (!p.submissions || p.submissions.length === 0) return "";
-    return '<button type="button" class="history-toggle" data-history-toggle>Submission history (' + p.submissions.length + ')</button>';
-  }
-
   function renderTimelineContent(p){
     if (!p.submissions || p.submissions.length === 0) return "";
     var items = p.submissions.map(function(s){
@@ -566,204 +744,229 @@
   }
 
   // ---------------------------------------------------------------------
-  // Inline edit flow: email -> one-time code -> edit fields -> save.
-  //
-  // The dashboard's core data load (init(), above/below) never depends on
-  // any of this — WORKER_URL is only ever contacted when a user actively
-  // opens an edit panel, so a misconfigured or unreachable Worker can never
-  // break the read-only page loading data.json.
+  // DEMO MODE — everything below persists to localStorage only, never to
+  // the shared repo. This deliberately replaces the Cloudflare Worker /
+  // email-verification pipeline (parked in worker-phase2-paused/ — see its
+  // README) for today's zero-external-dependency demo. See README.md's
+  // "Future: real authentication" section for the real plan.
   // ---------------------------------------------------------------------
 
-  // Set this to your deployed Worker's URL once you've run `wrangler
-  // deploy` — see README.md's "Worker setup" section. Left as a placeholder
-  // here, editing shows a friendly "unavailable" message instead of trying
-  // (and failing) to reach a real endpoint.
-  var WORKER_URL = "https://lab-ledger-updates.YOUR-SUBDOMAIN.workers.dev";
-  var SESSION_KEY = "labledger_session";
+  var DEMO_EDITS_KEY = "labledger_demo_edits";
+  var DEMO_NAME_KEY = "labledger_demo_name";
+  var WAITING_STAGES = ["Idea", "On Hold", "Withdrawn"];
 
-  // ?worker=<url> overrides WORKER_URL, mirroring the existing ?data=
-  // override — handy for pointing at a staging Worker (or a mocked one in
-  // tests) without editing this file.
-  function getWorkerUrl(){
-    var params = new URLSearchParams(window.location.search);
-    return params.get("worker") || WORKER_URL;
+  // Ported from scripts/status_logic.py (also ported, separately, to
+  // worker-phase2-paused/worker/src/status_logic.js). Three copies because
+  // this needs to run in three different runtimes (Excel-reading Python,
+  // a paused Worker, and here in the plain browser) with no shared module
+  // system between them — keep all three in sync if the rules ever change.
+  function daysLeftFromDeadline(deadlineIso, now){
+    if (!deadlineIso) return null;
+    now = now || new Date();
+    var todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    var d = new Date(deadlineIso.slice(0, 10) + "T00:00:00Z");
+    var deadlineUtc = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    return Math.round((deadlineUtc - todayUtc) / 86400000);
   }
 
-  function workerConfigured(){
-    return getWorkerUrl().indexOf("YOUR-SUBDOMAIN") === -1;
+  function deriveStatus(stage, attempts, latestDecision, deadlineIso, publishedDate, now){
+    if (publishedDate) return "⚪ Published";
+    if (latestDecision === "Accepted") return "⚪ Completed";
+    if (latestDecision === "Rejected") return "🔴 Closed — resubmit?";
+
+    var dleft = daysLeftFromDeadline(deadlineIso, now);
+
+    if (latestDecision === "Revise & Resubmit" || (dleft !== null && dleft >= 0 && dleft <= 14)) {
+      return "🟡 Needs Attention";
+    }
+    if (dleft !== null && dleft < 0) return "🔴 Overdue";
+    if (WAITING_STAGES.indexOf(stage) !== -1) return "🟠 Waiting";
+    if ((attempts || 0) > 0 || stage === "Internal Review") return "🔵 Reviewing";
+    if (stage === "Drafting") return "🟢 On Track";
+    return "⚪ Needs Status";
   }
 
-  function getSession(){
+  function fmtDateTime(iso){
+    if (!iso) return null;
+    var hasTime = iso.length > 10;
+    var d = new Date(hasTime ? iso : iso + "T00:00:00");
+    if (isNaN(d.getTime())) return iso;
+    var opts = { year: "numeric", month: "short", day: "numeric" };
+    if (hasTime) { opts.hour = "numeric"; opts.minute = "2-digit"; }
+    return d.toLocaleString(undefined, opts);
+  }
+
+  function loadDemoEdits(){
     try {
-      var raw = sessionStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      var session = JSON.parse(raw);
-      if (!session.token || !session.expiresAt || Date.now() >= session.expiresAt) {
-        sessionStorage.removeItem(SESSION_KEY);
-        return null;
-      }
-      return session;
+      var raw = localStorage.getItem(DEMO_EDITS_KEY);
+      return raw ? JSON.parse(raw) : {};
     } catch (e) {
-      return null;
+      return {};
     }
   }
 
-  function setSession(email, token, expiresInSeconds){
-    var session = { email: email, token: token, expiresAt: Date.now() + expiresInSeconds * 1000 };
-    // sessionStorage, not localStorage — the session clears when the tab
-    // closes rather than persisting indefinitely on a shared/public computer.
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    return session;
-  }
-
-  function clearSession(){
-    sessionStorage.removeItem(SESSION_KEY);
-  }
-
-  function workerFetch(path, body){
-    if (!workerConfigured()) {
-      return Promise.resolve({ ok: false, networkError: true, data: { error: "Editing isn't configured on this deployment yet." } });
+  function saveDemoEdits(edits){
+    try {
+      localStorage.setItem(DEMO_EDITS_KEY, JSON.stringify(edits));
+    } catch (e) {
+      console.error("Lab Ledger: couldn't save demo edit (localStorage unavailable?)", e);
     }
-    return fetch(getWorkerUrl() + path, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    }).then(function(res){
-      return res.json().catch(function(){ return {}; }).then(function(data){
-        return { ok: res.ok, status: res.status, data: data };
-      });
-    }).catch(function(err){
-      console.error("Lab Ledger: edit request failed", err);
-      return { ok: false, networkError: true, data: { error: "Couldn't reach the update service." } };
+  }
+
+  function getDemoName(){
+    try { return sessionStorage.getItem(DEMO_NAME_KEY) || ""; } catch (e) { return ""; }
+  }
+
+  function setDemoName(name){
+    try { sessionStorage.setItem(DEMO_NAME_KEY, name); } catch (e) { /* non-fatal */ }
+  }
+
+  // Each paper's patch is always the FULL latest value for every field the
+  // demo has touched (not a diff, not an append-only log) — every edit is
+  // computed against the current merged state, so overwriting is correct
+  // and there's no separate "append new submissions" bookkeeping needed.
+  function applyDemoEditsToPapers(rawPapers, edits){
+    return rawPapers.map(function(p){
+      var patch = edits[p.id];
+      if (!patch) return p;
+      var merged = Object.assign({}, p, patch.fields || {});
+      merged._demoEdited = true;
+      merged._demoEditedBy = patch.editedBy;
+      merged._demoEditedAt = patch.editedAt;
+      return merged;
     });
+  }
+
+  function commitDemoEdit(paperId, updatedFields, editorName){
+    var edits = loadDemoEdits();
+    var existing = edits[paperId] || { fields: {} };
+    edits[paperId] = {
+      fields: Object.assign({}, existing.fields, updatedFields),
+      editedBy: editorName,
+      editedAt: new Date().toISOString()
+    };
+    saveDemoEdits(edits);
+    return edits;
+  }
+
+  function refreshFromDemoEdits(){
+    state.papers = applyDemoEditsToPapers(state.rawPapers, loadDemoEdits());
+    populateOwnerSelect();
+    render();
   }
 
   function showEditMessage(slot, type, text){
     slot.innerHTML = '<div class="edit-message ' + type + '">' + escapeHtml(text) + '</div>';
   }
 
-  function closeEditPanel(panel){
+  function closeDetailPanel(panel){
     panel.classList.remove("open");
-    var card = panel.closest(".paper-card");
-    if (card) {
-      var toggle = card.querySelector("[data-edit-toggle]");
-      if (toggle) toggle.setAttribute("aria-expanded", "false");
+    state.openDetailPaperId = null;
+  }
+
+  // -------------------- Resources mini-editor (add/remove rows) --------------------
+
+  function addResourceRow(container, label, url){
+    var row = document.createElement("div");
+    row.className = "resource-edit-row";
+    row.innerHTML =
+      '<input type="text" placeholder="Label (e.g. Slack channel)" class="res-label" value="' + escapeHtml(label || "") + '">' +
+      '<input type="text" placeholder="https://…" class="res-url" value="' + escapeHtml(url || "") + '">' +
+      '<button type="button" class="resource-remove-btn" aria-label="Remove resource">×</button>';
+    row.querySelector(".resource-remove-btn").addEventListener("click", function(){ row.remove(); });
+    container.appendChild(row);
+  }
+
+  function readResourceRows(container){
+    return Array.from(container.querySelectorAll(".resource-edit-row")).map(function(row){
+      return {
+        label: row.querySelector(".res-label").value.trim(),
+        url: row.querySelector(".res-url").value.trim()
+      };
+    }).filter(function(r){ return r.url; })
+      .map(function(r){ return { label: r.label || r.url, url: r.url }; });
+  }
+
+  // -------------------- Detail panel: read view --------------------
+
+  function renderDetailReadView(panel, p){
+    var badge = '<span class="badge ' + badgeClass(p.status) + '">' + escapeHtml(p.status || "Unknown") + '</span>';
+
+    var metaItems = [];
+    function metaRow(label, value){
+      if (!value) return;
+      metaItems.push('<div><dt>' + escapeHtml(label) + '</dt><dd>' + value + '</dd></div>');
     }
-  }
+    metaRow("Owner", p.owner ? escapeHtml(p.owner) : null);
+    metaRow("Stage", p.stage ? escapeHtml(p.stage) : null);
+    metaRow("Priority", p.priority ? escapeHtml(p.priority) : null);
+    metaRow("Venue", p.currentVenue ? escapeHtml(p.currentVenue) : (p.targetVenue ? escapeHtml(p.targetVenue) + " (target)" : null));
+    if (p.deadline) {
+      var dl = fmtDate(p.deadline);
+      if (typeof p.daysLeft === "number") dl += p.daysLeft < 0 ? " (" + Math.abs(p.daysLeft) + "d overdue)" : " (" + p.daysLeft + "d left)";
+      metaRow("Deadline", dl);
+    }
+    metaRow("Authors", p.authors ? escapeHtml(p.authors) : null);
+    metaRow("Last updated", p.lastUpdated ? fmtDate(p.lastUpdated) : null);
 
-  function reloadDataAndRerender(){
-    fetch(dataUrl()).then(function(res){ return res.json(); }).then(function(data){
-      state.papers = Array.isArray(data.papers) ? data.papers : [];
-      populateOwnerSelect();
-      render();
-    }).catch(function(err){
-      console.error("Lab Ledger: failed to refresh after edit", err);
-    });
-  }
-
-  function renderEditPanel(panel, p){
-    var session = getSession();
-    if (session) {
-      renderFieldsStep(panel, p, session);
+    var nextMeetingHtml;
+    if (p.nextMeeting && p.nextMeeting.date) {
+      nextMeetingHtml = '<div class="meeting-block"><div class="m-date">' + escapeHtml(fmtDateTime(p.nextMeeting.date)) + '</div>' +
+        (p.nextMeeting.link ? '<a href="' + escapeHtml(p.nextMeeting.link) + '" target="_blank" rel="noopener">Join meeting</a>' : '') + '</div>';
     } else {
-      renderEmailStep(panel, p);
+      nextMeetingHtml = '<p class="detail-empty">No meeting scheduled.</p>';
     }
-  }
 
-  function renderEmailStep(panel, p){
-    var uid = "edit-" + p.id;
+    var pastMeetingsHtml;
+    if (p.pastMeetings && p.pastMeetings.length) {
+      pastMeetingsHtml = p.pastMeetings.map(function(m){
+        return '<div class="meeting-block"><div class="m-date">' + escapeHtml(fmtDateTime(m.date)) + '</div>' +
+          (m.link ? '<a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">Recording / notes</a>' : '') +
+          (m.notes ? '<div class="m-notes">' + escapeHtml(m.notes) + '</div>' : '') + '</div>';
+      }).join("");
+    } else {
+      pastMeetingsHtml = '<p class="detail-empty">No past meetings logged.</p>';
+    }
+
+    var draftHtml = p.currentDraftLink
+      ? '<a href="' + escapeHtml(p.currentDraftLink) + '" target="_blank" rel="noopener">Open current draft</a>'
+      : '<p class="detail-empty">No draft link set.</p>';
+
+    var resourcesHtml;
+    if (p.resources && p.resources.length) {
+      resourcesHtml = '<ul class="resource-list">' + p.resources.map(function(r){
+        return '<li><a href="' + escapeHtml(r.url) + '" target="_blank" rel="noopener">' + escapeHtml(r.label || r.url) + '</a></li>';
+      }).join("") + '</ul>';
+    } else {
+      resourcesHtml = '<p class="detail-empty">No resources added.</p>';
+    }
+
+    var timelineHtml = (p.submissions && p.submissions.length)
+      ? renderTimelineContent(p).replace('<div class="timeline">', '<div class="timeline open">')
+      : '<p class="detail-empty">No submissions logged yet.</p>';
+
+    var editedNote = p._demoEdited
+      ? '<p class="hint">✏️ Edited in this demo session' + (p._demoEditedBy ? ' by ' + escapeHtml(p._demoEditedBy) : '') + '.</p>'
+      : '';
+
     panel.innerHTML =
-      '<h4>Verify your lab email to edit</h4>' +
-      '<p class="hint">We’ll email a 6-digit code to confirm you’re a lab member. You won’t need to do this again for a couple of hours.</p>' +
-      '<div class="edit-message-slot"></div>' +
-      '<div class="edit-field">' +
-        '<label for="' + uid + '-email">Lab email</label>' +
-        '<input type="email" id="' + uid + '-email" placeholder="you@yourlab.org" autocomplete="email">' +
-      '</div>' +
-      '<div class="edit-actions">' +
-        '<button type="button" class="edit-btn-primary" data-send-code>Send code</button>' +
-        '<button type="button" class="edit-btn-secondary" data-cancel-edit>Cancel</button>' +
-      '</div>';
+      '<div class="detail-head"><h3>' + escapeHtml(p.title) + '</h3><button type="button" class="detail-close" data-detail-close aria-label="Close">×</button></div>' +
+      badge + editedNote +
+      '<div class="detail-section"><dl class="detail-meta-grid">' + metaItems.join("") + '</dl></div>' +
+      '<div class="detail-section"><h5>Next meeting</h5>' + nextMeetingHtml + '</div>' +
+      '<div class="detail-section"><h5>Past meetings</h5>' + pastMeetingsHtml + '</div>' +
+      '<div class="detail-section"><h5>Current draft</h5>' + draftHtml + '</div>' +
+      '<div class="detail-section"><h5>Resources</h5>' + resourcesHtml + '</div>' +
+      '<div class="detail-section"><h5>Submission history</h5>' + timelineHtml + '</div>' +
+      '<button type="button" class="detail-edit-toggle" data-open-edit>Edit</button>';
 
-    var emailInput = panel.querySelector("#" + uid + "-email");
-    var msgSlot = panel.querySelector(".edit-message-slot");
-    var sendBtn = panel.querySelector("[data-send-code]");
-
-    emailInput.addEventListener("keydown", function(e){ if (e.key === "Enter") sendBtn.click(); });
-
-    sendBtn.addEventListener("click", function(){
-      var email = emailInput.value.trim();
-      if (!email || email.indexOf("@") === -1) {
-        showEditMessage(msgSlot, "error", "Enter a valid email address.");
-        return;
-      }
-      sendBtn.disabled = true;
-      sendBtn.textContent = "Sending…";
-      workerFetch("/request-code", { email: email }).then(function(result){
-        sendBtn.disabled = false;
-        sendBtn.textContent = "Send code";
-        if (result.networkError) {
-          showEditMessage(msgSlot, "error", "Editing is temporarily unavailable. Please try again later.");
-          return;
-        }
-        renderCodeStep(panel, p, email);
-      });
-    });
-
-    panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ closeEditPanel(panel); });
+    panel.querySelector("[data-detail-close]").addEventListener("click", function(){ closeDetailPanel(panel); });
+    panel.querySelector("[data-open-edit]").addEventListener("click", function(){ renderDetailEditView(panel, p); });
   }
 
-  function renderCodeStep(panel, p, email){
-    var uid = "edit-" + p.id;
-    panel.innerHTML =
-      '<h4>Enter your code</h4>' +
-      '<p class="hint">Sent to <strong>' + escapeHtml(email) + '</strong> — expires in 10 minutes.</p>' +
-      '<div class="edit-message-slot"></div>' +
-      '<div class="edit-field">' +
-        '<label for="' + uid + '-code">Verification code</label>' +
-        '<input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="code-input" id="' + uid + '-code" placeholder="000000" autocomplete="one-time-code">' +
-      '</div>' +
-      '<div class="edit-actions">' +
-        '<button type="button" class="edit-btn-primary" data-verify-code>Verify</button>' +
-        '<button type="button" class="edit-btn-secondary" data-use-different-email>Use a different email</button>' +
-      '</div>';
+  // -------------------- Detail panel: edit view --------------------
 
-    var codeInput = panel.querySelector("#" + uid + "-code");
-    var msgSlot = panel.querySelector(".edit-message-slot");
-    var verifyBtn = panel.querySelector("[data-verify-code]");
-    codeInput.focus();
-    codeInput.addEventListener("keydown", function(e){ if (e.key === "Enter") verifyBtn.click(); });
-
-    verifyBtn.addEventListener("click", function(){
-      var code = codeInput.value.trim();
-      if (!/^\d{6}$/.test(code)) {
-        showEditMessage(msgSlot, "error", "Enter the 6-digit code from your email.");
-        return;
-      }
-      verifyBtn.disabled = true;
-      verifyBtn.textContent = "Verifying…";
-      workerFetch("/verify-code", { email: email, code: code }).then(function(result){
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = "Verify";
-        if (result.networkError) {
-          showEditMessage(msgSlot, "error", "Editing is temporarily unavailable. Please try again later.");
-          return;
-        }
-        if (!result.ok) {
-          showEditMessage(msgSlot, "error", (result.data && result.data.error) || "That code didn't work. Please try again.");
-          return;
-        }
-        var session = setSession(email, result.data.token, result.data.expiresIn);
-        renderFieldsStep(panel, p, session);
-      });
-    });
-
-    panel.querySelector("[data-use-different-email]").addEventListener("click", function(){
-      renderEmailStep(panel, p);
-    });
-  }
-
-  function renderFieldsStep(panel, p, session){
+  function renderDetailEditView(panel, p){
     var uid = "edit-" + p.id;
     var owners = Array.from(new Set(state.papers.map(function(x){ return x.owner; }).filter(Boolean))).sort();
     var stageOptions = ["", "Idea", "Drafting", "Internal Review", "On Hold"];
@@ -778,46 +981,59 @@
       }).join("");
     }
 
+    var storedName = getDemoName();
+
     panel.innerHTML =
-      '<h4>Edit ' + escapeHtml(p.id) + '</h4>' +
-      '<p class="hint">Signed in as ' + escapeHtml(session.email) + '. <button type="button" class="edit-btn-secondary" data-sign-out>Not you?</button></p>' +
+      '<div class="detail-head"><h3>Edit ' + escapeHtml(p.id) + '</h3><button type="button" class="detail-close" data-detail-close aria-label="Close">×</button></div>' +
       '<div class="edit-message-slot"></div>' +
       '<div class="edit-field">' +
-        '<label for="' + uid + '-stage">Stage</label>' +
-        '<select id="' + uid + '-stage">' + optionsHtml(stageOptions, p.stage, "(no change)") + '</select>' +
+        '<label for="' + uid + '-name">Your name<span class="field-hint">Shown as the editor of this change — demo attribution only, not verified.</span></label>' +
+        '<input type="text" id="' + uid + '-name" placeholder="e.g. Jane Doe" value="' + escapeHtml(storedName) + '">' +
       '</div>' +
       '<div class="edit-row2">' +
-        '<div class="edit-field">' +
-          '<label for="' + uid + '-priority">Priority</label>' +
-          '<select id="' + uid + '-priority">' + optionsHtml(priorityOptions, p.priority, "(no change)") + '</select>' +
-        '</div>' +
-        '<div class="edit-field">' +
-          '<label for="' + uid + '-owner">Owner</label>' +
-          '<select id="' + uid + '-owner">' + optionsHtml([""].concat(owners), p.owner, "(no change)") + '</select>' +
-        '</div>' +
+        '<div class="edit-field"><label for="' + uid + '-stage">Stage</label>' +
+          '<select id="' + uid + '-stage">' + optionsHtml(stageOptions, p.stage, "(no change)") + '</select></div>' +
+        '<div class="edit-field"><label for="' + uid + '-priority">Priority</label>' +
+          '<select id="' + uid + '-priority">' + optionsHtml(priorityOptions, p.priority, "(no change)") + '</select></div>' +
+      '</div>' +
+      '<div class="edit-row2">' +
+        '<div class="edit-field"><label for="' + uid + '-owner">Owner</label>' +
+          '<select id="' + uid + '-owner">' + optionsHtml([""].concat(owners), p.owner, "(no change)") + '</select></div>' +
+        '<div class="edit-field"><label for="' + uid + '-deadline">Deadline</label>' +
+          '<input type="date" id="' + uid + '-deadline" value="' + escapeHtml(p.deadline ? p.deadline.slice(0,10) : "") + '"></div>' +
       '</div>' +
       '<fieldset class="edit-fieldset">' +
+        '<legend>Next meeting</legend>' +
+        '<div class="edit-row2">' +
+          '<div class="edit-field"><label for="' + uid + '-meetdate">Date &amp; time</label>' +
+            '<input type="datetime-local" id="' + uid + '-meetdate" value="' + escapeHtml(p.nextMeeting && p.nextMeeting.date ? p.nextMeeting.date.slice(0,16) : "") + '"></div>' +
+          '<div class="edit-field"><label for="' + uid + '-meetlink">Link</label>' +
+            '<input type="text" id="' + uid + '-meetlink" placeholder="https://zoom.us/…" value="' + escapeHtml(p.nextMeeting && p.nextMeeting.link ? p.nextMeeting.link : "") + '"></div>' +
+        '</div>' +
+      '</fieldset>' +
+      '<fieldset class="edit-fieldset">' +
+        '<legend>Current draft link</legend>' +
+        '<div class="edit-field"><input type="text" id="' + uid + '-draft" placeholder="https://docs.google.com/…" value="' + escapeHtml(p.currentDraftLink || "") + '"></div>' +
+      '</fieldset>' +
+      '<fieldset class="edit-fieldset">' +
+        '<legend>Resources</legend>' +
+        '<div id="' + uid + '-resources"></div>' +
+        '<button type="button" class="add-resource-btn" data-add-resource>+ Add resource</button>' +
+      '</fieldset>' +
+      '<fieldset class="edit-fieldset">' +
         '<legend>Log a new submission</legend>' +
-        '<div class="edit-field">' +
-          '<label for="' + uid + '-venue">Venue<span class="field-hint">Leave blank unless you just sent this to a new journal/conference.</span></label>' +
-          '<input type="text" id="' + uid + '-venue" placeholder="e.g. Nature Medicine">' +
-        '</div>' +
-        '<div class="edit-field">' +
-          '<label for="' + uid + '-submitted">Submitted date</label>' +
-          '<input type="date" id="' + uid + '-submitted">' +
-        '</div>' +
+        '<div class="edit-field"><label for="' + uid + '-venue">Venue<span class="field-hint">Leave blank unless you just sent this to a new journal/conference.</span></label>' +
+          '<input type="text" id="' + uid + '-venue" placeholder="e.g. Nature Medicine"></div>' +
+        '<div class="edit-field"><label for="' + uid + '-submitted">Submitted date</label>' +
+          '<input type="date" id="' + uid + '-submitted"></div>' +
       '</fieldset>' +
       '<fieldset class="edit-fieldset">' +
         '<legend>Decision<span class="field-hint" style="display:block;font-weight:400">Applies to the new submission above, or the current venue if Venue is blank.</span></legend>' +
         '<div class="edit-row2">' +
-          '<div class="edit-field">' +
-            '<label for="' + uid + '-decision">Decision</label>' +
-            '<select id="' + uid + '-decision">' + optionsHtml(decisionOptions, "", "(no change)") + '</select>' +
-          '</div>' +
-          '<div class="edit-field">' +
-            '<label for="' + uid + '-decisiondate">Decision date</label>' +
-            '<input type="date" id="' + uid + '-decisiondate">' +
-          '</div>' +
+          '<div class="edit-field"><label for="' + uid + '-decision">Decision</label>' +
+            '<select id="' + uid + '-decision">' + optionsHtml(decisionOptions, "", "(no change)") + '</select></div>' +
+          '<div class="edit-field"><label for="' + uid + '-decisiondate">Decision date</label>' +
+            '<input type="date" id="' + uid + '-decisiondate"></div>' +
         '</div>' +
       '</fieldset>' +
       '<div class="edit-field">' +
@@ -829,72 +1045,111 @@
         '<button type="button" class="edit-btn-secondary" data-cancel-edit>Cancel</button>' +
       '</div>';
 
+    panel.querySelector("[data-detail-close]").addEventListener("click", function(){ closeDetailPanel(panel); });
+    panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ renderDetailReadView(panel, p); });
+
+    var resourcesContainer = panel.querySelector("#" + uid + "-resources");
+    (p.resources || []).forEach(function(r){ addResourceRow(resourcesContainer, r.label, r.url); });
+    panel.querySelector("[data-add-resource]").addEventListener("click", function(){ addResourceRow(resourcesContainer, "", ""); });
+
     var msgSlot = panel.querySelector(".edit-message-slot");
     var saveBtn = panel.querySelector("[data-save-edit]");
 
-    panel.querySelector("[data-sign-out]").addEventListener("click", function(){
-      clearSession();
-      renderEmailStep(panel, p);
-    });
-    panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ closeEditPanel(panel); });
-
     saveBtn.addEventListener("click", function(){
+      var name = panel.querySelector("#" + uid + "-name").value.trim();
+      if (!name) {
+        showEditMessage(msgSlot, "error", "Enter your name so this change is attributed correctly.");
+        return;
+      }
+      setDemoName(name);
+
       var stage = panel.querySelector("#" + uid + "-stage").value;
       var priority = panel.querySelector("#" + uid + "-priority").value;
       var owner = panel.querySelector("#" + uid + "-owner").value;
+      var deadline = panel.querySelector("#" + uid + "-deadline").value;
+      var meetDate = panel.querySelector("#" + uid + "-meetdate").value;
+      var meetLink = panel.querySelector("#" + uid + "-meetlink").value.trim();
+      var draftLink = panel.querySelector("#" + uid + "-draft").value.trim();
+      var resources = readResourceRows(resourcesContainer);
       var venue = panel.querySelector("#" + uid + "-venue").value.trim();
       var submittedDate = panel.querySelector("#" + uid + "-submitted").value;
       var decision = panel.querySelector("#" + uid + "-decision").value;
       var decisionDate = panel.querySelector("#" + uid + "-decisiondate").value;
       var notes = panel.querySelector("#" + uid + "-notes").value.trim();
 
-      var body = { token: session.token, paperId: p.id };
-      if (stage) body.stage = stage;
-      if (priority) body.priority = priority;
-      if (owner) body.owner = owner;
-      if (venue) {
-        if (!submittedDate) {
-          showEditMessage(msgSlot, "error", "Enter a Submitted date to log this new venue.");
-          return;
-        }
-        body.newSubmission = { venue: venue, submittedDate: submittedDate, decision: decision || null, decisionDate: decisionDate || null, notes: notes || null };
-      } else if (decision) {
-        body.decisionUpdate = { decision: decision, decisionDate: decisionDate || null, notes: notes || null };
-      } else if (notes) {
-        body.notes = notes;
+      if (venue && !submittedDate) {
+        showEditMessage(msgSlot, "error", "Enter a Submitted date to log this new venue.");
+        return;
       }
 
-      if (!body.stage && !body.priority && !body.owner && !body.newSubmission && !body.decisionUpdate && !body.notes) {
+      var fields = {};
+      function setIfChanged(key, value){
+        if (JSON.stringify(value) !== JSON.stringify(p[key])) fields[key] = value;
+      }
+
+      if (stage) setIfChanged("stage", stage);
+      if (priority) setIfChanged("priority", priority);
+      if (owner) setIfChanged("owner", owner);
+      if (deadline) setIfChanged("deadline", deadline);
+      if (meetDate || meetLink) setIfChanged("nextMeeting", { date: meetDate || null, link: meetLink || null });
+      setIfChanged("currentDraftLink", draftLink || null);
+      setIfChanged("resources", resources);
+
+      var submissions = (p.submissions || []).slice();
+      var submissionTouched = false;
+      if (venue) {
+        var nextAttempt = (p.attempts || 0) + 1;
+        submissions.push({
+          attempt: nextAttempt, venue: venue, submittedDate: submittedDate, responseDeadline: null,
+          decision: decision || null, decisionDate: decisionDate || null, notes: notes || null
+        });
+        fields.attempts = nextAttempt;
+        fields.currentVenue = venue;
+        fields.latestDecision = decision || null;
+        submissionTouched = true;
+      } else if (decision) {
+        if (submissions.length > 0) {
+          var latest = Object.assign({}, submissions[submissions.length - 1]);
+          latest.decision = decision;
+          if (decisionDate) latest.decisionDate = decisionDate;
+          if (notes) latest.notes = notes;
+          submissions[submissions.length - 1] = latest;
+          fields.latestDecision = decision;
+          submissionTouched = true;
+        } else {
+          showEditMessage(msgSlot, "error", "No existing submission to apply a decision to — fill in Venue to log a new one instead.");
+          return;
+        }
+      } else if (notes) {
+        setIfChanged("notes", notes);
+      }
+      if (submissionTouched) fields.submissions = submissions;
+
+      if (Object.keys(fields).length === 0) {
         showEditMessage(msgSlot, "error", "Nothing to save — change at least one field.");
         return;
       }
 
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Saving…";
-      workerFetch("/apply-update", body).then(function(result){
-        if (result.networkError) {
-          saveBtn.disabled = false;
-          saveBtn.textContent = "Save changes";
-          showEditMessage(msgSlot, "error", "Editing is temporarily unavailable. Please try again later.");
-          return;
-        }
-        if (!result.ok) {
-          saveBtn.disabled = false;
-          saveBtn.textContent = "Save changes";
-          if (result.status === 401 || result.status === 403) {
-            clearSession();
-            renderEmailStep(panel, p);
-            showEditMessage(panel.querySelector(".edit-message-slot"), "error", (result.data && result.data.error) || "Please verify your email again.");
-            return;
-          }
-          showEditMessage(msgSlot, "error", (result.data && result.data.error) || "Something went wrong. Please try again.");
-          return;
-        }
-        var summary = (result.data.summary || []).join(" · ");
-        panel.innerHTML = '<div class="edit-message success">Saved!' + (summary ? " " + escapeHtml(summary) : "") + '</div>';
-        setTimeout(reloadDataAndRerender, 1500);
-      });
+      var now = new Date();
+      var newStage = "stage" in fields ? fields.stage : p.stage;
+      var newAttempts = "attempts" in fields ? fields.attempts : p.attempts;
+      var newDecision = "latestDecision" in fields ? fields.latestDecision : p.latestDecision;
+      var newDeadline = "deadline" in fields ? fields.deadline : p.deadline;
+      var newStatus = deriveStatus(newStage, newAttempts, newDecision, newDeadline, p.publishedDate, now);
+      if (newStatus !== p.status) fields.status = newStatus;
+      fields.lastUpdated = now.toISOString().slice(0, 10);
+
+      commitDemoEdit(p.id, fields, name);
+
+      var summaryParts = Object.keys(fields).filter(function(k){ return k !== "submissions"; }).map(function(k){ return k; });
+      panel.innerHTML = '<div class="edit-message success">Saved — ' + escapeHtml(summaryParts.join(", ")) + '</div>';
+      state.openDetailPaperId = p.id;
+      setTimeout(refreshFromDemoEdits, 900);
     });
+  }
+
+  function renderDetailPanel(panel, p){
+    renderDetailReadView(panel, p);
   }
 
   function renderPaperCard(p){
@@ -914,36 +1169,41 @@
     }
     if (p.lastUpdated) meta.push('<span class="meta-item">Last updated ' + fmtDate(p.lastUpdated) + '</span>');
 
+    var editedFlag = p._demoEdited ? '<span class="edited-flag">Edited (demo)</span>' : '';
+
     var el = document.createElement("div");
     el.className = "paper-card";
     el.innerHTML =
-      '<div class="row1"><h3>' + escapeHtml(p.title) + '</h3>' + badge + '</div>' +
+      '<div class="row1"><button type="button" class="paper-title-btn" data-open-detail>' + escapeHtml(p.title) + '</button>' + badge + editedFlag + '</div>' +
       '<div class="meta-row">' + meta.join("") + '</div>' +
-      '<div class="card-actions">' + renderHistoryToggle(p) +
-        '<button type="button" class="edit-toggle" data-edit-toggle aria-expanded="false">Edit</button></div>' +
-      renderTimelineContent(p) +
-      '<div class="edit-panel" data-edit-panel></div>';
+      '<div class="detail-panel" data-detail-panel></div>';
 
-    var toggle = el.querySelector("[data-history-toggle]");
-    if (toggle) {
-      toggle.addEventListener("click", function(){
-        var panel = el.querySelector(".timeline");
-        panel.classList.toggle("open");
-      });
+    var detailPanel = el.querySelector("[data-detail-panel]");
+    var titleBtn = el.querySelector("[data-open-detail]");
+
+    function openDetail(){
+      state.openDetailPaperId = p.id;
+      titleBtn.setAttribute("aria-expanded", "true");
+      renderDetailPanel(detailPanel, p);
+      detailPanel.classList.add("open");
     }
 
-    var editToggle = el.querySelector("[data-edit-toggle]");
-    var editPanel = el.querySelector("[data-edit-panel]");
-    editToggle.addEventListener("click", function(){
-      var willOpen = !editPanel.classList.contains("open");
-      editToggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
-      if (willOpen) {
-        renderEditPanel(editPanel, p);
-        editPanel.classList.add("open");
+    titleBtn.setAttribute("aria-expanded", "false");
+    titleBtn.addEventListener("click", function(){
+      if (detailPanel.classList.contains("open")) {
+        closeDetailPanel(detailPanel);
+        titleBtn.setAttribute("aria-expanded", "false");
       } else {
-        editPanel.classList.remove("open");
+        openDetail();
       }
     });
+
+    // Preserve which paper's detail panel was open across a full re-render
+    // (e.g. right after saving an edit), so the presenter doesn't have to
+    // reopen it to see the change land.
+    if (state.openDetailPaperId === p.id) {
+      openDetail();
+    }
 
     return el;
   }
@@ -1036,22 +1296,64 @@
     return params.get("data") || "data.json";
   }
 
+  function wireDemoBanner(){
+    document.getElementById("reset-demo-btn").addEventListener("click", function(){
+      if (!confirm("This clears all local demo edits and reloads the original data. Continue?")) return;
+      localStorage.removeItem(DEMO_EDITS_KEY);
+      state.openDetailPaperId = null;
+      location.reload();
+    });
+
+    var overlay = document.getElementById("copy-json-overlay");
+    var textarea = document.getElementById("copy-json-text");
+    var copyBtn = document.getElementById("copy-json-copy");
+
+    document.getElementById("copy-demo-btn").addEventListener("click", function(){
+      var edits = loadDemoEdits();
+      textarea.value = JSON.stringify(edits, null, 2);
+      copyBtn.textContent = "Copy to clipboard";
+      overlay.classList.add("open");
+      textarea.focus();
+      textarea.select();
+    });
+
+    document.getElementById("copy-json-close").addEventListener("click", function(){
+      overlay.classList.remove("open");
+    });
+
+    copyBtn.addEventListener("click", function(){
+      textarea.select();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value).then(function(){
+          copyBtn.textContent = "Copied!";
+        }).catch(function(){
+          copyBtn.textContent = "Select all + Ctrl/Cmd-C";
+        });
+      } else {
+        copyBtn.textContent = "Select all + Ctrl/Cmd-C";
+      }
+    });
+  }
+
   function init(){
     wireControls();
     wirePrintExpansion();
+    wireDemoBanner();
     fetch(dataUrl())
       .then(function(res){
         if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + dataUrl());
         return res.json();
       })
       .then(function(data){
-        state.papers = Array.isArray(data.papers) ? data.papers : [];
+        state.rawPapers = Array.isArray(data.papers) ? data.papers : [];
+        state.papers = applyDemoEditsToPapers(state.rawPapers, loadDemoEdits());
         populateOwnerSelect();
         render();
       })
       .catch(function(err){
         console.error("Lab Ledger: failed to load data.", err);
         showError("Couldn't load " + dataUrl() + " — check the console. (This page must be served over http://, not opened as a file:// URL — see README.)");
+        state.rawPapers = [];
         state.papers = [];
         populateOwnerSelect();
         render();
