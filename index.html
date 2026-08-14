@@ -729,7 +729,7 @@
 <body>
 
 <div id="demo-banner" role="status">
-  <span>🎭 Demo mode — edits, new projects, and deletions are saved in this browser only, not yet shared with the team <span title="This also means anything added or deleted here won't appear or disappear on the public Discover page — that page reads a separate file generated from the real spreadsheet, not from this browser's demo data.">ⓘ</span>.</span>
+  <span>🎭 Demo mode — edits, new projects, and deletions are saved in this browser only, not yet shared with the team <span title="A new project marked &quot;Open to new members&quot; will also show up on the Discover page, flagged as a demo addition — but only in this same browser. Deleting a real paper here never removes it from Discover either way, since that page never reads this browser's edits. None of this is visible to any other visitor until it goes through the real spreadsheet.">ⓘ</span>.</span>
   <div class="demo-actions">
     <button type="button" id="reset-demo-btn">Reset demo data</button>
     <button type="button" id="copy-demo-btn">Copy my changes as JSON</button>
@@ -1274,10 +1274,6 @@
     }).join("");
   }
 
-  function ownerOptionsList(){
-    return Array.from(new Set(state.papers.map(function(x){ return x.owner; }).filter(Boolean))).sort();
-  }
-
   // "clinical ML, causal inference" -> ["clinical ML", "causal inference"].
   // Client-side mirror of export_data.py's parse_list_cell(), same
   // comma-separated convention so a value typed here would round-trip
@@ -1291,7 +1287,6 @@
   // the two stay visually and behaviorally consistent — see README.md's
   // "Demo mode" section.
   function renderCommonProjectFieldsHtml(uid, p){
-    var owners = ownerOptionsList();
     return (
       '<div class="edit-row2">' +
         '<div class="edit-field"><label for="' + uid + '-stage">Stage</label>' +
@@ -1301,7 +1296,7 @@
       '</div>' +
       '<div class="edit-row2">' +
         '<div class="edit-field"><label for="' + uid + '-owner">Owner</label>' +
-          '<select id="' + uid + '-owner">' + optionsHtml([""].concat(owners), p.owner, "(no change)") + '</select></div>' +
+          '<input type="text" id="' + uid + '-owner" placeholder="e.g. Jane Doe" value="' + escapeHtml(p.owner || "") + '"></div>' +
         '<div class="edit-field"><label for="' + uid + '-deadline">Deadline</label>' +
           '<input type="date" id="' + uid + '-deadline" value="' + escapeHtml(p.deadline ? p.deadline.slice(0,10) : "") + '"></div>' +
       '</div>' +
@@ -1357,7 +1352,7 @@
     return {
       stage: panel.querySelector("#" + uid + "-stage").value,
       priority: panel.querySelector("#" + uid + "-priority").value,
-      owner: panel.querySelector("#" + uid + "-owner").value,
+      owner: panel.querySelector("#" + uid + "-owner").value.trim(),
       deadline: panel.querySelector("#" + uid + "-deadline").value,
       targetVenue: panel.querySelector("#" + uid + "-targetvenue").value.trim(),
       targetDeadline: panel.querySelector("#" + uid + "-targetdeadline").value,
@@ -1477,7 +1472,7 @@
 
       if (v.stage) setIfChanged("stage", v.stage);
       if (v.priority) setIfChanged("priority", v.priority);
-      if (v.owner) setIfChanged("owner", v.owner);
+      setIfChanged("owner", v.owner || null);
       if (v.deadline) setIfChanged("deadline", v.deadline);
       setIfChanged("targetVenue", v.targetVenue || null);
       if (v.targetDeadline) setIfChanged("targetDeadline", v.targetDeadline);
@@ -1770,7 +1765,7 @@
     var blank = {};
 
     slot.innerHTML =
-      '<p class="hint">This is saved to your browser only — see the demo-mode banner. It won\'t appear on the public <a href="discover.html" target="_blank" rel="noopener">Discover page</a>, which reads a separate export generated from the real spreadsheet.</p>' +
+      '<p class="hint">This is saved to your browser only — see the demo-mode banner. If "Open to new members" is checked below, it will also show up on the <a href="discover.html" target="_blank" rel="noopener">Discover page</a>, flagged as a demo addition — but only in this browser. It\'s not a real publish: other visitors reading the real, published data never see it until this goes through the real spreadsheet.</p>' +
       '<div class="edit-message-slot"></div>' +
       '<div class="edit-field">' +
         '<label for="' + uid + '-title">Title *</label>' +

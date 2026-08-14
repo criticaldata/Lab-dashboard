@@ -16,6 +16,8 @@
     --panel:#faf9f7;
     --teal:#0f7a7a;
     --teal-bg:#e3f4f4;
+    --amber:#8a6100;
+    --amber-bg:#fbf0d6;
     --focus:#2563eb;
   }
   *{box-sizing:border-box;}
@@ -138,6 +140,21 @@
     border-radius:999px;
     margin-bottom:10px;
   }
+  .demo-local-badge{
+    display:inline-block;
+    font-size:.74rem;
+    font-weight:600;
+    color:var(--amber);
+    background:var(--amber-bg);
+    padding:2px 10px;
+    border-radius:999px;
+    margin:0 0 10px 6px;
+  }
+  .demo-local-note{
+    margin:6px 0 0;
+    font-size:.78rem;
+    color:var(--amber);
+  }
   .project-card .abstract{
     font-size:.9rem;
     color:var(--ink);
@@ -254,7 +271,7 @@
 (function(){
   "use strict";
 
-  var state = { papers: [], query: "", loading: true };
+  var state = { papers: [], query: "", loading: true, demoLocalCount: 0 };
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, function(c){
@@ -266,6 +283,78 @@
     var el = document.getElementById("error-banner");
     el.textContent = message;
     el.style.display = "block";
+  }
+
+  // ---------------------------------------------------------------------
+  // Demo-mode bridge — reads index.html's OWN localStorage (same origin,
+  // same browser) to echo back any project created there with "Open to
+  // new members" checked, so a demo doesn't feel broken when a freshly
+  // added open project doesn't show up here. This is NOT a real publish:
+  // it only ever reads this browser's own local storage, never another
+  // visitor's, and never data.json — a demo-EDITED real paper that gets
+  // toggled open can't be bridged this way (the edit only stores the
+  // fields that changed, e.g. just `openToNewMembers`, never a title —
+  // there's nothing here to render a card from without reading data.json,
+  // which this page deliberately never does). Only brand-new demo-created
+  // projects, which already carry a full paper object, can round-trip
+  // safely. See README.md's "Project Discovery" section.
+  var DEMO_ADDED_KEY = "labledger_demo_added";
+  var DEMO_EDITS_KEY = "labledger_demo_edits";
+  var DEMO_DELETED_KEY = "labledger_demo_deleted";
+  // Mirrors export_data.py's GENERIC_LAB_EMAIL — a demo-created project has
+  // no Team Directory row to check for "Public Contact OK", so it always
+  // gets the safe generic-inbox fallback, never a guessed personal email.
+  var GENERIC_LAB_EMAIL = "criticaldata-lab@mit.edu";
+
+  function loadJSON(key, fallback){
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  // Client-side mirror of export_data.py's public_stage_label() — same
+  // plain-language, deliberately-coarser-than-the-internal-badge labels,
+  // so a demo-added project reads identically to a real one once it's
+  // actually exported through the spreadsheet pipeline.
+  function publicStageLabel(p){
+    if (p.publishedDate) return "Published";
+    if ((p.attempts || 0) > 0) return "Submitted, under review";
+    if (p.stage === "Drafting") return "In progress (drafting)";
+    if (p.stage === "Internal Review") return "In progress (internal review)";
+    if (p.stage === "Idea") return "Early stage / idea";
+    if (p.stage === "On Hold") return "On hold";
+    return "Getting started";
+  }
+
+  function loadDemoOpenProjects(){
+    var added = loadJSON(DEMO_ADDED_KEY, []);
+    var edits = loadJSON(DEMO_EDITS_KEY, {});
+    var deletedSet = new Set(loadJSON(DEMO_DELETED_KEY, []));
+
+    return added
+      .filter(function(p){ return !deletedSet.has(p.id); })
+      .map(function(p){
+        var patch = edits[p.id];
+        return patch ? Object.assign({}, p, patch.fields || {}) : p;
+      })
+      .filter(function(p){ return p.openToNewMembers === true; })
+      .map(function(p){
+        var firstName = p.owner ? p.owner.split(" ")[0] : null;
+        return {
+          id: p.id,
+          title: p.title,
+          abstract: p.abstract || null,
+          tags: p.tags || [],
+          skillsNeeded: p.skillsNeeded || [],
+          stage: publicStageLabel(p),
+          openToNewMembers: true,
+          contact: { name: firstName, email: GENERIC_LAB_EMAIL },
+          _demoLocal: true
+        };
+      });
   }
 
   // Common connective words filtered out so they don't cause noisy
@@ -349,6 +438,7 @@
     el.innerHTML =
       '<h3>' + escapeHtml(p.title) + '</h3>' +
       '<span class="stage-label">' + escapeHtml(p.stage || "") + '</span>' +
+      (p._demoLocal ? '<span class="demo-local-badge" title="Created in this browser’s demo session — not a real publish, and not visible to any other visitor.">🎭 Added in this demo session</span>' : "") +
       (p.abstract
         ? '<p class="abstract">' + escapeHtml(p.abstract) + '</p>'
         : '<p class="abstract empty">No summary yet — reach out to ask what this project is about.</p>') +
@@ -397,7 +487,14 @@
       // there's no usable signal to search on, so say that plainly too.
       countText = "That search didn't have enough to go on — showing all " + countText;
     }
-    count.textContent = countText;
+    if (state.demoLocalCount > 0) {
+      count.innerHTML = escapeHtml(countText) +
+        '<div class="demo-local-note">🎭 Includes ' + state.demoLocalCount +
+        (state.demoLocalCount === 1 ? ' project' : ' projects') +
+        ' added in this browser’s demo session — visible only to you, not a real publish.</div>';
+    } else {
+      count.textContent = countText;
+    }
 
     list.innerHTML = "";
     if (scored.length === 0) {
@@ -413,6 +510,19 @@
   function dataUrl(){
     var params = new URLSearchParams(window.location.search);
     return params.get("data") || "data.public.json";
+  }
+
+  // Folds this browser's demo-added open projects into whatever the real
+  // fetch returned (or didn't) — the real, published data always wins on
+  // an id collision (shouldn't happen in practice, since demo ids continue
+  // from data.json's own numbering, not data.public.json's filtered
+  // subset, but a local demo addition should never be able to shadow a
+  // real project even in a freak collision).
+  function mergeDemoOpenProjects(){
+    var realIds = new Set(state.papers.map(function(p){ return p.id; }));
+    var demoOpen = loadDemoOpenProjects().filter(function(p){ return !realIds.has(p.id); });
+    state.papers = state.papers.concat(demoOpen);
+    state.demoLocalCount = demoOpen.length;
   }
 
   function init(){
@@ -433,6 +543,7 @@
       })
       .then(function(data){
         state.papers = Array.isArray(data.papers) ? data.papers : [];
+        mergeDemoOpenProjects();
         state.loading = false;
         render();
       })
@@ -440,6 +551,7 @@
         console.error("Lab Ledger Discover: failed to load data.", err);
         showError("Couldn't load " + dataUrl() + " — check the console. (This page must be served over http://, not opened as a file:// URL.)");
         state.papers = [];
+        mergeDemoOpenProjects();
         state.loading = false;
         render();
       });

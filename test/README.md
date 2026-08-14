@@ -35,6 +35,7 @@ node test/test_part1.js           # Needs Status collapse, last-updated field, p
 node test/test_demo_mode.js       # inline editing: every field type, persistence, reset, copy-as-JSON
 node test/test_create_delete.js   # add/delete a project entirely in demo mode, real-paper hide vs. reset
 node test/test_discover.js        # Project Discovery page: filtering, matching, mailto, network isolation
+node test/test_discover_bridge.js # demo-created open projects echoing through to discover.html, same-browser only
 ```
 
 Or all of them at once: `npm test` from inside `test/` (with the server
@@ -87,3 +88,12 @@ not meant to be committed).
   correct, mobile layout, and — the other half of the security guarantee
   alongside the allowlist test — that the page makes zero network requests
   to `data.json`, ever.
+- **`test_discover_bridge.js`** — the index.html -> discover.html demo
+  bridge: a project created via "+ New Project" with "Open to new members"
+  checked actually shows up on `discover.html`, flagged as a demo
+  addition, still with zero requests to `data.json`; a project created
+  without that box checked does NOT show up; deleting the project on
+  `index.html` removes it from `discover.html` too; and — the critical
+  safety check — a **different browser context** (a stand-in for another
+  visitor) never sees it, proving this is a same-browser localStorage echo
+  and not an actual publish. Desktop and mobile.
