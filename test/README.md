@@ -30,7 +30,7 @@ python3 -m http.server 8000
 then, from the repo root:
 
 ```bash
-node test/test_dashboard.js       # KPIs, search, owner filter, submission history, mobile
+node test/test_dashboard.js       # KPIs, search (incl. owner names), open-to-new-members badge/KPI, loading skeleton, submission history, mobile
 node test/test_part1.js           # Needs Status collapse, last-updated field, print stylesheet
 node test/test_demo_mode.js       # inline editing: every field type, persistence, reset, copy-as-JSON
 node test/test_create_delete.js   # add/delete a project entirely in demo mode, real-paper hide vs. reset
@@ -51,9 +51,12 @@ not meant to be committed).
   `openToNewMembers: false` papers never make it in at all. If someone
   widens what `export_data.py` writes to `data.public.json` later, this is
   what catches it.
-- **`test_dashboard.js`** — the core internal dashboard: KPI counts,
-  clicking a KPI to filter, search, owner filter, opening a paper's
-  submission history, mobile layout, the fixture-data mode, the
+- **`test_dashboard.js`** — the core internal dashboard: KPI counts
+  (including the "Open to New Members" card and its per-card badge),
+  clicking a KPI to filter, search (title/venue/notes and, since the old
+  owner dropdown was removed, owner names too — case-insensitive, partial
+  match), opening a paper's submission history, the loading skeleton before
+  `data.json` resolves, mobile layout, the fixture-data mode, the
   fetch-failure error banner, and the `file://`-protocol trap this whole
   project started from.
 - **`test_part1.js`** — the "Needs Status" collapsible section (counts are
@@ -62,18 +65,25 @@ not meant to be committed).
   stylesheet.
 - **`test_demo_mode.js`** — the inline-editing flow end to end: every field
   type, logging a new submission attempt, refresh-persistence, the
-  one-time name prompt, Reset demo data, Copy my changes as JSON, and the
-  demo banner's visibility/non-blocking behavior, at desktop and mobile
-  widths.
+  one-time name prompt, the toast that confirms a save, Reset demo data
+  (now a custom confirm modal, not a native `confirm()`), Copy my changes
+  as JSON, and the demo banner's visibility/non-blocking behavior, at
+  desktop and mobile widths.
 - **`test_create_delete.js`** — adding a project via "+ New Project" (ID
   generation, required-title validation, the "New (not yet shared)" flag,
-  refresh-persistence), deleting it outright vs. deleting a real
-  data.json-sourced paper (hidden only — asserts the raw data.json file is
-  untouched), the delete confirmation step (and that Cancel really cancels),
-  Reset demo data restoring a hidden real paper, and that Copy my changes
-  as JSON includes both an added paper and a deleted id.
+  a toast confirming creation, refresh-persistence), deleting it outright
+  vs. deleting a real data.json-sourced paper (hidden only — asserts the
+  raw data.json file is untouched, and that a toast says so), the delete
+  confirmation step (and that Cancel really cancels), Reset demo data
+  restoring a hidden real paper, and that Copy my changes as JSON includes
+  both an added paper and a deleted id.
 - **`test_discover.js`** — the public Project Discovery page: only
-  `openToNewMembers` papers appear, keyword matching/sorting responds to
-  what's typed, the "I'm interested" mailto link is correct, mobile layout,
-  and — the other half of the security guarantee alongside the allowlist
-  test — that the page makes zero network requests to `data.json`, ever.
+  `openToNewMembers` papers appear, weighted keyword matching/sorting
+  responds to what's typed (tag/skill hits outrank incidental abstract
+  hits; confirms a short technical token like "AI" no longer false-matches
+  inside an unrelated word like "cl-ai-ms"), the no-match and
+  all-stopword-query messaging, the loading skeleton before
+  `data.public.json` resolves, the "I'm interested" mailto link is
+  correct, mobile layout, and — the other half of the security guarantee
+  alongside the allowlist test — that the page makes zero network requests
+  to `data.json`, ever.

@@ -32,7 +32,7 @@ function assert(cond, msg) {
 
   const kpiNums = await page.$$eval('.kpi-card .num', els => els.map(e => e.textContent.trim()));
   console.log('KPI numbers:', kpiNums);
-  assert(kpiNums.length === 6, 'Six KPI cards render, got ' + kpiNums.length);
+  assert(kpiNums.length === 7, 'Seven KPI cards render, got ' + kpiNums.length);
 
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_desktop_full.png'), fullPage: true });
 
@@ -66,18 +66,26 @@ function assert(cond, msg) {
   resultText = await page.$eval('#result-count', el => el.textContent);
   assert(resultText.startsWith(kpiNums[0] + ' of'), 'Clearing search restores the full list, got: ' + resultText);
 
-  // Owner dropdown
-  const ownerOptions = await page.$$eval('#owner-select option', els => els.map(e => e.value).filter(Boolean));
-  console.log('Owner options:', ownerOptions);
-  if (ownerOptions.length > 0) {
-    await page.selectOption('#owner-select', ownerOptions[0]);
-    await page.waitForTimeout(150);
-    resultText = await page.$eval('#result-count', el => el.textContent);
-    console.log('Owner filter "' + ownerOptions[0] + '":', resultText);
-    assert(/^\d+ of/.test(resultText), 'Owner filter narrows the list, got: ' + resultText);
-    await page.selectOption('#owner-select', '');
-    await page.waitForTimeout(150);
-  }
+  // Owner search — the dropdown was removed (doesn't scale to hundreds of
+  // members); owner matching now happens through the same search box as
+  // title/venue/notes. Confirm it still narrows the list, case-insensitively
+  // and on a partial name.
+  assert(await page.$('#owner-select') === null, 'The old owner dropdown is gone — no #owner-select element in the DOM');
+  const searchPlaceholder = await page.$eval('#search-input', el => el.placeholder);
+  assert(/owner/i.test(searchPlaceholder), 'Search placeholder mentions owner, got: ' + searchPlaceholder);
+
+  await page.fill('#search-input', 'mohammad shahin');
+  await page.waitForTimeout(150);
+  resultText = await page.$eval('#result-count', el => el.textContent);
+  console.log('Owner-name search (lowercase, partial) "mohammad shahin":', resultText);
+  assert(/^\d+ of/.test(resultText) && !resultText.startsWith('0 of'), 'Case-insensitive owner-name search narrows the list, got: ' + resultText);
+  const ownerCardCount = await page.$$eval('.paper-card', els => els.length);
+  const ownersShown = await page.$$eval('.paper-card .meta-item', els => els.map(e => e.textContent));
+  assert(ownersShown.some(t => /Owner:\s*Mohammad Shahin/i.test(t)), 'Every visible card is actually owned by the searched-for person');
+  console.log('Owner search matched ' + ownerCardCount + ' card(s)');
+
+  await page.fill('#search-input', '');
+  await page.waitForTimeout(150);
 
   // Submission history lives in the paper detail view — search for AI
   // Sriracha (2 logged attempts) and open its detail panel.
@@ -93,6 +101,24 @@ function assert(cond, msg) {
 
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_submission_timeline.png'), fullPage: true });
   await page.fill('#search-input', '');
+
+  // "Open to New Members" KPI — click-to-filter, same pattern as every
+  // other KPI card, plus the per-card badge it should agree with.
+  const openKpiIndex = 6;
+  const openKpiLabel = await page.$$eval('.kpi-card .label', els => els.map(e => e.textContent.trim()))
+    .then(labels => labels[openKpiIndex]);
+  assert(openKpiLabel === 'Open to New Members', 'The 7th KPI card is Open to New Members, got: ' + openKpiLabel);
+  const openKpiCount = parseInt(kpiNums[openKpiIndex], 10);
+  await (await page.$$('.kpi-card'))[openKpiIndex].click();
+  await page.waitForTimeout(150);
+  resultText = await page.$eval('#result-count', el => el.textContent);
+  console.log('After clicking Open to New Members:', resultText);
+  assert(resultText.startsWith(openKpiCount + ' of'), 'Filtered list count matches the Open to New Members KPI, got: ' + resultText);
+  const openBadgeCount = await page.$$eval('.open-badge', els => els.length);
+  assert(openBadgeCount === openKpiCount, 'Every card in the filtered list shows the open-badge, got ' + openBadgeCount + ' badges for ' + openKpiCount + ' cards');
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_open_to_new_members.png'), fullPage: true });
+  await (await page.$$('.kpi-card'))[openKpiIndex].click();
+  await page.waitForTimeout(150);
 
   // Mobile width
   await page.setViewportSize({ width: 390, height: 844 });
@@ -116,9 +142,39 @@ function assert(cond, msg) {
   await page.waitForTimeout(200);
   const sampleKpi = await page.$$eval('.kpi-card .num', els => els.map(e => e.textContent.trim()));
   console.log('Sample data KPI numbers:', sampleKpi);
-  assert(sampleKpi[0] === '8', 'Sample data Total = 8, got ' + sampleKpi[0]);
+  assert(sampleKpi[0] === '20', 'Sample data Total = 20, got ' + sampleKpi[0]);
+  assert(sampleKpi[6] === '13', 'Sample data Open to New Members = 13, got ' + sampleKpi[6]);
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_sample_data.png'), fullPage: true });
+
+  // The real data.json has 0 open-to-new-members papers right now, so the
+  // "here's an actual badge" screenshot has to come from sample data —
+  // click the KPI so the visible cards actually carry the badge.
+  await (await page.$$('.kpi-card'))[6].click();
+  await page.waitForTimeout(150);
+  const sampleOpenBadges = await page.$$eval('.open-badge', els => els.length);
+  assert(sampleOpenBadges === 13, 'Sample data Open to New Members filter shows 13 badged cards, got ' + sampleOpenBadges);
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_open_badge_sample.png'), fullPage: true });
+
   assert(sampleConsoleErrors.length === 0, 'No console errors on sample data, got: ' + JSON.stringify(sampleConsoleErrors));
+  await page.close();
+
+  // ---------- TEST 2b: loading skeleton, before data.json resolves ----------
+  page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.route('**/data.json', async route => {
+    await new Promise(r => setTimeout(r, 400));
+    await route.continue();
+  });
+  const navPromise = page.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(120);
+  const skelCountDuring = await page.$$eval('.skel', els => els.length);
+  assert(skelCountDuring > 0, 'Skeleton placeholders render while data.json is still loading, got ' + skelCountDuring);
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, 'dashboard_loading_skeleton.png'), fullPage: true });
+  await navPromise;
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(100);
+  const skelCountAfter = await page.$$eval('.skel', els => els.length);
+  assert(skelCountAfter === 0, 'Skeleton is fully replaced by real content once data.json resolves');
+  await page.unroute('**/data.json');
   await page.close();
 
   // ---------- TEST 3: fetch failure -> error banner ----------

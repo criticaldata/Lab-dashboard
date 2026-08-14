@@ -117,9 +117,12 @@
     border-radius:10px;
     padding:20px 22px;
     background:#fff;
-    transition:border-color .12s;
+    transition:border-color .12s,box-shadow .12s;
+    animation:cardFadeIn .14s ease;
   }
+  .project-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.05);}
   .project-card.best-match{border-color:var(--teal);}
+  .project-card .abstract.empty{font-style:italic;color:var(--muted);}
   .project-card h3{
     margin:0 0 4px;
     font-size:1.08rem;
@@ -176,6 +179,27 @@
     padding:48px 20px;
     color:var(--muted);
   }
+  .empty-state .empty-icon{font-size:1.8rem;display:block;margin-bottom:8px;}
+  .empty-state p{margin:4px 0 0;font-size:.85rem;}
+
+  .skel{
+    background:linear-gradient(90deg,var(--panel) 25%,#f1efec 37%,var(--panel) 63%);
+    background-size:400px 100%;
+    animation:shimmer 1.3s ease-in-out infinite;
+    border-radius:6px;
+  }
+  .skel-card{height:118px;border:1px solid var(--line);border-radius:10px;}
+
+  @keyframes cardFadeIn{from{opacity:0;transform:translateY(2px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes shimmer{0%{background-position:-200px 0;}100%{background-position:calc(200px + 100%) 0;}}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;
+      scroll-behavior:auto !important;
+    }
+  }
 
   footer.site{
     margin-top:48px;
@@ -230,7 +254,7 @@
 (function(){
   "use strict";
 
-  var state = { papers: [], query: "" };
+  var state = { papers: [], query: "", loading: true };
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, function(c){
@@ -246,41 +270,70 @@
 
   // Common connective words filtered out so they don't cause noisy
   // substring false-positives (e.g. "and" matching inside "statistics" via
-  // shared letters isn't a real signal). Short tokens (<3 chars) are
-  // dropped for the same reason — "i" would otherwise "match" almost any
-  // word in the corpus.
+  // shared letters isn't a real signal). Two-and-three-letter connectives
+  // are listed explicitly (rather than dropped by a blanket length cutoff)
+  // because a blanket cutoff also throws away real short technical tokens
+  // that matter in this domain — "AI", "ML", "UX" — which free-text queries
+  // like "I'm interested in AI" legitimately contain.
   var STOPWORDS = ["the","and","for","are","but","not","you","all","can",
     "her","was","one","our","out","day","get","has","him","his","how",
     "man","new","now","old","see","two","way","who","did","its","let",
     "say","she","too","use","like","that","this","from","have","with",
     "about","into","just","also","been","being","them","they","what",
-    "when","your","would","could","should"];
+    "when","your","would","could","should",
+    "in","on","to","of","is","it","by","or","an","if","so","no","we",
+    "up","my","me","us","am","be","do","go","as","at"];
 
   function tokenize(text){
     var words = (text || "").toLowerCase().match(/[a-z0-9]+/g) || [];
-    return words.filter(function(w){ return w.length >= 3 && STOPWORDS.indexOf(w) === -1; });
+    return words.filter(function(w){ return w.length >= 2 && STOPWORDS.indexOf(w) === -1; });
   }
 
-  function paperSearchText(p){
-    return [p.title, p.abstract, (p.tags || []).join(" "), (p.skillsNeeded || []).join(" ")].join(" ").toLowerCase();
+  // Weighted keyword-overlap scoring: a query word landing in a project's
+  // tags or skillsNeeded is a much stronger "this is the project you want"
+  // signal than the same word happening to appear inside a sentence of the
+  // abstract, so tag/skill hits are worth more than abstract hits, with
+  // the title (a deliberate human-written summary) in between. No
+  // stemming, no ML — see the on-page note. Good enough to sort "clearly
+  // relevant" above "clearly not," which is all this MVP promises.
+  var SCORE_WEIGHTS = { tag: 3, skill: 2, title: 2, abstract: 1 };
+
+  function wordsOf(text){
+    return (text || "").toLowerCase().match(/[a-z0-9]+/g) || [];
   }
 
-  // Basic keyword-overlap scoring: one point per distinct query word found
-  // anywhere in the paper's title/abstract/tags/skills. No stemming, no ML
-  // — see the on-page note. Good enough to sort "clearly relevant" above
-  // "clearly not," which is all this MVP promises.
+  // Matching is word-boundary aware, not a raw substring search — a query
+  // word only counts if it equals (or prefixes, for cheap "policy" ~
+  // "policies" style plural/inflection tolerance) a whole word in the
+  // target text. A prior raw-substring version let "ai" match inside
+  // "cl-ai-ms", surfacing an unrelated claims-data paper for every AI
+  // query; comparing tokenized words instead of concatenated strings
+  // closes that class of false positive.
+  function fieldHasWord(queryWord, fieldWords){
+    return fieldWords.some(function(fw){ return fw === queryWord || fw.indexOf(queryWord) === 0; });
+  }
+
   function scoreMatch(queryWords, p){
     if (queryWords.length === 0) return 0;
-    var text = paperSearchText(p);
+    var titleWords = wordsOf(p.title);
+    var abstractWords = wordsOf(p.abstract);
+    var tagsWords = wordsOf((p.tags || []).join(" "));
+    var skillsWords = wordsOf((p.skillsNeeded || []).join(" "));
     var score = 0;
-    queryWords.forEach(function(w){ if (text.indexOf(w) !== -1) score++; });
+    queryWords.forEach(function(w){
+      if (fieldHasWord(w, tagsWords)) score += SCORE_WEIGHTS.tag;
+      if (fieldHasWord(w, skillsWords)) score += SCORE_WEIGHTS.skill;
+      if (fieldHasWord(w, titleWords)) score += SCORE_WEIGHTS.title;
+      if (fieldHasWord(w, abstractWords)) score += SCORE_WEIGHTS.abstract;
+    });
     return score;
   }
 
   function pillsHtml(label, values, queryWords){
     if (!values || values.length === 0) return "";
     var items = values.map(function(v){
-      var isMatch = queryWords.some(function(w){ return v.toLowerCase().indexOf(w) !== -1; });
+      var pillWords = wordsOf(v);
+      var isMatch = queryWords.some(function(w){ return fieldHasWord(w, pillWords); });
       return '<span class="pill' + (isMatch ? ' match' : '') + '">' + escapeHtml(v) + '</span>';
     }).join("");
     return '<div class="pill-row"><span class="pill-group-label">' + escapeHtml(label) + '</span>' + items + '</div>';
@@ -296,7 +349,9 @@
     el.innerHTML =
       '<h3>' + escapeHtml(p.title) + '</h3>' +
       '<span class="stage-label">' + escapeHtml(p.stage || "") + '</span>' +
-      (p.abstract ? '<p class="abstract">' + escapeHtml(p.abstract) + '</p>' : '') +
+      (p.abstract
+        ? '<p class="abstract">' + escapeHtml(p.abstract) + '</p>'
+        : '<p class="abstract empty">No summary yet — reach out to ask what this project is about.</p>') +
       pillsHtml("Tags", p.tags, queryWords) +
       pillsHtml("Skills needed", p.skillsNeeded, queryWords) +
       '<a class="interested-btn" href="' + mailHref + '" data-interested-link>I’m interested</a>';
@@ -304,23 +359,51 @@
     return el;
   }
 
+  function renderSkeleton(){
+    var list = document.getElementById("project-list");
+    document.getElementById("result-count").textContent = "";
+    list.innerHTML = "";
+    for (var i = 0; i < 4; i++) {
+      var div = document.createElement("div");
+      div.className = "skel skel-card";
+      list.appendChild(div);
+    }
+  }
+
   function render(){
+    if (state.loading) {
+      renderSkeleton();
+      return;
+    }
     var list = document.getElementById("project-list");
     var count = document.getElementById("result-count");
     var queryWords = tokenize(state.query);
+    var hasQuery = state.query.trim().length > 0;
 
     var scored = state.papers.map(function(p){ return { paper: p, score: scoreMatch(queryWords, p) }; });
     // Stable sort: ties keep their original (spreadsheet) order.
     scored.sort(function(a, b){ return b.score - a.score; });
+    var maxScore = scored.reduce(function(m, s){ return Math.max(m, s.score); }, 0);
 
-    count.textContent = state.papers.length + (state.papers.length === 1 ? " open project" : " open projects") +
-      (queryWords.length > 0 ? " · sorted by match to your interests" : "");
+    var countText = state.papers.length + (state.papers.length === 1 ? " open project" : " open projects");
+    if (queryWords.length > 0 && maxScore > 0) {
+      countText += " · sorted by match to your interests";
+    } else if (hasQuery && queryWords.length > 0 && maxScore === 0) {
+      // A real query with no hits anywhere — say so plainly instead of
+      // silently falling back to an unsorted list with no explanation.
+      countText = "No close matches for “" + state.query.trim() + "” — showing all " + countText;
+    } else if (hasQuery && queryWords.length === 0) {
+      // Query was all stopwords/too-short tokens (e.g. "the" or "hi") —
+      // there's no usable signal to search on, so say that plainly too.
+      countText = "That search didn't have enough to go on — showing all " + countText;
+    }
+    count.textContent = countText;
 
     list.innerHTML = "";
     if (scored.length === 0) {
       var empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.textContent = "No open projects right now — check back soon, or go say hi to a lab member.";
+      empty.innerHTML = '<span class="empty-icon">🌱</span>No open projects right now.<p>Check back soon, or go say hi to a lab member — new projects open up as they get started.</p>';
       list.appendChild(empty);
       return;
     }
@@ -338,6 +421,8 @@
       render();
     });
 
+    render();
+
     // This page has exactly one data dependency, and it's the public
     // allowlisted file — there is no code path here that ever touches
     // data.json. See README.md's "Project Discovery" section.
@@ -348,12 +433,14 @@
       })
       .then(function(data){
         state.papers = Array.isArray(data.papers) ? data.papers : [];
+        state.loading = false;
         render();
       })
       .catch(function(err){
         console.error("Lab Ledger Discover: failed to load data.", err);
         showError("Couldn't load " + dataUrl() + " — check the console. (This page must be served over http://, not opened as a file:// URL.)");
         state.papers = [];
+        state.loading = false;
         render();
       });
   }

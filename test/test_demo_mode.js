@@ -86,7 +86,10 @@ async function clearStorage(page) {
   await page.selectOption('.detail-panel select[id$="-decision"]', 'Under Review');
 
   await page.click('.detail-panel [data-save-edit]');
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(200);
+  const saveToastText = await page.$eval('#toast-container .toast', el => el.textContent).catch(() => null);
+  assert(saveToastText && /saved/i.test(saveToastText), 'A toast confirms the save (not a native alert), got: ' + saveToastText);
+  await page.waitForTimeout(1000);
 
   // ---- Confirm it landed back on read view with new values ----
   const readViewText = await page.$eval('.detail-panel', el => el.textContent);
@@ -131,10 +134,16 @@ async function clearStorage(page) {
   await page.click('.detail-panel [data-cancel-edit]');
   await page.waitForTimeout(100);
 
-  // ---- Reset demo data ----
-  page.on('dialog', d => d.accept());
+  // ---- Reset demo data (custom in-app confirm modal, not a native confirm()) ----
   await page.click('#reset-demo-btn');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(150);
+  const confirmModalOpen = await page.$eval('#confirm-overlay', el => el.classList.contains('open'));
+  assert(confirmModalOpen, 'Reset demo data opens a custom confirm modal instead of a native confirm()');
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle' }),
+    page.click('#confirm-ok')
+  ]);
+  await page.waitForTimeout(200);
   await page.fill('#search-input', 'AI Sriracha');
   await page.waitForTimeout(150);
   const cardAfterReset = await page.$eval('.paper-card', el => el.textContent);

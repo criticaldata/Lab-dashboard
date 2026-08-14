@@ -35,14 +35,14 @@ function assert(cond, msg) {
   await page.waitForTimeout(200);
 
   const cardCount = await page.$$eval('.project-card', els => els.length);
-  assert(cardCount === 3, 'Only the 3 openToNewMembers fixture papers appear, got ' + cardCount);
+  assert(cardCount === 13, 'Only the 13 openToNewMembers fixture papers appear, got ' + cardCount);
 
   const titles = await page.$$eval('.project-card h3', els => els.map(e => e.textContent));
   console.log('Titles shown:', titles);
-  assert(!titles.some(t => t.includes('Overdue') || t.includes('Two Submission') || t.includes('Revise') || t.includes('Accepted') || t.includes('Published')), 'None of the closed (openToNewMembers:false) papers appear');
+  assert(!titles.some(t => t.includes('Overdue') || t.includes('Two Submission') || t.includes('Revise') || t.includes('Accepted') || t.includes('Published') || t.includes('Benchmarking Large Language') || t.includes("Lab's Own Data Retention")), 'None of the closed (openToNewMembers:false) papers appear');
 
   const resultCountText = await page.$eval('#result-count', el => el.textContent);
-  assert(resultCountText.includes('3 open project'), 'Result count reflects 3 open projects, got: ' + resultCountText);
+  assert(resultCountText.includes('13 open project'), 'Result count reflects 13 open projects, got: ' + resultCountText);
 
   const noteText = await page.$eval('.matching-note', el => el.textContent);
   assert(noteText.includes('Basic keyword matching'), 'Page plainly labels the matching as basic/temporary');
@@ -77,17 +77,40 @@ function assert(cond, msg) {
   console.log('Order after "clinical trials and statistics":', orderedTitles2);
   assert(orderedTitles2[0].includes('Out for Review'), 'The clinical-trials paper (S005) sorts first for that query, got: ' + orderedTitles2[0]);
 
-  // A nonsense query should still show all 3 (sorted, all score 0) rather than an empty state
+  // A tag match should outrank a same-count-of-words abstract-only match —
+  // "AI" appears in two projects' tags (S012, S015) and nowhere else; a
+  // naive substring version of this matcher used to also false-positive
+  // match "AI" inside "claims" (S019) — confirm that's gone.
+  await page.fill('#interest-input', "I'm interested in AI");
+  await page.waitForTimeout(150);
+  const aiTitles = await page.$$eval('.project-card h3', els => els.map(e => e.textContent));
+  console.log('Order after "I\'m interested in AI":', aiTitles);
+  const aiBestMatches = await page.$$eval('.project-card.best-match h3', els => els.map(e => e.textContent));
+  assert(!aiBestMatches.some(t => t.includes('Claims-Data Audit')), 'The claims-data paper is NOT flagged as a best-match for an "AI" query (no more false-positive substring match), got best-matches: ' + JSON.stringify(aiBestMatches));
+  assert(aiBestMatches.some(t => t.includes('AI Hype Cycles')) && aiBestMatches.some(t => t.includes('Should AI Clinicians')), 'Both genuinely AI-tagged projects ARE flagged as best-matches, got: ' + JSON.stringify(aiBestMatches));
+
+  // A nonsense query should still show all 13 (sorted, all score 0) rather than an empty state
   await page.fill('#interest-input', 'xyznonsensequery');
   await page.waitForTimeout(150);
   const cardCountNonsense = await page.$$eval('.project-card', els => els.length);
-  assert(cardCountNonsense === 3, 'A query matching nothing still shows all open projects (sorted, not filtered/hidden), got ' + cardCountNonsense);
+  assert(cardCountNonsense === 13, 'A query matching nothing still shows all open projects (sorted, not filtered/hidden), got ' + cardCountNonsense);
+  const nonsenseCountText = await page.$eval('#result-count', el => el.textContent);
+  assert(nonsenseCountText.includes('No close matches'), 'No-match state says so plainly instead of silently showing an unsorted list, got: ' + nonsenseCountText);
+
+  // An all-stopword query has no usable tokens at all — same "show
+  // everything" fallback, but with different, more accurate messaging.
+  await page.fill('#interest-input', 'the and but');
+  await page.waitForTimeout(150);
+  const stopwordCountText = await page.$eval('#result-count', el => el.textContent);
+  assert(stopwordCountText.includes("didn't have enough to go on"), 'An all-stopword query gets its own plain-language explanation, got: ' + stopwordCountText);
+  const cardCountStopword = await page.$$eval('.project-card', els => els.length);
+  assert(cardCountStopword === 13, 'All-stopword query still shows all 13 open projects, got ' + cardCountStopword);
 
   // Clear query -> back to original order/count
   await page.fill('#interest-input', '');
   await page.waitForTimeout(150);
   const cardCountCleared = await page.$$eval('.project-card', els => els.length);
-  assert(cardCountCleared === 3, 'Clearing the query still shows all 3');
+  assert(cardCountCleared === 13, 'Clearing the query still shows all 13');
 
   assert(consoleErrors.length === 0, 'No console errors on discover.html, got: ' + JSON.stringify(consoleErrors));
 
@@ -130,6 +153,25 @@ function assert(cond, msg) {
   const mobileClientW = await page.evaluate(() => document.documentElement.clientWidth);
   assert(mobileScrollW <= mobileClientW + 2, 'No horizontal overflow on mobile (scrollWidth=' + mobileScrollW + ' clientWidth=' + mobileClientW + ')');
   assert(mobileErrors.length === 0, 'No console errors on mobile, got: ' + JSON.stringify(mobileErrors));
+  await page.close();
+
+  // ================= Loading skeleton, before data.public.json resolves =================
+  page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.route('**/data.sample.public.json', async route => {
+    await new Promise(r => setTimeout(r, 400));
+    await route.continue();
+  });
+  const navPromise = page.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(120);
+  const skelCountDuring = await page.$$eval('.skel', els => els.length);
+  assert(skelCountDuring > 0, 'Skeleton placeholders render while data.public.json is still loading, got ' + skelCountDuring);
+  await page.screenshot({ path: path.join(DIR, 'discover_loading_skeleton.png'), fullPage: true });
+  await navPromise;
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(100);
+  const skelCountAfter = await page.$$eval('.skel', els => els.length);
+  assert(skelCountAfter === 0, 'Skeleton is fully replaced by real project cards once data loads');
+  await page.unroute('**/data.sample.public.json');
   await page.close();
 
   // ================= Real data.public.json -> renders fine, no crash =================

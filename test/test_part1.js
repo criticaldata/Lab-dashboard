@@ -82,7 +82,7 @@ function assert(cond, msg) {
   assert(listText.includes('Last updated'), 'Sample data (which has lastUpdated set) shows "Last updated" on at least one card');
   const lastUpdatedCount = await page.$$eval('.meta-item', els => els.filter(e => e.textContent.includes('Last updated')).length);
   console.log('Cards showing Last updated:', lastUpdatedCount);
-  assert(lastUpdatedCount === 8, 'All 8 sample papers have lastUpdated and show it, got ' + lastUpdatedCount);
+  assert(lastUpdatedCount === 20, 'All 20 sample papers have lastUpdated and show it, got ' + lastUpdatedCount);
   await page.close();
 
   // ---- Print stylesheet ----

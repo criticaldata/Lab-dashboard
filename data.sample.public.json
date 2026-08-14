@@ -59,6 +59,208 @@
         "name": "Test",
         "email": "criticaldata-lab@mit.edu"
       }
+    },
+    {
+      "id": "S009",
+      "title": "Mapping Algorithmic Bias in Emergency Triage Models",
+      "abstract": "An audit of algorithmic bias in ML-based emergency-department triage scoring tools, focused on whether risk scores systematically under-triage patients from historically under-resourced neighborhoods.",
+      "tags": [
+        "machine learning",
+        "algorithmic bias",
+        "emergency medicine",
+        "health equity"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "fairness metrics"
+      ],
+      "stage": "In progress (drafting)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Priya",
+        "email": "priya.raman@example.org"
+      }
+    },
+    {
+      "id": "S010",
+      "title": "The Ethics of Consent in Passive Sensor Data Collection",
+      "abstract": "Examining what 'informed consent' should mean when wearable and ambient sensors passively collect health-relevant data outside a clinical encounter, and drafting a practical consent framework labs can adopt.",
+      "tags": [
+        "research ethics",
+        "data governance",
+        "informed consent"
+      ],
+      "skillsNeeded": [
+        "writing",
+        "policy analysis"
+      ],
+      "stage": "Early stage / idea",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Marcus",
+        "email": "criticaldata-lab@mit.edu"
+      }
+    },
+    {
+      "id": "S011",
+      "title": "Federated Learning for Multi-Hospital Sepsis Prediction",
+      "abstract": "A federated learning approach to sepsis onset prediction that trains across five hospital systems without centralizing patient data, addressing the generalizability failures that sank an earlier single-site model.",
+      "tags": [
+        "machine learning",
+        "federated learning",
+        "sepsis",
+        "clinical data"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "distributed systems"
+      ],
+      "stage": "Submitted, under review",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Wei",
+        "email": "wei.zhang@example.org"
+      }
+    },
+    {
+      "id": "S012",
+      "title": "Should AI Clinicians Disclose Uncertainty? A Survey of Patient Preferences",
+      "abstract": "A patient-preference survey testing whether people want AI clinical-decision-support tools to explicitly disclose their confidence level, and how disclosure changes trust and follow-through on recommendations.",
+      "tags": [
+        "healthcare AI",
+        "patient preferences",
+        "survey research"
+      ],
+      "skillsNeeded": [
+        "survey design",
+        "writing"
+      ],
+      "stage": "In progress (drafting)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Sofia",
+        "email": "criticaldata-lab@mit.edu"
+      }
+    },
+    {
+      "id": "S013",
+      "title": "Cleaning Ten Years of Messy EHR Timestamps: A Reproducible Pipeline",
+      "abstract": "A fully reproducible, open-source pipeline for reconciling inconsistent EHR timestamp formats across a decade of merged hospital systems, released alongside the accepted manuscript.",
+      "tags": [
+        "EHR data",
+        "data engineering",
+        "reproducibility"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "SQL"
+      ],
+      "stage": "Submitted, under review",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Priya",
+        "email": "priya.raman@example.org"
+      }
+    },
+    {
+      "id": "S014",
+      "title": "Public Health Policy Simulation for Pandemic Resource Allocation",
+      "abstract": "An agent-based simulation comparing pandemic-era resource-allocation policies (bed triage, vaccine rollout order, supply-chain prioritization) across different equity-weighting schemes.",
+      "tags": [
+        "public health policy",
+        "simulation",
+        "resource allocation"
+      ],
+      "skillsNeeded": [
+        "policy analysis",
+        "R"
+      ],
+      "stage": "In progress (internal review)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Marcus",
+        "email": "criticaldata-lab@mit.edu"
+      }
+    },
+    {
+      "id": "S015",
+      "title": "A Narrative Review of AI Hype Cycles in Medicine (1980-2026)",
+      "abstract": "A historical narrative review tracing five decades of 'AI will transform medicine' predictions against what actually shipped, looking for a pattern in why certain claims recur every hype cycle.",
+      "tags": [
+        "writing",
+        "history of science",
+        "healthcare AI"
+      ],
+      "skillsNeeded": [
+        "writing",
+        "literature review"
+      ],
+      "stage": "In progress (drafting)",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Sofia",
+        "email": "criticaldata-lab@mit.edu"
+      }
+    },
+    {
+      "id": "S017",
+      "title": "Who Gets Left Out? Auditing Consent Forms for Health Literacy",
+      "abstract": "An audit of hospital consent forms' reading-level and comprehensibility across a diverse literacy sample, finding that most forms require college-level reading fluency to understand basic risks.",
+      "tags": [
+        "health equity",
+        "research ethics",
+        "health literacy"
+      ],
+      "skillsNeeded": [
+        "qualitative research",
+        "writing"
+      ],
+      "stage": "Submitted, under review",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Priya",
+        "email": "priya.raman@example.org"
+      }
+    },
+    {
+      "id": "S019",
+      "title": "Which Combination Therapies Actually Get Tried First? A Claims-Data Audit",
+      "abstract": "A claims-data audit of real-world combination-therapy sequencing for a common chronic condition, benchmarked against clinical-guideline recommended sequences.",
+      "tags": [
+        "machine learning",
+        "clinical data",
+        "claims data"
+      ],
+      "skillsNeeded": [
+        "Python",
+        "causal inference"
+      ],
+      "stage": "Submitted, under review",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Wei",
+        "email": "wei.zhang@example.org"
+      }
+    },
+    {
+      "id": "S020",
+      "title": "Explaining Statistics to Journalists: A Field Guide From Five Years of Media Requests",
+      "abstract": "A practical field guide, drawn from five years of fielding journalist questions about the lab's statistical results, on how to explain p-values, confidence intervals, and effect sizes without either dumbing them down or getting misquoted.",
+      "tags": [
+        "writing",
+        "science communication",
+        "public engagement"
+      ],
+      "skillsNeeded": [
+        "writing",
+        "editing"
+      ],
+      "stage": "Published",
+      "openToNewMembers": true,
+      "contact": {
+        "name": "Sofia",
+        "email": "criticaldata-lab@mit.edu"
+      }
     }
   ]
 }

@@ -76,7 +76,11 @@ async function freshPage(browser, viewport) {
   await page.check('#new-project-open');
   await page.fill('#new-project-targetvenue', 'Journal of Automated Testing');
   await page.click('#new-project-save');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(200);
+
+  const createToastText = await page.$eval('#toast-container .toast', el => el.textContent).catch(() => null);
+  assert(createToastText && /created/i.test(createToastText), 'A toast confirms project creation, got: ' + createToastText);
+  await page.waitForTimeout(300);
 
   const overlayClosedAfterSave = await page.$eval('#new-project-overlay', el => !el.classList.contains('open'));
   assert(overlayClosedAfterSave, 'Modal closes after a successful save');
@@ -133,7 +137,10 @@ async function freshPage(browser, viewport) {
   await page.click('.detail-panel [data-open-delete]');
   await page.waitForTimeout(150);
   await page.click('.detail-panel [data-confirm-delete]');
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(150);
+
+  const deleteToastText = await page.$eval('#toast-container .toast', el => el.textContent).catch(() => null);
+  assert(deleteToastText && /deleted/i.test(deleteToastText), 'A toast confirms the deletion of a locally-added project, got: ' + deleteToastText);
 
   const emptyStateAfterDelete = await page.$('.empty-state');
   assert(emptyStateAfterDelete !== null, 'The added project is gone immediately after confirming delete');
@@ -161,7 +168,10 @@ async function freshPage(browser, viewport) {
   console.log('Delete confirm text (real paper):', realConfirmText);
   assert(realConfirmText.includes('stays in the real data.json'), 'Confirmation text correctly says the real record is untouched: ' + realConfirmText);
   await page.click('.detail-panel [data-confirm-delete]');
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(150);
+
+  const realDeleteToastText = await page.$eval('#toast-container .toast', el => el.textContent).catch(() => null);
+  assert(realDeleteToastText && /hidden/i.test(realDeleteToastText), 'A toast confirms the real paper was hidden (not a native alert), got: ' + realDeleteToastText);
 
   const emptyStateAfterRealDelete = await page.$('.empty-state');
   assert(emptyStateAfterRealDelete !== null, 'AI Sriracha disappears from the rendered list after deleting');
@@ -180,9 +190,13 @@ async function freshPage(browser, viewport) {
   const stillHiddenAfterReload = await page.$('.empty-state');
   assert(stillHiddenAfterReload !== null, 'The hidden real paper stays hidden after a refresh (deleted-list persisted)');
 
-  page.on('dialog', d => d.accept());
   await page.click('#reset-demo-btn');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(150);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle' }),
+    page.click('#confirm-ok')
+  ]);
+  await page.waitForTimeout(200);
   await page.fill('#search-input', 'AI Sriracha');
   await page.waitForTimeout(200);
   const backAfterReset = await page.$('.paper-card');

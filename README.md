@@ -10,11 +10,11 @@ No login, no build step, nothing to install to view it.
 
 | File | Purpose |
 |---|---|
-| `index.html` | The internal dashboard: KPIs, search, the paper detail view, and demo-mode inline editing/create/delete. Requires no login today, but shows full internal detail (deadlines, drafts, meeting links, notes) — see "Project Discovery" below for why that matters. One file, no framework, no build step. |
+| `index.html` | The internal dashboard: KPIs (including an "Open to New Members" count), a single search box that matches title/owner/venue/notes (there's no separate owner dropdown — it didn't scale past a handful of names), the paper detail view, and demo-mode inline editing/create/delete. Requires no login today, but shows full internal detail (deadlines, drafts, meeting links, notes) — see "Project Discovery" below for why that matters. One file, no framework, no build step. |
 | `discover.html` | The **public-safe** project-browsing page for prospective members. Reads only `data.public.json` — never `data.json`. See "Project Discovery" below. |
 | `data.json` | The real data `index.html` reads, generated from the spreadsheet. Contains everything — safe only for lab members. |
 | `data.public.json` | An explicit-allowlist export for `discover.html`, generated alongside `data.json`. Safe to share with anyone — see "Project Discovery" below for exactly why. |
-| `data.sample.json`, `data.sample.public.json` | Fixture data (8 papers, 3 of them open to new members) covering every UI state, for local testing/demos of both pages. |
+| `data.sample.json`, `data.sample.public.json` | Fixture data (20 papers, 13 of them open to new members, spanning ML/policy-ethics/clinical-data/writing-heavy projects) covering every UI state, for local testing/demos of both pages. |
 | `export_data.py` | Regenerates `data.json` **and** `data.public.json` from `Lab_Papers_Dashboard.xlsx`, reconciling `data.json` with any edits already applied via the Issue Form fallback. |
 | `Lab_Papers_Dashboard.xlsx` | Source of truth for bulk edits. Papers Tracker + Submissions Log + Team Directory. |
 | `assets/mit-critical-data-logo.svg`, `assets/favicon.ico` | Brand assets, pulled from criticaldata.mit.edu. |
@@ -86,7 +86,10 @@ What demo mode does:
   and clears when the tab closes).
 - **Reset demo data** (top banner) clears everything — edits, added papers,
   and hidden/deleted papers — back to the original `data.json`/
-  `data.sample.json`. Use this between demo runs.
+  `data.sample.json`. Use this between demo runs. Both this and the delete
+  confirmation use the app's own styled confirm dialog, not the browser's
+  native `confirm()` popup — and every action that changes something
+  (saved, created, deleted, reset) shows a small toast so it's never silent.
 - **Copy my changes as JSON** (top banner) dumps exactly what's in
   `localStorage` — edits, newly added papers, and deleted paper IDs, as
   `{ edits, added, deleted }` — so real changes made during a demo aren't
@@ -174,15 +177,29 @@ below for the exact columns to add): `abstract` (2-3 sentence plain-language
 summary — real papers get one only once the spreadsheet has one; nothing
 was fabricated), `tags`, `skillsNeeded`, and `openToNewMembers` (a project
 only appears on `discover.html` once this is explicitly set `true` —
-nothing is open by default).
+nothing is open by default). `openToNewMembers` also drives a small
+"🤝 Open to new members" badge and its own KPI card on `index.html` itself,
+so lab members can see at a glance which projects are recruiting without
+needing to visit the public page.
 
-**Matching is intentionally basic today:** plain keyword overlap between
-what someone types and each project's tags/abstract/skills, sorted
-best-match-first — the page says so on-screen ("Basic keyword matching for
-now — this will become an AI-powered recommendation soon"). A real
-AI-matching agent representing the PI is a planned future upgrade, not
-built here; today's version needs no ML, no API key, nothing that can fail
-in front of an audience.
+**Matching is intentionally basic today:** weighted keyword overlap between
+what someone types and each project's title/tags/skillsNeeded/abstract,
+sorted best-match-first — the page says so on-screen ("Basic keyword
+matching for now — this will become an AI-powered recommendation soon"). A
+tag or skill hit counts for more than the same word merely appearing inside
+the abstract (a tag match is a much stronger "this is what you want" signal
+than an incidental word in a sentence), and matching is word-boundary aware
+rather than raw substring search — a short token like "AI" only counts
+against a whole word, not a random word that happens to contain those two
+letters (an earlier substring-only version of this matched "AI" inside
+"cl**ai**ms", surfacing an unrelated paper for every AI query). A query
+that matches nothing still shows every open project rather than an empty
+page, and says so ("No close matches for '…' — showing all N open
+projects"); a query that's entirely stopwords or too short to search on
+gets its own plain-language explanation instead of silently falling back.
+A real AI-matching agent representing the PI is a planned future upgrade,
+not built here; today's version needs no ML, no API key, nothing that can
+fail in front of an audience.
 
 Try it locally: `http://localhost:8000/discover.html?data=data.sample.public.json`
 (the real `data.public.json` is empty until the spreadsheet has at least one
@@ -267,12 +284,15 @@ pattern — one row per meeting, joined by paper title):
 whether a paper's public contact on `discover.html` shows that owner's real
 email or falls back to the generic lab inbox. See "Project Discovery" above.
 
-`data.sample.json`'s 8 fixture papers already have realistic example values
-across every field above (3 of the 8 marked `openToNewMembers: true`, with
-varied tags for testing keyword matching; the rest show the full range of
-meeting/draft/resource states) — open it or demo with
-`?data=data.sample.json` (and `discover.html?data=data.sample.public.json`)
-to see the full range without touching the real spreadsheet or real data.
+`data.sample.json`'s 20 fixture papers already have realistic example values
+across every field above (13 of the 20 marked `openToNewMembers: true`,
+spanning ML-heavy, policy/ethics-heavy, clinical-data-heavy, and
+writing-heavy projects so `discover.html`'s search demos convincingly
+across different typed interests; the rest show the full range of
+meeting/draft/resource/multi-attempt-submission states) — open it or demo
+with `?data=data.sample.json` (and
+`discover.html?data=data.sample.public.json`) to see the full range without
+touching the real spreadsheet or real data.
 
 **One shape worth double-checking before it's locked in further:**
 `resources` is intentionally free-form (`label` + `url`, no `type` field) so
@@ -310,7 +330,7 @@ python3 -m http.server 8000
 Then open `http://localhost:8000/` in your browser. This is also exactly how
 GitHub Pages serves it in production, so testing this way matches reality.
 
-To demo/preview with fake fixture data (`data.sample.json`, 8 papers
+To demo/preview with fake fixture data (`data.sample.json`, 20 papers
 covering every status, all four new fields populated) instead of the real
 `data.json`, open `http://localhost:8000/?data=data.sample.json`.
 
