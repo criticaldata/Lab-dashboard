@@ -49,6 +49,32 @@ function assert(cond, msg) {
 
   await page.screenshot({ path: path.join(DIR, 'discover_empty_search_desktop.png'), fullPage: true });
 
+  // ================= "New to the lab?" section =================
+  // Sits between the search box and the project list — see README.md and
+  // the NEWCOMER_INFO comment in discover.html for why. The four bullets
+  // are deliberate placeholders (not real lab process) until someone
+  // edits them; this asserts that's still unmistakable, and that the two
+  // real resource links are actually correct, safe, external links.
+  const placeholderBullets = await page.$$eval('.placeholder-bullet', els => els.map(e => e.textContent));
+  assert(placeholderBullets.length === 4, 'All 4 "How the lab works" bullets render, got ' + placeholderBullets.length);
+  assert(placeholderBullets.every(t => t.includes('PLACEHOLDER')), 'Every one of them is still visibly marked as a placeholder, got: ' + JSON.stringify(placeholderBullets));
+  const placeholderTagCount = await page.$$eval('.placeholder-tag', els => els.length);
+  assert(placeholderTagCount === 4, 'Every placeholder bullet also carries the visual "Placeholder" tag badge, got ' + placeholderTagCount);
+
+  const resourceLinks = await page.$$eval('.resource-link a', els => els.map(e => ({
+    href: e.getAttribute('href'), target: e.getAttribute('target'), rel: e.getAttribute('rel'), text: e.textContent
+  })));
+  assert(resourceLinks.length === 2, 'Both real resource links render, got ' + resourceLinks.length);
+  const physionet = resourceLinks.find(l => l.text === 'PhysioNet');
+  const criticalData = resourceLinks.find(l => l.text === 'MIT Critical Data');
+  assert(physionet && physionet.href === 'https://physionet.org/', 'PhysioNet link points at the real URL, got: ' + (physionet && physionet.href));
+  assert(criticalData && criticalData.href === 'https://criticaldata.mit.edu/', 'MIT Critical Data link points at the real URL, got: ' + (criticalData && criticalData.href));
+  assert(resourceLinks.every(l => l.target === '_blank' && l.rel === 'noopener'), 'Both real links open in a new tab with rel="noopener", got: ' + JSON.stringify(resourceLinks));
+  const resourceDescriptions = await page.$$eval('.resource-link p', els => els.map(e => e.textContent.trim()));
+  assert(resourceDescriptions.length === 2 && resourceDescriptions.every(d => d.length > 10), 'Both real links have a real one-line description, got: ' + JSON.stringify(resourceDescriptions));
+
+  await page.screenshot({ path: path.join(DIR, 'discover_newcomer_section_desktop.png'), fullPage: true });
+
   // ================= Network isolation: never touches data.json =================
   const touchedRealData = requestUrls.some(u => {
     try { return new URL(u).pathname.endsWith('/data.json'); } catch (e) { return false; }
@@ -144,6 +170,12 @@ function assert(cond, msg) {
   await page.goto(BASE, { waitUntil: 'networkidle' });
   await page.waitForTimeout(200);
   await page.screenshot({ path: path.join(DIR, 'discover_empty_search_mobile.png'), fullPage: true });
+
+  const mobilePlaceholderCount = await page.$$eval('.placeholder-bullet', els => els.length);
+  assert(mobilePlaceholderCount === 4, 'The "New to the lab?" placeholder bullets still render on mobile, got ' + mobilePlaceholderCount);
+  const mobileResourceLinkCount = await page.$$eval('.resource-link a', els => els.length);
+  assert(mobileResourceLinkCount === 2, 'Both real resource links still render on mobile, got ' + mobileResourceLinkCount);
+  await page.screenshot({ path: path.join(DIR, 'discover_newcomer_section_mobile.png'), fullPage: true });
 
   await page.fill('#interest-input', 'machine learning and public health policy');
   await page.waitForTimeout(150);

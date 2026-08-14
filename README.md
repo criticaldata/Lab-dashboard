@@ -415,6 +415,26 @@ ever wanted, an optional `type` (e.g. `"slack"`, `"drive"`, `"dataset"`,
 `"other"`) would be a cheap, backwards-compatible addition — flagging now
 rather than after real resource data exists to migrate.
 
+## Before this goes live
+
+`discover.html` currently ships with **placeholder onboarding text** in its
+"New to the lab?" section (between the search box and the project list) —
+not real lab guidance. The four "How the lab works" bullets literally read
+`[PLACEHOLDER — e.g. "..."]`, styled with a dashed amber border and a
+"Placeholder" tag so they can't be mistaken for real content, but they
+still need to be replaced before this page is shared outside the lab.
+
+**To fix it:** open `discover.html`, find the `NEWCOMER_INFO` object near
+the top of the `<script>` block (right after `var state = ...` — it has a
+comment block above it saying exactly this). Replace each string in
+`placeholderBullets` with your lab's actual guidance (meeting cadence, how
+to join a project, who to contact, etc.). Once a bullet's text no longer
+starts with `[PLACEHOLDER`, it automatically stops rendering with the
+dashed border and tag and just shows as plain text — no CSS or other code
+changes needed. The two resource links in the same object (PhysioNet, MIT
+Critical Data) are real, working links with genuine descriptions and don't
+need editing.
+
 ## Deployment
 
 Repo → **Settings → Pages** → Source: **Deploy from a branch** → Branch:

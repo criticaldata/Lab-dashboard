@@ -88,7 +88,11 @@ not meant to be committed).
   `data.public.json` resolves, the "I'm interested" mailto link is
   correct, mobile layout, and — the other half of the security guarantee
   alongside the allowlist test — that the page makes zero network requests
-  to `data.json`, ever.
+  to `data.json`, ever. Also covers the "New to the lab?" section: all 4
+  onboarding bullets are still visibly marked as placeholders (text + the
+  "Placeholder" tag), and both real resource links (PhysioNet, MIT
+  Critical Data) point at the correct URL and open with
+  `target="_blank" rel="noopener"`.
 - **`test_discover_bridge.js`** — the index.html -> discover.html demo
   bridge: a project created via "+ New Project" with "Open to new members"
   checked actually shows up on `discover.html`, flagged as a demo

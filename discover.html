@@ -107,6 +107,72 @@
     font-style:italic;
   }
 
+  /* -------------------- "New to the lab?" section -------------------- */
+  .newcomer-section{
+    margin:0 0 32px;
+    padding:24px 26px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+  .newcomer-section h2{
+    margin:0 0 16px;
+    font-size:1.02rem;
+    color:var(--mit-charcoal);
+  }
+  .newcomer-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+  }
+  .newcomer-col h3{
+    margin:0 0 10px;
+    font-size:.74rem;
+    font-weight:700;
+    color:var(--mit-charcoal);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .placeholder-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .placeholder-bullet{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    padding:9px 12px;
+    border:1px dashed var(--amber);
+    border-radius:6px;
+    background:var(--amber-bg);
+    font-size:.85rem;
+    color:var(--amber);
+    font-style:italic;
+    line-height:1.4;
+  }
+  .placeholder-tag{
+    flex:0 0 auto;
+    font-style:normal;
+    font-size:.6rem;
+    font-weight:800;
+    letter-spacing:.04em;
+    color:#fff;
+    background:var(--amber);
+    padding:2px 6px;
+    border-radius:4px;
+    white-space:nowrap;
+    margin-top:1px;
+  }
+  /* Once a bullet is edited to no longer start with "[PLACEHOLDER", it
+     renders here instead — plain text, no dashed border, no tag. */
+  .real-bullet{
+    padding:9px 12px;
+    font-size:.85rem;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .resource-link-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
+  .resource-link a{font-size:.92rem;font-weight:700;text-decoration:none;}
+  .resource-link a:hover{text-decoration:underline;}
+  .resource-link p{margin:3px 0 0;font-size:.84rem;color:var(--muted);}
+
   #result-count{
     font-size:.84rem;
     color:var(--muted);
@@ -256,6 +322,8 @@
     header.site .wrap{flex-direction:column;align-items:flex-start;}
     .hero h2{font-size:1.3rem;}
     .project-card{padding:16px 18px;}
+    .newcomer-section{padding:18px 18px;}
+    .newcomer-grid{grid-template-columns:1fr;gap:20px;}
   }
 </style>
 </head>
@@ -286,6 +354,8 @@
     <p class="matching-note">Basic keyword matching for now — this will become an AI-powered recommendation soon.</p>
   </div>
 
+  <section class="newcomer-section" id="newcomer-section" aria-label="New to the lab?"></section>
+
   <div id="result-count"></div>
   <div class="project-list" id="project-list"></div>
 </main>
@@ -297,6 +367,68 @@
   "use strict";
 
   var state = { papers: [], query: "", loading: true, demoLocalCount: 0 };
+
+  // ---------------------------------------------------------------------
+  // "New to the lab?" section content — EDIT THIS BEFORE SHARING THIS PAGE
+  // WIDELY. The four bullets below are placeholders, not real guidance —
+  // deliberately, so nobody (including whoever wrote this) mistakes
+  // made-up onboarding details for the real thing. Replace each with your
+  // lab's actual process; the bracket/"PLACEHOLDER" styling disappears
+  // automatically once the text no longer starts with "[PLACEHOLDER".
+  // The two resource links are real public sites and don't need editing.
+  // See README.md's "Before this goes live" section too.
+  // ---------------------------------------------------------------------
+  var NEWCOMER_INFO = {
+    placeholderBullets: [
+      '[PLACEHOLDER — e.g. "We meet every Tuesday at 2pm ET over Zoom"]',
+      '[PLACEHOLDER — e.g. "To join a project, message the paper’s owner directly"]',
+      '[PLACEHOLDER — e.g. "New members should read the two links below first"]',
+      '[PLACEHOLDER — e.g. "Questions? Contact [name/email]"]'
+    ],
+    resourceLinks: [
+      {
+        name: "PhysioNet",
+        url: "https://physionet.org/",
+        description: "A free, open-access repository of clinical and physiological datasets widely used in health-data research — a common starting point for finding real data to work with."
+      },
+      {
+        name: "MIT Critical Data",
+        url: "https://criticaldata.mit.edu/",
+        description: "The broader MIT research initiative this lab is part of, focused on using health data responsibly to improve patient care worldwide."
+      }
+    ]
+  };
+
+  function renderNewcomerSection(){
+    var mount = document.getElementById("newcomer-section");
+    if (!mount) return;
+
+    var bulletsHtml = NEWCOMER_INFO.placeholderBullets.map(function(text){
+      var isPlaceholder = text.indexOf("[PLACEHOLDER") === 0;
+      return '<li class="' + (isPlaceholder ? "placeholder-bullet" : "real-bullet") + '">' +
+        (isPlaceholder ? '<span class="placeholder-tag">Placeholder</span>' : "") +
+        '<span>' + escapeHtml(text) + '</span></li>';
+    }).join("");
+
+    var linksHtml = NEWCOMER_INFO.resourceLinks.map(function(link){
+      return '<li class="resource-link">' +
+        '<a href="' + escapeHtml(link.url) + '" target="_blank" rel="noopener">' + escapeHtml(link.name) + '</a>' +
+        '<p>' + escapeHtml(link.description) + '</p></li>';
+    }).join("");
+
+    mount.innerHTML =
+      '<h2>New to the lab?</h2>' +
+      '<div class="newcomer-grid">' +
+        '<div class="newcomer-col">' +
+          '<h3>How the lab works</h3>' +
+          '<ul class="placeholder-list">' + bulletsHtml + '</ul>' +
+        '</div>' +
+        '<div class="newcomer-col">' +
+          '<h3>Key links</h3>' +
+          '<ul class="resource-link-list">' + linksHtml + '</ul>' +
+        '</div>' +
+      '</div>';
+  }
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, function(c){
@@ -569,6 +701,8 @@
   }
 
   function init(){
+    renderNewcomerSection();
+
     document.getElementById("interest-input").addEventListener("input", function(e){
       state.query = e.target.value;
       render();
