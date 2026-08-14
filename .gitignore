@@ -8,10 +8,7 @@ __pycache__/
 # "Security notes" section for why).
 team-emails.local.json
 
-# Worker dev/deploy tooling
-worker/node_modules/
-worker/.wrangler/
-worker/.dev.vars
+# Worker dev/deploy tooling (worker-phase2-paused/ — see its README)
 worker-phase2-paused/worker/node_modules/
 worker-phase2-paused/worker/.wrangler/
 worker-phase2-paused/worker/.dev.vars

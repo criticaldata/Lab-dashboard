@@ -3,7 +3,7 @@
 This is the Cloudflare Worker auth pipeline (email one-time-code
 verification → signed session → committing edits straight to `data.json`
 via the GitHub Contents API). It's fully built and passed its offline test
-suite (`worker/test/run.js` — 26 assertions across 11 scenarios, including
+suite (`worker/test/run.js` — 32 assertions across 11 scenarios, including
 the unauthorized-email, expired/reused-code, and concurrent-write-conflict
 cases), but the live Cloudflare setup (account, KV namespace, secrets,
 `wrangler deploy`) hit enough friction that we're not debugging it under

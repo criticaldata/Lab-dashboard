@@ -171,8 +171,10 @@ async function clearStorage(page) {
   assert(overlayOpen, 'Copy-JSON overlay opens');
   const jsonText = await page.$eval('#copy-json-text', el => el.value);
   const parsed = JSON.parse(jsonText);
-  assert(parsed['P006'] && parsed['P006'].fields.priority === 'High', 'Copy-JSON dump contains the real edit, got: ' + jsonText.slice(0, 200));
-  assert(parsed['P006'].editedBy === 'Copy Tester', 'Copy-JSON dump attributes the edit to the entered name');
+  // Copy-JSON's top-level shape is {edits, added, deleted} — added/deleted
+  // were introduced alongside create/delete support; see test_create_delete.js.
+  assert(parsed.edits && parsed.edits['P006'] && parsed.edits['P006'].fields.priority === 'High', 'Copy-JSON dump contains the real edit, got: ' + jsonText.slice(0, 250));
+  assert(parsed.edits['P006'].editedBy === 'Copy Tester', 'Copy-JSON dump attributes the edit to the entered name');
   await page.click('#copy-json-close');
   await page.waitForTimeout(100);
   const overlayClosed = await page.$eval('#copy-json-overlay', el => !el.classList.contains('open'));

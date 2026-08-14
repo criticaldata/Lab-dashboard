@@ -10,7 +10,7 @@ No login, no build step, nothing to install to view it.
 
 | File | Purpose |
 |---|---|
-| `index.html` | The internal dashboard: KPIs, search, the paper detail view, and demo-mode inline editing. Requires no login today, but shows full internal detail (deadlines, drafts, meeting links, notes) — see "Project Discovery" below for why that matters. One file, no framework, no build step. |
+| `index.html` | The internal dashboard: KPIs, search, the paper detail view, and demo-mode inline editing/create/delete. Requires no login today, but shows full internal detail (deadlines, drafts, meeting links, notes) — see "Project Discovery" below for why that matters. One file, no framework, no build step. |
 | `discover.html` | The **public-safe** project-browsing page for prospective members. Reads only `data.public.json` — never `data.json`. See "Project Discovery" below. |
 | `data.json` | The real data `index.html` reads, generated from the spreadsheet. Contains everything — safe only for lab members. |
 | `data.public.json` | An explicit-allowlist export for `discover.html`, generated alongside `data.json`. Safe to share with anyone — see "Project Discovery" below for exactly why. |
@@ -24,6 +24,7 @@ No login, no build step, nothing to install to view it.
 | `scripts/generate_issue_template.py`, `scripts/apply_update.py` | The Issue Form fallback pipeline — see "The Issue Form fallback" below. |
 | `.github/` | The Issue Form fallback's template + Actions. |
 | `worker-phase2-paused/` | A Cloudflare Worker (email-OTP auth + committing edits to `data.json`) that's built and tested but **not currently live** — parked, not deleted. See its own README and "Future: real authentication" below. |
+| `test/` | Playwright + Node test suite covering `index.html`, `discover.html`, and the `data.public.json` security allowlist. See `test/README.md`. |
 
 ## Data flow
 
@@ -46,35 +47,60 @@ is fully visible on the paper's timeline rather than lost.
 
 Click a paper's **title** to open its detail view — full meta, next/past
 meetings, current draft link, resources, and submission history — then
-click **Edit** inside it to change anything.
+click **Edit** inside it to change anything, add a **+ New Project**, or
+delete one.
 
-**Right now, editing is open to anyone viewing the site, and every change is
-saved to that browser's `localStorage` only** — never to `data.json`, never
-to the shared repo, never seen by anyone else. A banner across the top of
-the page says so at all times. This is intentional: the real auth pipeline
-(email verification + committing to the shared repo) is built but paused —
-see "Future: real authentication" below — and today's priority was a demo
-that works reliably in front of an audience with zero external services
-that could fail mid-demo.
+**Right now, editing, creating, and deleting are all open to anyone viewing
+the site, and every change is saved to that browser's `localStorage`
+only** — never to `data.json`, never to the shared repo, never seen by
+anyone else. A banner across the top of the page says so at all times. This
+is intentional: the real auth pipeline (email verification + committing to
+the shared repo) is built but paused — see "Future: real authentication"
+below — and today's priority was a demo that works reliably in front of an
+audience with zero external services that could fail mid-demo. It's also
+why delete isn't a real delete: `data.json` is shared and unauthenticated,
+so a real delete-on-click would let any visitor permanently remove a real
+paper for the whole lab. Deleting a real paper here only hides it in that
+browser's `localStorage` (a tombstone) — `data.json` itself is never
+touched, and "Reset demo data" brings it right back.
 
 What demo mode does:
 
-- First time you edit in a browser tab, you're asked for your name (free
-  text, not verified — cosmetic attribution only, shown next to the change
-  so a room full of people editing different papers can tell whose edit is
-  whose). It's remembered for the rest of that browser session.
+- First time you edit, create, or delete in a browser tab, you're asked for
+  your name (free text, not verified — cosmetic attribution only, shown
+  next to the change so a room full of people editing different papers can
+  tell whose edit is whose). It's remembered for the rest of that browser
+  session.
 - Edited papers show an **"Edited (demo)"** flag on their card and a note in
   their detail view ("Edited in this demo session by \_\_\_").
-- Edits persist across a page refresh (they're in `localStorage`, which
+- **+ New Project** (top of the dashboard) opens a blank version of the same
+  form used for editing — only Title is required. The new paper gets an ID
+  in the same `P0xx` scheme as the real data (continuing from the highest
+  existing number) and shows a **"New (not yet shared)"** flag on its card.
+- Inside a paper's edit view, **Delete this project…** asks for confirmation
+  before doing anything (no single-click delete). Deleting a paper you
+  created locally removes it outright; deleting a real, `data.json`-sourced
+  paper only hides it in this browser (see above).
+- All of this persists across a page refresh (it's in `localStorage`, which
   survives reloads — unlike the session name, which is in `sessionStorage`
   and clears when the tab closes).
-- **Reset demo data** (top banner) clears everything back to the original
-  `data.json`/`data.sample.json` — use this between demo runs.
+- **Reset demo data** (top banner) clears everything — edits, added papers,
+  and hidden/deleted papers — back to the original `data.json`/
+  `data.sample.json`. Use this between demo runs.
 - **Copy my changes as JSON** (top banner) dumps exactly what's in
-  `localStorage` so real edits made during a demo aren't lost — a
-  maintainer can hand-apply that JSON into the real `data.json` later. It's
-  the same shape `apply_update.py` produces (`{ paperId: { fields, editedBy,
-  editedAt } }`), so it's not a one-off format.
+  `localStorage` — edits, newly added papers, and deleted paper IDs, as
+  `{ edits, added, deleted }` — so real changes made during a demo aren't
+  lost. A maintainer can hand-apply that JSON into the real `data.json`
+  later (the `edits` portion is the same shape `apply_update.py` produces:
+  `{ paperId: { fields, editedBy, editedAt } }`).
+
+**None of this touches `discover.html`.** Papers created or deleted in demo
+mode only ever change `index.html`'s `localStorage` — `discover.html` reads
+a completely separate file, `data.public.json`, generated only by
+`export_data.py` from the real spreadsheet. A project added here will never
+appear there, and one hidden here is never actually removed from there,
+until it goes through the real spreadsheet → `export_data.py` pipeline. The
+demo banner and the New Project form both say so on-screen.
 
 To demo against the safe fixture data instead of real lab papers, open
 `index.html?data=data.sample.json` (see "Viewing this locally" below).
@@ -297,11 +323,13 @@ real problem if it were the permanent design. Two real options exist:
 **Already built, currently paused:** `worker-phase2-paused/` is a complete
 Cloudflare Worker doing email one-time-code verification, signed session
 tokens, and committing straight to `data.json` via the GitHub Contents API
-— fully covered by an offline test suite (26 assertions, including the
-unauthorized-email, expired/reused-code, and concurrent-edit-conflict
-cases). It hit Cloudflare account/CLI setup friction that wasn't worth
-debugging under demo deadline pressure; the code itself was never the
-problem. See `worker-phase2-paused/README.md`.
+— fully covered by an offline test suite (`worker/test/run.js`, 32
+assertions across 11 scenarios, including the unauthorized-email,
+expired/reused-code, and concurrent-edit-conflict cases — run it yourself
+with `node worker-phase2-paused/worker/test/run.js`, no setup needed, it's
+fully self-mocked). It hit Cloudflare account/CLI setup friction that
+wasn't worth debugging under demo deadline pressure; the code itself was
+never the problem. See `worker-phase2-paused/README.md`.
 
 **The likely long-term replacement: Supabase.** A hand-maintained email
 allowlist (what the paused Worker uses, via a `TEAM_EMAILS` secret) doesn't

@@ -231,6 +231,26 @@
     padding:2px 8px;
     border-radius:999px;
   }
+  .new-flag{
+    font-size:.74rem;
+    font-weight:600;
+    color:var(--teal);
+    background:var(--teal-bg);
+    padding:2px 8px;
+    border-radius:999px;
+  }
+  .new-project-btn{
+    background:#fff;
+    border:1px solid var(--mit-red);
+    color:var(--mit-red);
+    border-radius:6px;
+    padding:9px 16px;
+    font-size:.86rem;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .new-project-btn:hover{background:var(--red-bg);}
 
   .detail-panel{
     display:none;
@@ -293,6 +313,15 @@
   .detail-meta-grid dt{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;}
   .detail-meta-grid dd{margin:2px 0 0;color:var(--ink);}
   .detail-empty{color:var(--muted);font-size:.86rem;font-style:italic;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .pill{
+    font-size:.76rem;
+    padding:3px 10px;
+    border-radius:999px;
+    background:var(--panel);
+    color:var(--muted);
+    border:1px solid var(--line);
+  }
   .resource-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
   .resource-list li a{font-size:.88rem;}
   .meeting-block{font-size:.86rem;}
@@ -504,6 +533,9 @@
     flex-direction:column;
     gap:10px;
   }
+  .modal-box.wide{max-width:640px;max-height:88vh;}
+  .modal-box.wide form,
+  .modal-box.wide .modal-scroll{overflow-y:auto;padding-right:4px;}
   .modal-box h4{margin:0;font-size:1rem;color:var(--mit-charcoal);}
   .modal-box textarea{
     flex:1;
@@ -516,6 +548,43 @@
     resize:vertical;
   }
   .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+
+  .danger-zone{
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  .delete-link{
+    background:none;
+    border:none;
+    color:var(--mit-red);
+    font-size:.82rem;
+    font-weight:600;
+    cursor:pointer;
+    padding:4px 0;
+    text-decoration:underline;
+  }
+  .delete-confirm{
+    background:var(--red-bg);
+    border:1px solid var(--mit-red);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .delete-confirm p{margin:0 0 12px;font-size:.88rem;color:var(--mit-charcoal);}
+  .edit-btn-danger{
+    background:var(--mit-red);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:9px 16px;
+    font-size:.86rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .edit-btn-danger:hover{background:#8a1a2b;}
+  .checkbox-field{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .checkbox-field input{width:auto;}
+  .checkbox-field label{margin:0;font-size:.84rem;font-weight:600;color:var(--ink);}
 
   footer.site{
     margin-top:40px;
@@ -537,11 +606,13 @@
     .paper-card h3,
     .paper-title-btn{max-width:100%;}
     .controls select{flex:1 1 100%;}
+    .controls .new-project-btn{flex:1 1 100%;}
     #demo-banner{font-size:.78rem;padding:8px 12px;text-align:left;justify-content:flex-start;}
     .detail-meta-grid{grid-template-columns:1fr 1fr;}
     .edit-row2{flex-direction:column;gap:0;}
     .resource-edit-row{flex-wrap:wrap;}
     .resource-edit-row input:first-child{flex:1 1 100%;}
+    .modal-box.wide{max-width:100%;max-height:92vh;}
   }
 
   @media print{
@@ -583,7 +654,7 @@
 <body>
 
 <div id="demo-banner" role="status">
-  <span>🎭 Demo mode — edits are saved in this browser only, not yet shared with the team.</span>
+  <span>🎭 Demo mode — edits, new projects, and deletions are saved in this browser only, not yet shared with the team <span title="This also means anything added or deleted here won't appear or disappear on the public Discover page — that page reads a separate file generated from the real spreadsheet, not from this browser's demo data.">ⓘ</span>.</span>
   <div class="demo-actions">
     <button type="button" id="reset-demo-btn">Reset demo data</button>
     <button type="button" id="copy-demo-btn">Copy my changes as JSON</button>
@@ -616,6 +687,13 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="new-project-overlay">
+  <div class="modal-box wide">
+    <h4>New project</h4>
+    <div class="modal-scroll" id="new-project-form-slot"></div>
+  </div>
+</div>
+
 <main class="wrap">
   <div class="kpi-row" id="kpi-row"></div>
 
@@ -624,6 +702,7 @@
     <select id="owner-select" aria-label="Filter by owner">
       <option value="">All owners</option>
     </select>
+    <button type="button" class="new-project-btn" id="new-project-btn">+ New Project</button>
   </div>
 
   <div id="result-count"></div>
@@ -760,6 +839,8 @@
   // ---------------------------------------------------------------------
 
   var DEMO_EDITS_KEY = "labledger_demo_edits";
+  var DEMO_ADDED_KEY = "labledger_demo_added";
+  var DEMO_DELETED_KEY = "labledger_demo_deleted";
   var DEMO_NAME_KEY = "labledger_demo_name";
   var WAITING_STAGES = ["Idea", "On Hold", "Withdrawn"];
 
@@ -804,22 +885,29 @@
     return d.toLocaleString(undefined, opts);
   }
 
-  function loadDemoEdits(){
+  function loadJSON(key, fallback){
     try {
-      var raw = localStorage.getItem(DEMO_EDITS_KEY);
-      return raw ? JSON.parse(raw) : {};
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
     } catch (e) {
-      return {};
+      return fallback;
     }
   }
 
-  function saveDemoEdits(edits){
+  function saveJSON(key, value){
     try {
-      localStorage.setItem(DEMO_EDITS_KEY, JSON.stringify(edits));
+      localStorage.setItem(key, JSON.stringify(value));
     } catch (e) {
-      console.error("Lab Ledger: couldn't save demo edit (localStorage unavailable?)", e);
+      console.error("Lab Ledger: couldn't save demo state (localStorage unavailable?)", e);
     }
   }
+
+  function loadDemoEdits(){ return loadJSON(DEMO_EDITS_KEY, {}); }
+  function saveDemoEdits(edits){ saveJSON(DEMO_EDITS_KEY, edits); }
+  function loadDemoAdded(){ return loadJSON(DEMO_ADDED_KEY, []); }
+  function saveDemoAdded(added){ saveJSON(DEMO_ADDED_KEY, added); }
+  function loadDemoDeleted(){ return loadJSON(DEMO_DELETED_KEY, []); }
+  function saveDemoDeleted(deleted){ saveJSON(DEMO_DELETED_KEY, deleted); }
 
   function getDemoName(){
     try { return sessionStorage.getItem(DEMO_NAME_KEY) || ""; } catch (e) { return ""; }
@@ -829,20 +917,39 @@
     try { sessionStorage.setItem(DEMO_NAME_KEY, name); } catch (e) { /* non-fatal */ }
   }
 
-  // Each paper's patch is always the FULL latest value for every field the
-  // demo has touched (not a diff, not an append-only log) — every edit is
-  // computed against the current merged state, so overwriting is correct
-  // and there's no separate "append new submissions" bookkeeping needed.
-  function applyDemoEditsToPapers(rawPapers, edits){
-    return rawPapers.map(function(p){
+  // Builds the rendered paper list from three localStorage layers on top
+  // of the real, unmutated data:
+  //   - edits:   { paperId: { fields, editedBy, editedAt } } — the FULL
+  //               latest value for every field the demo has touched,
+  //               applies to both real and locally-added papers.
+  //   - added:   [ fullPaperObject, ... ] — brand-new papers created in
+  //               this demo session, never present in data.json.
+  //   - deleted: [ paperId, ... ] — a tombstone list. For a real paper this
+  //               is the ONLY way demo mode can "delete" it (data.json is
+  //               never touched); for a paper that was itself added in
+  //               this session, deleting it just removes it from `added`
+  //               instead (see commitDemoDelete) — nothing needs a
+  //               tombstone if it never existed outside localStorage.
+  function buildMergedPapers(rawPapers){
+    var edits = loadDemoEdits();
+    var added = loadDemoAdded();
+    var deletedSet = new Set(loadDemoDeleted());
+
+    function withEdits(p, isAdded){
       var patch = edits[p.id];
-      if (!patch) return p;
-      var merged = Object.assign({}, p, patch.fields || {});
-      merged._demoEdited = true;
-      merged._demoEditedBy = patch.editedBy;
-      merged._demoEditedAt = patch.editedAt;
+      var merged = patch ? Object.assign({}, p, patch.fields || {}) : Object.assign({}, p);
+      if (isAdded) merged._demoAdded = true;
+      if (patch) {
+        merged._demoEdited = true;
+        merged._demoEditedBy = patch.editedBy;
+        merged._demoEditedAt = patch.editedAt;
+      }
       return merged;
-    });
+    }
+
+    var fromReal = rawPapers.filter(function(p){ return !deletedSet.has(p.id); }).map(function(p){ return withEdits(p, false); });
+    var fromAdded = added.filter(function(p){ return !deletedSet.has(p.id); }).map(function(p){ return withEdits(p, true); });
+    return fromReal.concat(fromAdded);
   }
 
   function commitDemoEdit(paperId, updatedFields, editorName){
@@ -857,8 +964,45 @@
     return edits;
   }
 
+  function nextPaperId(){
+    var maxNum = 0;
+    state.papers.forEach(function(p){
+      var m = /^P(\d+)$/.exec(p.id || "");
+      if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+    });
+    return "P" + String(maxNum + 1).padStart(3, "0");
+  }
+
+  function commitDemoAdd(paper, editorName){
+    paper._demoCreatedBy = editorName;
+    paper._demoCreatedAt = new Date().toISOString();
+    var added = loadDemoAdded();
+    added.push(paper);
+    saveDemoAdded(added);
+  }
+
+  // A locally-added paper never existed outside this browser, so deleting
+  // it just removes it from `added` — no tombstone needed. A real paper
+  // (from data.json) can't be removed from that file, so its id goes on
+  // the `deleted` list instead, which filters it out of every render.
+  function commitDemoDelete(paperId){
+    var added = loadDemoAdded();
+    var wasLocallyAdded = added.some(function(p){ return p.id === paperId; });
+    if (wasLocallyAdded) {
+      saveDemoAdded(added.filter(function(p){ return p.id !== paperId; }));
+      var edits = loadDemoEdits();
+      if (edits[paperId]) { delete edits[paperId]; saveDemoEdits(edits); }
+    } else {
+      var deleted = loadDemoDeleted();
+      if (deleted.indexOf(paperId) === -1) {
+        deleted.push(paperId);
+        saveDemoDeleted(deleted);
+      }
+    }
+  }
+
   function refreshFromDemoEdits(){
-    state.papers = applyDemoEditsToPapers(state.rawPapers, loadDemoEdits());
+    state.papers = buildMergedPapers(state.rawPapers);
     populateOwnerSelect();
     render();
   }
@@ -916,6 +1060,15 @@
     }
     metaRow("Authors", p.authors ? escapeHtml(p.authors) : null);
     metaRow("Last updated", p.lastUpdated ? fmtDate(p.lastUpdated) : null);
+    metaRow("Skills needed", (p.skillsNeeded && p.skillsNeeded.length) ? escapeHtml(p.skillsNeeded.join(", ")) : null);
+    metaRow("Open to new members", p.openToNewMembers ? "Yes" : null);
+
+    var abstractHtml = p.abstract
+      ? '<p style="margin:0">' + escapeHtml(p.abstract) + '</p>'
+      : '<p class="detail-empty">No abstract yet.</p>';
+    var tagsHtml = (p.tags && p.tags.length)
+      ? '<div class="pill-row">' + p.tags.map(function(t){ return '<span class="pill">' + escapeHtml(t) + '</span>'; }).join("") + '</div>'
+      : "";
 
     var nextMeetingHtml;
     if (p.nextMeeting && p.nextMeeting.date) {
@@ -953,13 +1106,15 @@
       ? renderTimelineContent(p).replace('<div class="timeline">', '<div class="timeline open">')
       : '<p class="detail-empty">No submissions logged yet.</p>';
 
-    var editedNote = p._demoEdited
-      ? '<p class="hint">✏️ Edited in this demo session' + (p._demoEditedBy ? ' by ' + escapeHtml(p._demoEditedBy) : '') + '.</p>'
-      : '';
+    var noteParts = [];
+    if (p._demoAdded) noteParts.push('🆕 Created in this demo session' + (p._demoCreatedBy ? ' by ' + escapeHtml(p._demoCreatedBy) : '') + '.');
+    if (p._demoEdited) noteParts.push('✏️ Edited in this demo session' + (p._demoEditedBy ? ' by ' + escapeHtml(p._demoEditedBy) : '') + '.');
+    var editedNote = noteParts.length ? '<p class="hint">' + noteParts.join(' ') + '</p>' : '';
 
     panel.innerHTML =
       '<div class="detail-head"><h3>' + escapeHtml(p.title) + '</h3><button type="button" class="detail-close" data-detail-close aria-label="Close">×</button></div>' +
       badge + editedNote +
+      '<div class="detail-section"><h5>Abstract</h5>' + abstractHtml + tagsHtml + '</div>' +
       '<div class="detail-section"><dl class="detail-meta-grid">' + metaItems.join("") + '</dl></div>' +
       '<div class="detail-section"><h5>Next meeting</h5>' + nextMeetingHtml + '</div>' +
       '<div class="detail-section"><h5>Past meetings</h5>' + pastMeetingsHtml + '</div>' +
@@ -974,41 +1129,68 @@
 
   // -------------------- Detail panel: edit view --------------------
 
-  function renderDetailEditView(panel, p){
-    var uid = "edit-" + p.id;
-    var owners = Array.from(new Set(state.papers.map(function(x){ return x.owner; }).filter(Boolean))).sort();
-    var stageOptions = ["", "Idea", "Drafting", "Internal Review", "On Hold"];
-    var priorityOptions = ["", "High", "Medium", "Low"];
-    var decisionOptions = ["", "Under Review", "Revise & Resubmit", "Accepted", "Rejected", "Withdrawn"];
+  var STAGE_OPTIONS = ["", "Idea", "Drafting", "Internal Review", "On Hold"];
+  var PRIORITY_OPTIONS = ["", "High", "Medium", "Low"];
+  var DECISION_OPTIONS = ["", "Under Review", "Revise & Resubmit", "Accepted", "Rejected", "Withdrawn"];
 
-    function optionsHtml(values, current, emptyLabel){
-      return values.map(function(v){
-        var label = v === "" ? emptyLabel : v;
-        var selected = v === (current || "") ? " selected" : "";
-        return '<option value="' + escapeHtml(v) + '"' + selected + '>' + escapeHtml(label) + '</option>';
-      }).join("");
-    }
+  function optionsHtml(values, current, emptyLabel){
+    return values.map(function(v){
+      var label = v === "" ? emptyLabel : v;
+      var selected = v === (current || "") ? " selected" : "";
+      return '<option value="' + escapeHtml(v) + '"' + selected + '>' + escapeHtml(label) + '</option>';
+    }).join("");
+  }
 
-    var storedName = getDemoName();
+  function ownerOptionsList(){
+    return Array.from(new Set(state.papers.map(function(x){ return x.owner; }).filter(Boolean))).sort();
+  }
 
-    panel.innerHTML =
-      '<div class="detail-head"><h3>Edit ' + escapeHtml(p.id) + '</h3><button type="button" class="detail-close" data-detail-close aria-label="Close">×</button></div>' +
-      '<div class="edit-message-slot"></div>' +
-      '<div class="edit-field">' +
-        '<label for="' + uid + '-name">Your name<span class="field-hint">Shown as the editor of this change — demo attribution only, not verified.</span></label>' +
-        '<input type="text" id="' + uid + '-name" placeholder="e.g. Jane Doe" value="' + escapeHtml(storedName) + '">' +
-      '</div>' +
+  // "clinical ML, causal inference" -> ["clinical ML", "causal inference"].
+  // Client-side mirror of export_data.py's parse_list_cell(), same
+  // comma-separated convention so a value typed here would round-trip
+  // identically if it were ever entered in the spreadsheet instead.
+  function parseListInput(str){
+    if (!str) return [];
+    return str.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+  }
+
+  // Shared by both the "edit existing paper" and "new project" forms, so
+  // the two stay visually and behaviorally consistent — see README.md's
+  // "Demo mode" section.
+  function renderCommonProjectFieldsHtml(uid, p){
+    var owners = ownerOptionsList();
+    return (
       '<div class="edit-row2">' +
         '<div class="edit-field"><label for="' + uid + '-stage">Stage</label>' +
-          '<select id="' + uid + '-stage">' + optionsHtml(stageOptions, p.stage, "(no change)") + '</select></div>' +
+          '<select id="' + uid + '-stage">' + optionsHtml(STAGE_OPTIONS, p.stage, "(no change)") + '</select></div>' +
         '<div class="edit-field"><label for="' + uid + '-priority">Priority</label>' +
-          '<select id="' + uid + '-priority">' + optionsHtml(priorityOptions, p.priority, "(no change)") + '</select></div>' +
+          '<select id="' + uid + '-priority">' + optionsHtml(PRIORITY_OPTIONS, p.priority, "(no change)") + '</select></div>' +
       '</div>' +
       '<div class="edit-row2">' +
         '<div class="edit-field"><label for="' + uid + '-owner">Owner</label>' +
           '<select id="' + uid + '-owner">' + optionsHtml([""].concat(owners), p.owner, "(no change)") + '</select></div>' +
         '<div class="edit-field"><label for="' + uid + '-deadline">Deadline</label>' +
           '<input type="date" id="' + uid + '-deadline" value="' + escapeHtml(p.deadline ? p.deadline.slice(0,10) : "") + '"></div>' +
+      '</div>' +
+      '<div class="edit-row2">' +
+        '<div class="edit-field"><label for="' + uid + '-targetvenue">Target venue<span class="field-hint">Where you\'re aiming to submit, before it\'s actually sent anywhere.</span></label>' +
+          '<input type="text" id="' + uid + '-targetvenue" placeholder="e.g. Nature Medicine" value="' + escapeHtml(p.targetVenue || "") + '"></div>' +
+        '<div class="edit-field"><label for="' + uid + '-targetdeadline">Target deadline</label>' +
+          '<input type="date" id="' + uid + '-targetdeadline" value="' + escapeHtml(p.targetDeadline ? p.targetDeadline.slice(0,10) : "") + '"></div>' +
+      '</div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-abstract">Abstract<span class="field-hint">2-3 sentence plain-language summary — shown on the public Discover page once this comes from a real spreadsheet export.</span></label>' +
+        '<textarea id="' + uid + '-abstract">' + escapeHtml(p.abstract || "") + '</textarea>' +
+      '</div>' +
+      '<div class="edit-row2">' +
+        '<div class="edit-field"><label for="' + uid + '-tags">Tags<span class="field-hint">Comma-separated, e.g. "clinical ML, causal inference".</span></label>' +
+          '<input type="text" id="' + uid + '-tags" value="' + escapeHtml((p.tags || []).join(", ")) + '"></div>' +
+        '<div class="edit-field"><label for="' + uid + '-skills">Skills needed<span class="field-hint">Comma-separated, e.g. "Python, writing".</span></label>' +
+          '<input type="text" id="' + uid + '-skills" value="' + escapeHtml((p.skillsNeeded || []).join(", ")) + '"></div>' +
+      '</div>' +
+      '<div class="checkbox-field">' +
+        '<input type="checkbox" id="' + uid + '-open"' + (p.openToNewMembers ? " checked" : "") + '>' +
+        '<label for="' + uid + '-open">Open to new members</label>' +
       '</div>' +
       '<fieldset class="edit-fieldset">' +
         '<legend>Next meeting</legend>' +
@@ -1027,7 +1209,75 @@
         '<legend>Resources</legend>' +
         '<div id="' + uid + '-resources"></div>' +
         '<button type="button" class="add-resource-btn" data-add-resource>+ Add resource</button>' +
-      '</fieldset>' +
+      '</fieldset>'
+    );
+  }
+
+  function wireCommonProjectFieldsInteractivity(panel, uid, p){
+    var resourcesContainer = panel.querySelector("#" + uid + "-resources");
+    (p.resources || []).forEach(function(r){ addResourceRow(resourcesContainer, r.label, r.url); });
+    panel.querySelector("[data-add-resource]").addEventListener("click", function(){ addResourceRow(resourcesContainer, "", ""); });
+    return resourcesContainer;
+  }
+
+  function readCommonProjectFieldValues(panel, uid, resourcesContainer){
+    return {
+      stage: panel.querySelector("#" + uid + "-stage").value,
+      priority: panel.querySelector("#" + uid + "-priority").value,
+      owner: panel.querySelector("#" + uid + "-owner").value,
+      deadline: panel.querySelector("#" + uid + "-deadline").value,
+      targetVenue: panel.querySelector("#" + uid + "-targetvenue").value.trim(),
+      targetDeadline: panel.querySelector("#" + uid + "-targetdeadline").value,
+      abstract: panel.querySelector("#" + uid + "-abstract").value.trim(),
+      tags: parseListInput(panel.querySelector("#" + uid + "-tags").value),
+      skillsNeeded: parseListInput(panel.querySelector("#" + uid + "-skills").value),
+      openToNewMembers: panel.querySelector("#" + uid + "-open").checked,
+      meetDate: panel.querySelector("#" + uid + "-meetdate").value,
+      meetLink: panel.querySelector("#" + uid + "-meetlink").value.trim(),
+      draftLink: panel.querySelector("#" + uid + "-draft").value.trim(),
+      resources: readResourceRows(resourcesContainer)
+    };
+  }
+
+  // -------------------- Delete --------------------
+
+  function renderDeleteConfirm(panel, p){
+    panel.innerHTML =
+      '<div class="detail-head"><h3>Delete ' + escapeHtml(p.id) + '</h3><button type="button" class="detail-close" data-detail-close aria-label="Close">×</button></div>' +
+      '<div class="delete-confirm">' +
+        '<p>Delete <strong>' + escapeHtml(p.title) + '</strong>? ' +
+        (p._demoAdded
+          ? "It was only created in this demo session, so this removes it completely."
+          : "It stays in the real data.json/spreadsheet — this only hides it from this browser's view, and undoing it is one click away.") +
+        '</p>' +
+        '<p style="margin-bottom:0">Use <strong>Reset demo data</strong> (top banner) any time to bring it back, along with every other demo change.</p>' +
+      '</div>' +
+      '<div class="edit-actions">' +
+        '<button type="button" class="edit-btn-danger" data-confirm-delete>Yes, delete it</button>' +
+        '<button type="button" class="edit-btn-secondary" data-cancel-delete>Cancel</button>' +
+      '</div>';
+
+    panel.querySelector("[data-detail-close]").addEventListener("click", function(){ closeDetailPanel(panel); });
+    panel.querySelector("[data-cancel-delete]").addEventListener("click", function(){ renderDetailEditView(panel, p); });
+    panel.querySelector("[data-confirm-delete]").addEventListener("click", function(){
+      commitDemoDelete(p.id);
+      closeDetailPanel(panel);
+      refreshFromDemoEdits();
+    });
+  }
+
+  function renderDetailEditView(panel, p){
+    var uid = "edit-" + p.id;
+    var storedName = getDemoName();
+
+    panel.innerHTML =
+      '<div class="detail-head"><h3>Edit ' + escapeHtml(p.id) + '</h3><button type="button" class="detail-close" data-detail-close aria-label="Close">×</button></div>' +
+      '<div class="edit-message-slot"></div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-name">Your name<span class="field-hint">Shown as the editor of this change — demo attribution only, not verified.</span></label>' +
+        '<input type="text" id="' + uid + '-name" placeholder="e.g. Jane Doe" value="' + escapeHtml(storedName) + '">' +
+      '</div>' +
+      renderCommonProjectFieldsHtml(uid, p) +
       '<fieldset class="edit-fieldset">' +
         '<legend>Log a new submission</legend>' +
         '<div class="edit-field"><label for="' + uid + '-venue">Venue<span class="field-hint">Leave blank unless you just sent this to a new journal/conference.</span></label>' +
@@ -1039,7 +1289,7 @@
         '<legend>Decision<span class="field-hint" style="display:block;font-weight:400">Applies to the new submission above, or the current venue if Venue is blank.</span></legend>' +
         '<div class="edit-row2">' +
           '<div class="edit-field"><label for="' + uid + '-decision">Decision</label>' +
-            '<select id="' + uid + '-decision">' + optionsHtml(decisionOptions, "", "(no change)") + '</select></div>' +
+            '<select id="' + uid + '-decision">' + optionsHtml(DECISION_OPTIONS, "", "(no change)") + '</select></div>' +
           '<div class="edit-field"><label for="' + uid + '-decisiondate">Decision date</label>' +
             '<input type="date" id="' + uid + '-decisiondate"></div>' +
         '</div>' +
@@ -1051,14 +1301,14 @@
       '<div class="edit-actions">' +
         '<button type="button" class="edit-btn-primary" data-save-edit>Save changes</button>' +
         '<button type="button" class="edit-btn-secondary" data-cancel-edit>Cancel</button>' +
-      '</div>';
+      '</div>' +
+      '<div class="danger-zone"><button type="button" class="delete-link" data-open-delete>Delete this project…</button></div>';
 
     panel.querySelector("[data-detail-close]").addEventListener("click", function(){ closeDetailPanel(panel); });
     panel.querySelector("[data-cancel-edit]").addEventListener("click", function(){ renderDetailReadView(panel, p); });
+    panel.querySelector("[data-open-delete]").addEventListener("click", function(){ renderDeleteConfirm(panel, p); });
 
-    var resourcesContainer = panel.querySelector("#" + uid + "-resources");
-    (p.resources || []).forEach(function(r){ addResourceRow(resourcesContainer, r.label, r.url); });
-    panel.querySelector("[data-add-resource]").addEventListener("click", function(){ addResourceRow(resourcesContainer, "", ""); });
+    var resourcesContainer = wireCommonProjectFieldsInteractivity(panel, uid, p);
 
     var msgSlot = panel.querySelector(".edit-message-slot");
     var saveBtn = panel.querySelector("[data-save-edit]");
@@ -1071,14 +1321,7 @@
       }
       setDemoName(name);
 
-      var stage = panel.querySelector("#" + uid + "-stage").value;
-      var priority = panel.querySelector("#" + uid + "-priority").value;
-      var owner = panel.querySelector("#" + uid + "-owner").value;
-      var deadline = panel.querySelector("#" + uid + "-deadline").value;
-      var meetDate = panel.querySelector("#" + uid + "-meetdate").value;
-      var meetLink = panel.querySelector("#" + uid + "-meetlink").value.trim();
-      var draftLink = panel.querySelector("#" + uid + "-draft").value.trim();
-      var resources = readResourceRows(resourcesContainer);
+      var v = readCommonProjectFieldValues(panel, uid, resourcesContainer);
       var venue = panel.querySelector("#" + uid + "-venue").value.trim();
       var submittedDate = panel.querySelector("#" + uid + "-submitted").value;
       var decision = panel.querySelector("#" + uid + "-decision").value;
@@ -1095,13 +1338,19 @@
         if (JSON.stringify(value) !== JSON.stringify(p[key])) fields[key] = value;
       }
 
-      if (stage) setIfChanged("stage", stage);
-      if (priority) setIfChanged("priority", priority);
-      if (owner) setIfChanged("owner", owner);
-      if (deadline) setIfChanged("deadline", deadline);
-      if (meetDate || meetLink) setIfChanged("nextMeeting", { date: meetDate || null, link: meetLink || null });
-      setIfChanged("currentDraftLink", draftLink || null);
-      setIfChanged("resources", resources);
+      if (v.stage) setIfChanged("stage", v.stage);
+      if (v.priority) setIfChanged("priority", v.priority);
+      if (v.owner) setIfChanged("owner", v.owner);
+      if (v.deadline) setIfChanged("deadline", v.deadline);
+      setIfChanged("targetVenue", v.targetVenue || null);
+      if (v.targetDeadline) setIfChanged("targetDeadline", v.targetDeadline);
+      setIfChanged("abstract", v.abstract || null);
+      setIfChanged("tags", v.tags);
+      setIfChanged("skillsNeeded", v.skillsNeeded);
+      setIfChanged("openToNewMembers", v.openToNewMembers);
+      if (v.meetDate || v.meetLink) setIfChanged("nextMeeting", { date: v.meetDate || null, link: v.meetLink || null });
+      setIfChanged("currentDraftLink", v.draftLink || null);
+      setIfChanged("resources", v.resources);
 
       var submissions = (p.submissions || []).slice();
       var submissionTouched = false;
@@ -1177,7 +1426,9 @@
     }
     if (p.lastUpdated) meta.push('<span class="meta-item">Last updated ' + fmtDate(p.lastUpdated) + '</span>');
 
-    var editedFlag = p._demoEdited ? '<span class="edited-flag">Edited (demo)</span>' : '';
+    var editedFlag = p._demoAdded
+      ? '<span class="new-flag">New (not yet shared)</span>'
+      : (p._demoEdited ? '<span class="edited-flag">Edited (demo)</span>' : '');
 
     var el = document.createElement("div");
     el.className = "paper-card";
@@ -1306,8 +1557,10 @@
 
   function wireDemoBanner(){
     document.getElementById("reset-demo-btn").addEventListener("click", function(){
-      if (!confirm("This clears all local demo edits and reloads the original data. Continue?")) return;
+      if (!confirm("This clears all local demo edits (including any added or deleted projects) and reloads the original data. Continue?")) return;
       localStorage.removeItem(DEMO_EDITS_KEY);
+      localStorage.removeItem(DEMO_ADDED_KEY);
+      localStorage.removeItem(DEMO_DELETED_KEY);
       state.openDetailPaperId = null;
       location.reload();
     });
@@ -1317,8 +1570,12 @@
     var copyBtn = document.getElementById("copy-json-copy");
 
     document.getElementById("copy-demo-btn").addEventListener("click", function(){
-      var edits = loadDemoEdits();
-      textarea.value = JSON.stringify(edits, null, 2);
+      var dump = {
+        edits: loadDemoEdits(),
+        added: loadDemoAdded(),
+        deleted: loadDemoDeleted()
+      };
+      textarea.value = JSON.stringify(dump, null, 2);
       copyBtn.textContent = "Copy to clipboard";
       overlay.classList.add("open");
       textarea.focus();
@@ -1343,10 +1600,109 @@
     });
   }
 
+  // -------------------- New Project --------------------
+
+  function closeNewProjectModal(){
+    document.getElementById("new-project-overlay").classList.remove("open");
+  }
+
+  function renderNewProjectForm(){
+    var uid = "new-project";
+    var slot = document.getElementById("new-project-form-slot");
+    var storedName = getDemoName();
+    var blank = {};
+
+    slot.innerHTML =
+      '<p class="hint">This is saved to your browser only — see the demo-mode banner. It won\'t appear on the public <a href="discover.html" target="_blank" rel="noopener">Discover page</a>, which reads a separate export generated from the real spreadsheet.</p>' +
+      '<div class="edit-message-slot"></div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-title">Title *</label>' +
+        '<input type="text" id="' + uid + '-title" placeholder="Paper / project title">' +
+      '</div>' +
+      '<div class="edit-field">' +
+        '<label for="' + uid + '-name">Your name<span class="field-hint">Shown as the creator — demo attribution only, not verified.</span></label>' +
+        '<input type="text" id="' + uid + '-name" placeholder="e.g. Jane Doe" value="' + escapeHtml(storedName) + '">' +
+      '</div>' +
+      renderCommonProjectFieldsHtml(uid, blank) +
+      '<div class="modal-actions">' +
+        '<button type="button" class="edit-btn-secondary" id="new-project-cancel">Cancel</button>' +
+        '<button type="button" class="edit-btn-primary" id="new-project-save">Create project</button>' +
+      '</div>';
+
+    var resourcesContainer = wireCommonProjectFieldsInteractivity(slot, uid, blank);
+    var msgSlot = slot.querySelector(".edit-message-slot");
+
+    document.getElementById("new-project-cancel").addEventListener("click", closeNewProjectModal);
+
+    document.getElementById("new-project-save").addEventListener("click", function(){
+      var title = slot.querySelector("#" + uid + "-title").value.trim();
+      var name = slot.querySelector("#" + uid + "-name").value.trim();
+      if (!title) {
+        showEditMessage(msgSlot, "error", "Title is required.");
+        return;
+      }
+      if (!name) {
+        showEditMessage(msgSlot, "error", "Enter your name so this is attributed correctly.");
+        return;
+      }
+      setDemoName(name);
+
+      var v = readCommonProjectFieldValues(slot, uid, resourcesContainer);
+      var now = new Date();
+      var status = deriveStatus(v.stage || null, 0, null, v.deadline || null, null, now);
+      var id = nextPaperId();
+
+      var paper = {
+        id: id,
+        title: title,
+        stage: v.stage || null,
+        status: status,
+        priority: v.priority || null,
+        targetVenue: v.targetVenue || null,
+        targetDeadline: v.targetDeadline || null,
+        attempts: 0,
+        currentVenue: null,
+        deadline: v.deadline || null,
+        daysLeft: v.deadline ? daysLeftFromDeadline(v.deadline, now) : null,
+        latestDecision: null,
+        owner: v.owner || null,
+        authors: null,
+        finalFile: null,
+        publishedDate: null,
+        progressPct: null,
+        lastUpdated: now.toISOString().slice(0, 10),
+        githubRepo: null,
+        notes: null,
+        submissions: [],
+        nextMeeting: (v.meetDate || v.meetLink) ? { date: v.meetDate || null, link: v.meetLink || null } : null,
+        pastMeetings: [],
+        currentDraftLink: v.draftLink || null,
+        resources: v.resources,
+        abstract: v.abstract || null,
+        tags: v.tags,
+        skillsNeeded: v.skillsNeeded,
+        openToNewMembers: v.openToNewMembers
+      };
+
+      commitDemoAdd(paper, name);
+      closeNewProjectModal();
+      state.openDetailPaperId = id;
+      refreshFromDemoEdits();
+    });
+  }
+
+  function wireNewProjectModal(){
+    document.getElementById("new-project-btn").addEventListener("click", function(){
+      renderNewProjectForm();
+      document.getElementById("new-project-overlay").classList.add("open");
+    });
+  }
+
   function init(){
     wireControls();
     wirePrintExpansion();
     wireDemoBanner();
+    wireNewProjectModal();
     fetch(dataUrl())
       .then(function(res){
         if (!res.ok) throw new Error("HTTP " + res.status + " fetching " + dataUrl());
@@ -1354,7 +1710,7 @@
       })
       .then(function(data){
         state.rawPapers = Array.isArray(data.papers) ? data.papers : [];
-        state.papers = applyDemoEditsToPapers(state.rawPapers, loadDemoEdits());
+        state.papers = buildMergedPapers(state.rawPapers);
         populateOwnerSelect();
         render();
       })

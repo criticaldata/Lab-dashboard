@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate data.json from Lab_Papers_Dashboard.xlsx.
+"""Regenerate data.json and data.public.json from Lab_Papers_Dashboard.xlsx.
 
 Usage: python3 export_data.py [path/to/Lab_Papers_Dashboard.xlsx]
 """

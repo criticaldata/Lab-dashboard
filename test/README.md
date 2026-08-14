@@ -30,10 +30,11 @@ python3 -m http.server 8000
 then, from the repo root:
 
 ```bash
-node test/test_dashboard.js      # KPIs, search, owner filter, submission history, mobile
-node test/test_part1.js          # Needs Status collapse, last-updated field, print stylesheet
-node test/test_demo_mode.js      # inline editing: every field type, persistence, reset, copy-as-JSON
-node test/test_discover.js       # Project Discovery page: filtering, matching, mailto, network isolation
+node test/test_dashboard.js       # KPIs, search, owner filter, submission history, mobile
+node test/test_part1.js           # Needs Status collapse, last-updated field, print stylesheet
+node test/test_demo_mode.js       # inline editing: every field type, persistence, reset, copy-as-JSON
+node test/test_create_delete.js   # add/delete a project entirely in demo mode, real-paper hide vs. reset
+node test/test_discover.js        # Project Discovery page: filtering, matching, mailto, network isolation
 ```
 
 Or all of them at once: `npm test` from inside `test/` (with the server
@@ -64,6 +65,13 @@ not meant to be committed).
   one-time name prompt, Reset demo data, Copy my changes as JSON, and the
   demo banner's visibility/non-blocking behavior, at desktop and mobile
   widths.
+- **`test_create_delete.js`** — adding a project via "+ New Project" (ID
+  generation, required-title validation, the "New (not yet shared)" flag,
+  refresh-persistence), deleting it outright vs. deleting a real
+  data.json-sourced paper (hidden only — asserts the raw data.json file is
+  untouched), the delete confirmation step (and that Cancel really cancels),
+  Reset demo data restoring a hidden real paper, and that Copy my changes
+  as JSON includes both an added paper and a deleted id.
 - **`test_discover.js`** — the public Project Discovery page: only
   `openToNewMembers` papers appear, keyword matching/sorting responds to
   what's typed, the "I'm interested" mailto link is correct, mobile layout,
