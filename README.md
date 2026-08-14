@@ -1,4 +1,4 @@
-# Lab Ledger — MIT Critical Data
+# Lab Ledger - MIT Critical Data
 
 A single-page dashboard for tracking every paper in the lab — what stage it's
 at, which journal/conference it's currently with, and its full submission
